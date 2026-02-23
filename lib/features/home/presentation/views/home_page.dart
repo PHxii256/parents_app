@@ -3,7 +3,7 @@ import 'package:parent_app/features/locations/views/locations_page_body.dart';
 import 'package:parent_app/features/notifications/views/notifications_page_body.dart';
 import 'package:parent_app/features/profile/views/profile_page_body.dart';
 import 'package:parent_app/features/settings/views/settings_page.dart';
-import 'package:parent_app/features/home/views/home_body.dart';
+import 'package:parent_app/features/home/presentation//views/home_body.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

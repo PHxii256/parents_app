@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/absence/views/absence_page.dart';
-import 'package:parent_app/features/change_request/views/change_request_page.dart';
+import 'package:parent_app/features/absence/presentation/views/absence_page.dart';
+import 'package:parent_app/features/change_request/presentation/views/change_request_page.dart';
 import 'package:parent_app/features/pin_code/views/pin_code_page.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
