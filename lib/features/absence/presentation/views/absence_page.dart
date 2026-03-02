@@ -1,14 +1,144 @@
 import 'package:flutter/material.dart';
 
-class AbsencePage extends StatelessWidget {
+class AbsencePage extends StatefulWidget {
   const AbsencePage({super.key});
 
   @override
+  State<AbsencePage> createState() => _AbsenceScreenState();
+}
+
+class _AbsenceScreenState extends State<AbsencePage> {
+  // Selected children (multiple)
+  List<String> selectedChildren = [];
+
+  // Absence date selection
+  String selectedDateOption = 'Tomorrow';
+
+  // List of children
+  final List<Map<String, String>> children = [
+    {'name': 'Ahmed Mohsen', 'grade': 'Grade 2'},
+    {'name': 'Mohamed Salah', 'grade': 'Grade 5'},
+  ];
+
+  @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        title: Text("Absence", style: TextStyle(fontWeight: FontWeight.w500)),
+        title: const Text('Absence'),
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: ListView(
+          children: [
+            // Select children
+            const Text(
+              'Select children',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: children.map((child) {
+                final name = child['name']!;
+                final grade = child['grade']!;
+                final isSelected = selectedChildren.contains(name);
+
+                return ListTile(
+                  leading: const CircleAvatar(
+                    backgroundColor: Colors.grey,
+                    radius: 20,
+                  ),
+                  title: Text(name),
+                  subtitle: Text(grade, style: const TextStyle(color: Colors.grey)),
+                  trailing: isSelected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        selectedChildren.remove(name);
+                      } else {
+                        selectedChildren.add(name);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Absence date
+            const Text(
+              'Absence date',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: [
+                RadioListTile<String>(
+                  title: const Text('Today (Monday)'),
+                  value: 'Today',
+                  groupValue: selectedDateOption,
+                  onChanged: (value) => setState(() => selectedDateOption = value!),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Tomorrow'),
+                  value: 'Tomorrow',
+                  groupValue: selectedDateOption,
+                  onChanged: (value) => setState(() => selectedDateOption = value!),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Specific date'),
+                  value: 'Specific date',
+                  groupValue: selectedDateOption,
+                  onChanged: (value) => setState(() => selectedDateOption = value!),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Duration'),
+                  value: 'Duration',
+                  groupValue: selectedDateOption,
+                  onChanged: (value) => setState(() => selectedDateOption = value!),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 24),
+
+            // Mark as absent button
+            SizedBox(
+              width: screenWidth * 0.9,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow.shade700,
+                ),
+                onPressed: () {
+                  // Example: print selected children
+                  print('Selected children: $selectedChildren');
+                  print('Selected date option: $selectedDateOption');
+                },
+                child: const Text(
+                  'Mark as absent',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: 'Addresses'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
       ),
     );
   }
