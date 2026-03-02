@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ListView(
-                physics: NeverScrollableScrollPhysics(),
+                physics: BouncingScrollPhysics(),
                 children: [
                   /// Phone Label
                   const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
