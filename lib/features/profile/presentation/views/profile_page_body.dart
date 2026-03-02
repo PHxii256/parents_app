@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/profile/views/profile_viewmodel.dart';
+import 'package:parent_app/features/profile/presentation/profile_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 
-import '../data/profile_repository_impl.dart';
+import '../../data/profile_repository_impl.dart';
 
 
 class ProfilePage extends StatelessWidget {
