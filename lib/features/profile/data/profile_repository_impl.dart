@@ -1,5 +1,6 @@
-import 'package:parent_app/features/change_request/domain/child.dart';
-import 'package:parent_app/features/change_request/domain/profile_repository.dart';
+
+import '../domain/child.dart';
+import '../domain/profile_repository.dart';
 
 class ProfileRepositoryImpl implements ProfileRepository {
   @override
