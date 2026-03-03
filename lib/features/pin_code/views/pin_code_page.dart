@@ -15,8 +15,6 @@ class _PinScreenState extends State<PinCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -24,7 +22,7 @@ class _PinScreenState extends State<PinCodePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text('Pin Code', style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -44,10 +42,7 @@ class _PinScreenState extends State<PinCodePage> {
               style: TextStyle(fontSize: 16, color: Colors.black54),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "Master Pin",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
+            const Text("Master Pin", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
             const SizedBox(height: 4),
             const Text(
               "(Do not share with anyone other than bus staff)",
@@ -89,9 +84,9 @@ class _PinScreenState extends State<PinCodePage> {
                   icon: const Icon(Icons.copy),
                   onPressed: () {
                     Clipboard.setData(ClipboardData(text: tempPinController.text));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Temporary PIN copied!")),
-                    );
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(const SnackBar(content: Text("Temporary PIN copied!")));
                   },
                 ),
               ),
@@ -99,7 +94,6 @@ class _PinScreenState extends State<PinCodePage> {
           ],
         ),
       ),
-
     );
   }
 }
