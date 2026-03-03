@@ -17,9 +17,9 @@ class CustPage extends StatefulWidget {
 class _CustPageState extends State<CustPage> {
   bool showAppBar = true;
   int currentWidgetIndex = 0;
-  Widget currentBody = HomeBody(onShowSubPage: (Widget? page) {});
+  Widget currentBody = HomeBody();
   final List<Widget> destinations = [
-    HomeBody(onShowSubPage: (Widget? page) {}),
+    HomeBody(),
     LocationsPage(),
     NotificationsPage(),
     ProfilePage(),
@@ -59,9 +59,7 @@ class _CustPageState extends State<CustPage> {
         ],
       ),
       body: currentBody,
-      appBar:
-          currentWidgetIndex == 0 &&
-              currentBody.runtimeType == HomeBody(onShowSubPage: (Widget? page) {}).runtimeType
+      appBar: currentWidgetIndex == 0 && currentBody.runtimeType == HomeBody().runtimeType
           ? AppBar(
               backgroundColor: Colors.transparent,
               actionsPadding: EdgeInsets.only(right: 8),
