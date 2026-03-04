@@ -7,7 +7,10 @@ class SettingsPage extends StatelessWidget {
     // first we should clear local jwt storage
     // this logic should be done in a bloc.
     if (ctx.mounted) {
-      Navigator.of(ctx).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
+      Navigator.of(
+        ctx,
+        rootNavigator: true,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
     }
   }
 
