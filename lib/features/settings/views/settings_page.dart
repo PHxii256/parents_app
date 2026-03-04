@@ -3,11 +3,15 @@ import 'package:parent_app/features/login/presentation/views/login_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
   void logout(BuildContext ctx) {
     // first we should clear local jwt storage
     // this logic should be done in a bloc.
     if (ctx.mounted) {
-      Navigator.of(ctx).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
+      Navigator.of(ctx).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const LoginPage()),
+        (route) => false,
+      );
     }
   }
 
