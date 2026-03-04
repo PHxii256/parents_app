@@ -19,7 +19,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Settings", style: TextStyle(fontWeight: FontWeight.w500)),
+        title: Text("Settings", style: TextStyle(fontWeight: FontWeight.w600)),
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),

@@ -9,7 +9,7 @@ class NotificationsPage extends StatelessWidget {
       children: [
         AppBar(
           centerTitle: true,
-          title: Text("Notifications", style: TextStyle(fontWeight: FontWeight.w500)),
+          title: Text("Notifications", style: TextStyle(fontWeight: FontWeight.w600)),
         ),
       ],
     );
