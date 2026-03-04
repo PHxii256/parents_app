@@ -9,7 +9,8 @@ class HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+      child:Column(
       children: [
         ClipRRect(
           child: Stack(
@@ -173,6 +174,7 @@ class HomeBody extends StatelessWidget {
           ),
         ),
       ],
+    )
     );
   }
 }
