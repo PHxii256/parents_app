@@ -16,10 +16,10 @@ class _LoginPageState extends State<LoginPage> {
     // if response is successful refresh the token and move the user to home/
     // this logic should be done in a bloc.
     if (mounted) {
-      Navigator.of(context ,rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => const HomePage()),
-            (route) => false,
-      );
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => HomePage()));
     }
   }
 

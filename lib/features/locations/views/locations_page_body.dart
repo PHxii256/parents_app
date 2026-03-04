@@ -9,7 +9,7 @@ class LocationsPage extends StatelessWidget {
       children: [
         AppBar(
           centerTitle: true,
-          title: Text("Locations", style: TextStyle(fontWeight: FontWeight.w500)),
+          title: Text("Locations", style: TextStyle(fontWeight: FontWeight.w600)),
         ),
       ],
     );

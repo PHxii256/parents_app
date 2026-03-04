@@ -22,11 +22,8 @@ class _AbsenceScreenState extends State<AbsencePage> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
@@ -74,51 +71,56 @@ class _AbsenceScreenState extends State<AbsencePage> {
           // Absence date
           const Text('Absence date', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 12),
-          Column(
-            children: [
-              RadioListTile<String>(
-                title: const Text('Today (Monday)'),
-                value: 'Today',
-                groupValue: selectedDateOption,
-                onChanged: (value) => setState(() => selectedDateOption = value!),
-              ),
-              RadioListTile<String>(
-                title: const Text('Tomorrow'),
-                value: 'Tomorrow',
-                groupValue: selectedDateOption,
-                onChanged: (value) => setState(() => selectedDateOption = value!),
-              ),
-              RadioListTile<String>(
-                title: const Text('Specific date'),
-                value: 'Specific date',
-                groupValue: selectedDateOption,
-                onChanged: (value) => setState(() => selectedDateOption = value!),
-              ),
-              RadioListTile<String>(
-                title: const Text('Duration'),
-                value: 'Duration',
-                groupValue: selectedDateOption,
-                onChanged: (value) => setState(() => selectedDateOption = value!),
-              ),
-            ],
+          RadioGroup<String>(
+            onChanged: (value) => setState(() => selectedDateOption = value!),
+            groupValue: selectedDateOption,
+            child: Column(
+              children: [
+                RadioListTile<String>(
+                  title: const Text('Today (Monday)'),
+                  value: 'Today',
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Tomorrow'),
+                  value: 'Tomorrow',
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Specific date'),
+                  value: 'Specific date',
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                RadioListTile<String>(
+                  title: const Text('Duration'),
+                  value: 'Duration',
+                  controlAffinity: ListTileControlAffinity.trailing,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 24),
 
           // Mark as absent button
           SizedBox(
-            width: screenWidth * 0.9,
             height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow.shade700),
-              onPressed: () {
-                // Example: print selected children
-                print('Selected children: $selectedChildren');
-                print('Selected date option: $selectedDateOption');
-              },
-              child: const Text(
-                'Mark as absent',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+            child: Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow.shade700),
+                onPressed: () {
+                  // Example: print selected children
+                  print('Selected children: $selectedChildren');
+                  print('Selected date option: $selectedDateOption');
+                },
+                child: const Text(
+                  'Mark as absent',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
           ),

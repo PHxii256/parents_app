@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ChangeRequestPage extends StatefulWidget {
   const ChangeRequestPage({super.key});
@@ -19,8 +20,8 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request'),
-        backgroundColor: Colors.white,
+        title: const Text('Request', style: TextStyle(fontWeight: FontWeight.w600)),
+        centerTitle: true,
         foregroundColor: Colors.black,
         elevation: 0,
         leading: IconButton(
@@ -32,11 +33,20 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            Text(
+              "Change pickup or drop-off for",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+            ),
+            Text(
+              "Tomorrow (Wednesday 16/3)",
+              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
+            ),
+            SizedBox(height: 18),
             // Pickup / Dropoff toggle
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(),
               ),
               child: Row(
                 children: [
@@ -46,10 +56,10 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: isPickup ? Colors.brown.shade200 : Colors.transparent,
+                          color: isPickup ? AppColors.highlight : Colors.transparent,
                           borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(8),
-                            bottomLeft: Radius.circular(8),
+                            topLeft: Radius.circular(32),
+                            bottomLeft: Radius.circular(32),
                           ),
                         ),
                         child: const Center(child: Text("Pickup")),
@@ -62,10 +72,10 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: !isPickup ? Colors.brown.shade200 : Colors.transparent,
+                          color: !isPickup ? AppColors.highlight : Colors.transparent,
                           borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(8),
-                            bottomRight: Radius.circular(8),
+                            topRight: Radius.circular(32),
+                            bottomRight: Radius.circular(32),
                           ),
                         ),
                         child: const Center(child: Text("Dropoff")),
@@ -86,7 +96,10 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                   'Saved Addresses',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                TextButton(onPressed: () {}, child: const Text('Add New Address')),
+                TextButton(
+                  onPressed: () {},
+                  child: Text('Add New Address', style: TextStyle(color: AppColors.cta)),
+                ),
               ],
             ),
             Column(
@@ -146,7 +159,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               height: 50,
               child: Expanded(
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow.shade700),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                   onPressed: () {},
                   child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
                 ),
@@ -155,7 +168,6 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
           ],
         ),
       ),
-
     );
   }
 }

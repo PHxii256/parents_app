@@ -14,6 +14,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
+        radioTheme: RadioThemeData(fillColor: WidgetStateProperty.all(Colors.black87)),
         fontFamily: 'Lexend',
       ),
       home: LoginPage(),

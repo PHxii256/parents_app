@@ -54,7 +54,7 @@ class HomeBody extends StatelessWidget {
                       Text(
                         "No trip currently",
                         style: TextStyle(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                           fontSize: 18,
                           color: Colors.black54,
                         ),
