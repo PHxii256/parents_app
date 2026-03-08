@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/views/home_page.dart';
+import 'package:parent_app/features/login/presentation/views/otp_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +24,16 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  void resetPass() {
+    // should send a request to the backend to email the otp to this account
+    if (mounted) {
+      Navigator.of(
+        context,
+        rootNavigator: true,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => OtpPage()));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                SizedBox(height: 8),
                 Text("Be At Ease.", style: TextStyle(fontSize: 16)),
               ],
             ),
@@ -49,6 +59,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: ListView(
+                padding: EdgeInsets.symmetric(vertical: 24),
                 physics: BouncingScrollPhysics(),
                 children: [
                   /// Phone Label
@@ -113,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         const Text("Forgot Password? "),
                         InkWell(
-                          onTap: () {},
+                          onTap: resetPass,
                           child: const Text(
                             "Reset",
                             style: TextStyle(
