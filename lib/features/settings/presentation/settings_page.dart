@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/login/presentation/login_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
   void logout(BuildContext ctx) {
-    // first we should clear local jwt storage
-    // this logic should be done in a bloc.
-    if (ctx.mounted) {
-      Navigator.of(
-        ctx,
-        rootNavigator: true,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
-    }
+    ctx.read<AuthCubit>().logout();
   }
 
   @override

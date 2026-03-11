@@ -1,4 +1,4 @@
-import 'package:parent_app/features/login/data/models/otp_data.dart';
+import 'package:parent_app/features/auth/data/models/otp_data.dart';
 
 sealed class OtpResult {}
 

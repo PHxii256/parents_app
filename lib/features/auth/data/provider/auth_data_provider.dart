@@ -15,11 +15,15 @@ class AuthDataProvider {
 
   // To:do replace double check params to make sure they makes sense
   Future<Response> jwtLogin({required String accessToken, required String refreshToken}) async {
-    final response = await _dio.post(
-      '/login',
-      data: {'accessToken': accessToken, 'refreshToken': refreshToken},
-    );
-    return response;
+    try {
+      final response = await _dio.post(
+        '/login',
+        data: {'accessToken': accessToken, 'refreshToken': refreshToken},
+      );
+      return response;
+    } on DioException catch (e) {
+      throw ServerException(message: e.response?.data['message'] ?? 'Network error');
+    }
   }
 
   Future<Response> logout({required String accessToken, required String refreshToken}) async {
@@ -42,7 +46,7 @@ class AuthDataProvider {
   }) async {
     final response = await _dio.post(
       '/reset-password',
-      data: {'password': newPassword, 'otp': otp, email: 'email'},
+      data: {'password': newPassword, 'otp': otp, email: email},
     );
     return response;
   }

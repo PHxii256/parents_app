@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -62,10 +61,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       ),
     );
 
-    Navigator.of(
-      context,
-      rootNavigator: true,
-    ).pushReplacement(MaterialPageRoute(builder: (context) => HomePage()));
+    // Pop back to LoginPage — AuthGate handles routing from there.
+    if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override

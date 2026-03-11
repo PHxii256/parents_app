@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:parent_app/features/login/presentation/reset_password_page.dart';
+import 'package:parent_app/features/auth/presentation/reset_password_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class OtpPage extends StatelessWidget {
-  const OtpPage({super.key});
-  final String email = "example@gmail.com";
+  final String email;
+  const OtpPage({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {
@@ -15,17 +15,27 @@ class OtpPage extends StatelessWidget {
       body: Column(
         children: [
           /// Yellow Header
-          Container(
-            height: 260,
-            width: double.infinity,
-            color: Colors.amber,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                Text("Be At Ease.", style: TextStyle(fontSize: 18)),
-              ],
-            ),
+          Stack(
+            children: [
+              Container(
+                height: 260,
+                width: double.infinity,
+                color: Colors.amber,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                    Text("Be At Ease.", style: TextStyle(fontSize: 18)),
+                  ],
+                ),
+              ),
+              SafeArea(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ),
+            ],
           ),
 
           Expanded(
