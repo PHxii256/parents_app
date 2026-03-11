@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:parent_app/features/login/presentation/views/reset_password_page.dart';
+import 'package:parent_app/features/login/presentation/reset_password_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class OtpPage extends StatelessWidget {

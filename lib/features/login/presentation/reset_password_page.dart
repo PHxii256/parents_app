@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/views/home_page.dart';
+import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ResetPasswordPage extends StatefulWidget {

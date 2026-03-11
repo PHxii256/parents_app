@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/views/home_page.dart';
-import 'package:parent_app/features/login/presentation/views/otp_page.dart';
+import 'package:parent_app/features/home/presentation/home_page.dart';
+import 'package:parent_app/features/login/presentation/otp_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
