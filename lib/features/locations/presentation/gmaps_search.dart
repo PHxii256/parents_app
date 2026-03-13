@@ -22,6 +22,7 @@ class _GmapsSearchState extends State<GmapsSearch> {
       // Use the pasted text, for example, set it to a TextEditingController or a Text widget
       setState(() {
         controller.text = clipboardData.text!;
+        hasText = controller.text.isNotEmpty;
       });
     } else {
       if (mounted) {
