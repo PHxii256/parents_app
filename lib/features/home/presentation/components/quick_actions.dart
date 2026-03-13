@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:parent_app/features/absence/presentation/absence_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
 import 'package:parent_app/features/pin_code/presentation/pin_code_page.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class QuickActions extends StatelessWidget {
@@ -9,13 +10,18 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       spacing: 12,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 6.0),
-          child: Text("Quick Actions", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23)),
+          child: Text(
+            localizations.quickActionsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+          ),
         ),
         Row(
           spacing: 8,
@@ -32,7 +38,10 @@ class QuickActions extends StatelessWidget {
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => PinCodePage()));
                   },
                 ),
-                Text("Pin Code", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  localizations.pinCodeTitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
               ],
             ),
             Column(
@@ -47,7 +56,10 @@ class QuickActions extends StatelessWidget {
                     Navigator.of(context).push(MaterialPageRoute(builder: (_) => AbsencePage()));
                   },
                 ),
-                Text("Absence", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  localizations.absenceTitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                ),
               ],
             ),
             Expanded(
@@ -66,8 +78,8 @@ class QuickActions extends StatelessWidget {
                     },
                   ),
                   Text(
-                    "Change Pickup/Drop-off",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                    localizations.changePickupDropoff,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
                 ],
               ),

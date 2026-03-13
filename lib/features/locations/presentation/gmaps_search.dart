@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/locations/service/gmap_url_util.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class GmapsSearch extends StatefulWidget {
@@ -17,6 +18,7 @@ class _GmapsSearchState extends State<GmapsSearch> {
   bool hasText = false;
 
   Future<void> _pasteText() async {
+    final localizations = AppLocalizations.of(context)!;
     final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
     if (clipboardData != null && clipboardData.text != null) {
       // Use the pasted text, for example, set it to a TextEditingController or a Text widget
@@ -26,9 +28,9 @@ class _GmapsSearchState extends State<GmapsSearch> {
       });
     } else {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Clipboard is empty, Please copy a link before pasting")),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(localizations.clipboardEmptyPasteLink)));
       }
     }
   }
@@ -41,6 +43,8 @@ class _GmapsSearchState extends State<GmapsSearch> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 22.0),
       child: Column(
@@ -53,7 +57,7 @@ class _GmapsSearchState extends State<GmapsSearch> {
                   height: 56,
                   child: SearchBar(
                     trailing: [InkWell(onTap: _pasteText, child: Icon(Icons.paste))],
-                    hintText: "Paste a Google Maps Link",
+                    hintText: localizations.pasteGoogleMapsLinkHint,
                     controller: controller,
                     onChanged: (value) {
                       setState(() {
@@ -102,8 +106,8 @@ class _GmapsSearchState extends State<GmapsSearch> {
           Padding(
             padding: const EdgeInsets.fromLTRB(4, 6, 0, 0),
             child: Text(
-              "(eg. https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)",
-              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.black38),
+              localizations.gmapsExampleHint,
+              style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.black38),
             ),
           ),
         ],

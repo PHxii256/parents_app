@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ChangeRequestPage extends StatefulWidget {
@@ -19,9 +20,14 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request', style: TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          localizations.requestTitle,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         centerTitle: true,
         foregroundColor: Colors.black,
         elevation: 0,
@@ -35,14 +41,14 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
         child: ListView(
           children: [
             Text(
-              "Change pickup or drop-off for",
-              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+              localizations.changePickupDropoffFor,
+              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
             ),
             Text(
-              "Tomorrow (Wednesday 16/3)",
-              style: TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
+              localizations.changeRequestDateSubtitle,
+              style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
             ),
-            SizedBox(height: 18),
+            const SizedBox(height: 18),
             // Pickup / Dropoff toggle
             Container(
               decoration: BoxDecoration(
@@ -63,7 +69,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                             bottomLeft: Radius.circular(32),
                           ),
                         ),
-                        child: const Center(child: Text("Pickup")),
+                        child: Center(child: Text(localizations.pickupLabel)),
                       ),
                     ),
                   ),
@@ -79,7 +85,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                             bottomRight: Radius.circular(32),
                           ),
                         ),
-                        child: const Center(child: Text("Dropoff")),
+                        child: Center(child: Text(localizations.dropoffLabel)),
                       ),
                     ),
                   ),
@@ -93,8 +99,8 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Saved Addresses',
+                Text(
+                  localizations.savedAddressesTitle,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextButton(
@@ -103,7 +109,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                       context,
                     ).push(MaterialPageRoute(builder: (context) => AddLocationPage()));
                   },
-                  child: Text('Add New Address', style: TextStyle(color: AppColors.cta)),
+                  child: Text(localizations.addNewAddress, style: TextStyle(color: AppColors.cta)),
                 ),
               ],
             ),
@@ -111,15 +117,15 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.home),
-                  title: const Text('Home'),
-                  subtitle: const Text('123 Maple Street'),
+                  title: Text(localizations.homeAddressName),
+                  subtitle: Text(localizations.homeAddressDesc),
                   trailing: selectedAddress == 'Home' ? const Icon(Icons.check) : null,
                   onTap: () => setState(() => selectedAddress = 'Home'),
                 ),
                 ListTile(
                   leading: const Icon(Icons.home),
-                  title: const Text("Grandma's House"),
-                  subtitle: const Text('789 Pine Lane'),
+                  title: Text(localizations.grandmasHouseName),
+                  subtitle: Text(localizations.grandmasHouseAddress),
                   trailing: selectedAddress == "Grandma's House" ? const Icon(Icons.check) : null,
                   onTap: () => setState(() => selectedAddress = "Grandma's House"),
                 ),
@@ -133,25 +139,25 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               child: Column(
                 children: [
                   RadioListTile<String>(
-                    title: const Text('Today (Monday)'),
+                    title: Text(localizations.todayMonday),
                     value: 'Today',
                     controlAffinity: ListTileControlAffinity.trailing,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
                   ),
                   RadioListTile<String>(
-                    title: const Text('Tomorrow'),
+                    title: Text(localizations.tomorrow),
                     value: 'Tomorrow',
                     controlAffinity: ListTileControlAffinity.trailing,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
                   ),
                   RadioListTile<String>(
-                    title: const Text('Specific date'),
+                    title: Text(localizations.specificDate),
                     value: 'Specific date',
                     controlAffinity: ListTileControlAffinity.trailing,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
                   ),
                   RadioListTile<String>(
-                    title: const Text('Duration'),
+                    title: Text(localizations.duration),
                     value: 'Duration',
                     controlAffinity: ListTileControlAffinity.trailing,
                     contentPadding: EdgeInsets.symmetric(horizontal: 16),
@@ -166,7 +172,10 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                 onPressed: () {},
-                child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
+                child: Text(
+                  localizations.nextButton,
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
             ),
           ],

@@ -1,0 +1,638 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations_ar.dart';
+import 'app_localizations_en.dart';
+
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
+
+  static AppLocalizations? of(BuildContext context) {
+    return Localizations.of<AppLocalizations>(context, AppLocalizations);
+  }
+
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
+
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
+
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('en'),
+  ];
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Be At Ease.'**
+  String get appTagline;
+
+  /// No description provided for @homeTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTab;
+
+  /// No description provided for @locationsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Locations'**
+  String get locationsTab;
+
+  /// No description provided for @notificationsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTab;
+
+  /// No description provided for @profileTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileTab;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @switchLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch Language'**
+  String get switchLanguage;
+
+  /// No description provided for @languagePair.
+  ///
+  /// In en, this message translates to:
+  /// **'English / Arabic'**
+  String get languagePair;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @passwordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get passwordLabel;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get loginButton;
+
+  /// No description provided for @forgotPasswordPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password? '**
+  String get forgotPasswordPrompt;
+
+  /// No description provided for @resetAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetAction;
+
+  /// No description provided for @verificationCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verificationCodeTitle;
+
+  /// No description provided for @sentToEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent to: {email}'**
+  String sentToEmail(Object email);
+
+  /// No description provided for @otpCodeSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Code sent! Check your email.'**
+  String get otpCodeSentSuccess;
+
+  /// No description provided for @otpDidNotReceiveCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive a code? '**
+  String get otpDidNotReceiveCode;
+
+  /// No description provided for @otpResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get otpResend;
+
+  /// No description provided for @otpResendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {time}'**
+  String otpResendIn(Object time);
+
+  /// No description provided for @otpWrongCodeTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong code, try again'**
+  String get otpWrongCodeTryAgain;
+
+  /// No description provided for @resetPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordTitle;
+
+  /// No description provided for @resetPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password below.'**
+  String get resetPasswordSubtitle;
+
+  /// No description provided for @newPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPasswordLabel;
+
+  /// No description provided for @confirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPasswordLabel;
+
+  /// No description provided for @resetPasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPasswordButton;
+
+  /// No description provided for @validationFillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all fields.'**
+  String get validationFillAllFields;
+
+  /// No description provided for @validationPasswordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters.'**
+  String get validationPasswordMinLength;
+
+  /// No description provided for @validationPasswordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get validationPasswordsDoNotMatch;
+
+  /// No description provided for @passwordResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully!'**
+  String get passwordResetSuccess;
+
+  /// No description provided for @quickActionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Actions'**
+  String get quickActionsTitle;
+
+  /// No description provided for @pinCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pin Code'**
+  String get pinCodeTitle;
+
+  /// No description provided for @absenceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence'**
+  String get absenceTitle;
+
+  /// No description provided for @changePickupDropoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Pickup/Drop-off'**
+  String get changePickupDropoff;
+
+  /// No description provided for @tripStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Status'**
+  String get tripStatusTitle;
+
+  /// No description provided for @noTripCurrently.
+  ///
+  /// In en, this message translates to:
+  /// **'No trip currently'**
+  String get noTripCurrently;
+
+  /// No description provided for @nextPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'(next pickup)'**
+  String get nextPickup;
+
+  /// No description provided for @homeAddressName.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeAddressName;
+
+  /// No description provided for @homeAddressDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'123 Maple Street'**
+  String get homeAddressDesc;
+
+  /// No description provided for @grandmasHouseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandma\'s House'**
+  String get grandmasHouseName;
+
+  /// No description provided for @grandmasHouseAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'789 Pine Lane'**
+  String get grandmasHouseAddress;
+
+  /// No description provided for @selectChildrenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select children'**
+  String get selectChildrenTitle;
+
+  /// No description provided for @absenceDateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence date'**
+  String get absenceDateTitle;
+
+  /// No description provided for @todayMonday.
+  ///
+  /// In en, this message translates to:
+  /// **'Today (Monday)'**
+  String get todayMonday;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// No description provided for @specificDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Specific date'**
+  String get specificDate;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @markAsAbsentButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as absent'**
+  String get markAsAbsentButton;
+
+  /// No description provided for @shareChildPinCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your child\'s pin code'**
+  String get shareChildPinCodeTitle;
+
+  /// No description provided for @pinCodeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.'**
+  String get pinCodeDescription;
+
+  /// No description provided for @masterPinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Master Pin'**
+  String get masterPinTitle;
+
+  /// No description provided for @masterPinWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'(Do not share with anyone other than bus staff)'**
+  String get masterPinWarning;
+
+  /// No description provided for @temporaryPinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary Pin'**
+  String get temporaryPinTitle;
+
+  /// No description provided for @temporaryPinInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'(This PIN is safe to share and is valid for one day only)'**
+  String get temporaryPinInfo;
+
+  /// No description provided for @temporaryPinCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary PIN copied!'**
+  String get temporaryPinCopied;
+
+  /// No description provided for @requestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get requestTitle;
+
+  /// No description provided for @changePickupDropoffFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Change pickup or drop-off for'**
+  String get changePickupDropoffFor;
+
+  /// No description provided for @changeRequestDateSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow (Wednesday 16/3)'**
+  String get changeRequestDateSubtitle;
+
+  /// No description provided for @pickupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get pickupLabel;
+
+  /// No description provided for @dropoffLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropoff'**
+  String get dropoffLabel;
+
+  /// No description provided for @savedAddressesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Addresses'**
+  String get savedAddressesTitle;
+
+  /// No description provided for @addNewAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Address'**
+  String get addNewAddress;
+
+  /// No description provided for @nextButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextButton;
+
+  /// No description provided for @addLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Location'**
+  String get addLocationTitle;
+
+  /// No description provided for @addLocationDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Location Details'**
+  String get addLocationDetailsTitle;
+
+  /// No description provided for @doneButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get doneButton;
+
+  /// No description provided for @locationNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Location name is required'**
+  String get locationNameRequired;
+
+  /// No description provided for @locationNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Name'**
+  String get locationNameLabel;
+
+  /// No description provided for @locationNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'eg. Grandma\'s Home'**
+  String get locationNameHint;
+
+  /// No description provided for @addressOptionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address (Optional)'**
+  String get addressOptionalLabel;
+
+  /// No description provided for @addressOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'eg. Sakanat El-Maadi St.9 Building 31'**
+  String get addressOptionalHint;
+
+  /// No description provided for @confirmLocationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get confirmLocationButton;
+
+  /// No description provided for @pasteGoogleMapsLinkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a Google Maps Link'**
+  String get pasteGoogleMapsLinkHint;
+
+  /// No description provided for @clipboardEmptyPasteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Clipboard is empty, please copy a link before pasting'**
+  String get clipboardEmptyPasteLink;
+
+  /// No description provided for @gmapsExampleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'(eg. https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)'**
+  String get gmapsExampleHint;
+
+  /// No description provided for @accountInformationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get accountInformationTitle;
+
+  /// No description provided for @yourEnrolledChildrenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Enrolled Children'**
+  String get yourEnrolledChildrenTitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name: {name}'**
+  String nameLabel(Object name);
+
+  /// No description provided for @primaryPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Phone: {phone}'**
+  String primaryPhoneLabel(Object phone);
+
+  /// No description provided for @secondaryPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Phone: {phone}'**
+  String secondaryPhoneLabel(Object phone);
+
+  /// No description provided for @locationServicesDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are disabled.'**
+  String get locationServicesDisabled;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied.'**
+  String get locationPermissionDenied;
+
+  /// No description provided for @locationPermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please turn on the location permission to view the map.'**
+  String get locationPermissionRequired;
+
+  /// No description provided for @openStreetMapContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenStreetMap contributors'**
+  String get openStreetMapContributors;
+}
+
+class _AppLocalizationsDelegate
+    extends LocalizationsDelegate<AppLocalizations> {
+  const _AppLocalizationsDelegate();
+
+  @override
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
+  }
+
+  @override
+  bool isSupported(Locale locale) =>
+      <String>['ar', 'en'].contains(locale.languageCode);
+
+  @override
+  bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'en':
+      return AppLocalizationsEn();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
+}

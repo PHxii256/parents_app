@@ -3,6 +3,7 @@ import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
 import 'package:parent_app/features/profile/presentation/profile_page_body.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
 
@@ -33,6 +34,8 @@ class _CustPageState extends State<CustPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       bottomNavigationBar: Column(
@@ -43,10 +46,19 @@ class _CustPageState extends State<CustPage> {
             labelPadding: EdgeInsets.only(top: 6),
             backgroundColor: Colors.transparent,
             destinations: [
-              NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-              NavigationDestination(icon: Icon(Icons.pin_drop), label: 'Locations'),
-              NavigationDestination(icon: Icon(Icons.notifications), label: 'Notifications'),
-              NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+              NavigationDestination(icon: const Icon(Icons.home), label: localizations.homeTab),
+              NavigationDestination(
+                icon: const Icon(Icons.pin_drop),
+                label: localizations.locationsTab,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.notifications),
+                label: localizations.notificationsTab,
+              ),
+              NavigationDestination(
+                icon: const Icon(Icons.person),
+                label: localizations.profileTab,
+              ),
             ],
             selectedIndex: currentWidgetIndex,
             onDestinationSelected: (value) {
@@ -68,8 +80,8 @@ class _CustPageState extends State<CustPage> {
                 child: Row(
                   spacing: 6,
                   children: [
-                    Icon(Icons.bus_alert, size: 24),
-                    Text("Safe Route", style: TextStyle(fontWeight: FontWeight.w700)),
+                    const Icon(Icons.bus_alert, size: 24),
+                    Text("Safe Route", style: const TextStyle(fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),

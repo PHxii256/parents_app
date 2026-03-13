@@ -44,9 +44,11 @@ class MapControls extends StatelessWidget {
             heroTag: 'center',
             backgroundColor: Colors.white,
             foregroundColor: Colors.black87,
-            onPressed: () {
-              _mapController.move(_deviceLocation!, _mapController.camera.zoom);
-            },
+            onPressed: _deviceLocation == null
+                ? null
+                : () {
+                    _mapController.move(_deviceLocation, _mapController.camera.zoom);
+                  },
             child: const Icon(Icons.gps_fixed),
           ),
         ],

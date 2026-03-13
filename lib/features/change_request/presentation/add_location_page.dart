@@ -5,6 +5,7 @@ import 'package:parent_app/features/change_request/presentation/components/confi
 import 'package:parent_app/features/change_request/presentation/components/cust_drag_marker.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 import 'package:parent_app/features/locations/presentation/gmaps_search.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class AddLocationPage extends StatefulWidget {
   const AddLocationPage({super.key});
@@ -18,23 +19,28 @@ class _AddLocationPageState extends State<AddLocationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         AppBar(
           centerTitle: true,
-          title: Text("Add Location", style: TextStyle(fontWeight: FontWeight.w600)),
+          title: Text(
+            localizations.addLocationTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
         ),
         GmapsSearch(cb: (coords) => setState(() => _locationCoords = coords)),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         _locationCoords != null
             ? Expanded(
                 child: MapView(
-                  stackWidgets: [ConfirmLocationButton()],
+                  stackWidgets: const [ConfirmLocationButton()],
                   initLocation: _locationCoords!,
                   dragMarkers: DragMarkers(markers: [custMarker(initPoint: _locationCoords!)]),
                 ),
               )
-            : SizedBox.shrink(),
+            : const SizedBox.shrink(),
       ],
     );
   }

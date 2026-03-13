@@ -4,6 +4,7 @@ import 'package:parent_app/features/notifications/presentation/notifications_pag
 import 'package:parent_app/features/profile/presentation/profile_page_body.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   final int? initialIndex;
@@ -30,20 +31,24 @@ class _HomePageState extends State<HomePage> {
     super.initState();
   }
 
-  // Handle Android back button: pop within the current tab before exiting
-  Future<bool> _onWillPop() async {
-    final canPop = _navigatorKeys[_currentIndex].currentState?.canPop() ?? false;
+  // Handle Android back button: pop within the current tab before exiting.
+  void _onPopInvokedWithResult(bool didPop, Object? result) {
+    if (didPop) return;
+
+    final currentNavigator = _navigatorKeys[_currentIndex].currentState;
+    final canPop = currentNavigator?.canPop() ?? false;
     if (canPop) {
-      _navigatorKeys[_currentIndex].currentState?.pop();
-      return false;
+      currentNavigator?.pop();
     }
-    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    final localizations = AppLocalizations.of(context)!;
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: _onPopInvokedWithResult,
       child: Scaffold(
         body: Stack(
           children: List.generate(4, (index) {
@@ -70,11 +75,20 @@ class _HomePageState extends State<HomePage> {
                   setState(() => _currentIndex = value);
                 }
               },
-              destinations: const [
-                NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-                NavigationDestination(icon: Icon(Icons.pin_drop), label: 'Locations'),
-                NavigationDestination(icon: Icon(Icons.notifications), label: 'Notifications'),
-                NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+              destinations: [
+                NavigationDestination(icon: const Icon(Icons.home), label: localizations.homeTab),
+                NavigationDestination(
+                  icon: const Icon(Icons.pin_drop),
+                  label: localizations.locationsTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.notifications),
+                  label: localizations.notificationsTab,
+                ),
+                NavigationDestination(
+                  icon: const Icon(Icons.person),
+                  label: localizations.profileTab,
+                ),
               ],
             ),
           ],
@@ -127,13 +141,13 @@ class _HomeRootPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         actionsPadding: const EdgeInsets.only(right: 8),
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8),
+        title: Padding(
+          padding: const EdgeInsets.only(left: 8),
           child: Row(
             spacing: 6,
             children: [
-              Icon(Icons.bus_alert, size: 24),
-              Text("Safe Route", style: TextStyle(fontWeight: FontWeight.w700)),
+              const Icon(Icons.bus_alert, size: 24),
+              Text("Safe Route", style: const TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),
         ),

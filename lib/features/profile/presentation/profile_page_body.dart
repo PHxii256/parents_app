@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/profile/presentation/profile_viewmodel.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 import '../data/profile_repository_impl.dart';
@@ -9,12 +10,17 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return ChangeNotifierProvider(
       create: (_) => ProfileViewModel(ProfileRepositoryImpl())..loadProfile(),
 
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("Profile", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22)),
+          title: Text(
+            localizations.profileTab,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+          ),
           centerTitle: true,
         ),
 
@@ -31,21 +37,21 @@ class ProfilePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Account Information",
+                  Text(
+                    localizations.accountInformationTitle,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
 
                   const SizedBox(height: 10),
 
-                  Text("Name: ${profile.name}"),
-                  Text("Primary Phone: ${profile.primaryPhone}"),
-                  Text("Secondary Phone: ${profile.secondaryPhone}"),
+                  Text(localizations.nameLabel(profile.name)),
+                  Text(localizations.primaryPhoneLabel(profile.primaryPhone)),
+                  Text(localizations.secondaryPhoneLabel(profile.secondaryPhone)),
 
                   const SizedBox(height: 30),
 
-                  const Text(
-                    "Your Enrolled Children",
+                  Text(
+                    localizations.yourEnrolledChildrenTitle,
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
 

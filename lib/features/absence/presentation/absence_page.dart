@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class AbsencePage extends StatefulWidget {
@@ -23,6 +24,8 @@ class _AbsenceScreenState extends State<AbsencePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -31,15 +34,18 @@ class _AbsenceScreenState extends State<AbsencePage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Absence', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          localizations.absenceTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           // Select children
-          const Text(
-            'Select children',
+          Text(
+            localizations.selectChildrenTitle,
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 12),
@@ -70,7 +76,10 @@ class _AbsenceScreenState extends State<AbsencePage> {
           const SizedBox(height: 24),
 
           // Absence date
-          const Text('Absence date', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+          Text(
+            localizations.absenceDateTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
           const SizedBox(height: 12),
           RadioGroup<String>(
             onChanged: (value) => setState(() => selectedDateOption = value!),
@@ -78,25 +87,25 @@ class _AbsenceScreenState extends State<AbsencePage> {
             child: Column(
               children: [
                 RadioListTile<String>(
-                  title: const Text('Today (Monday)'),
+                  title: Text(localizations.todayMonday),
                   value: 'Today',
                   controlAffinity: ListTileControlAffinity.trailing,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16),
                 ),
                 RadioListTile<String>(
-                  title: const Text('Tomorrow'),
+                  title: Text(localizations.tomorrow),
                   value: 'Tomorrow',
                   controlAffinity: ListTileControlAffinity.trailing,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16),
                 ),
                 RadioListTile<String>(
-                  title: const Text('Specific date'),
+                  title: Text(localizations.specificDate),
                   value: 'Specific date',
                   controlAffinity: ListTileControlAffinity.trailing,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16),
                 ),
                 RadioListTile<String>(
-                  title: const Text('Duration'),
+                  title: Text(localizations.duration),
                   value: 'Duration',
                   controlAffinity: ListTileControlAffinity.trailing,
                   contentPadding: EdgeInsets.symmetric(horizontal: 16),
@@ -115,11 +124,11 @@ class _AbsenceScreenState extends State<AbsencePage> {
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
               onPressed: () {
                 // Example: print selected children
-                print('Selected children: $selectedChildren');
-                print('Selected date option: $selectedDateOption');
+                debugPrint('Selected children: $selectedChildren');
+                debugPrint('Selected date option: $selectedDateOption');
               },
-              child: const Text(
-                'Mark as absent',
+              child: Text(
+                localizations.markAsAbsentButton,
                 style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),

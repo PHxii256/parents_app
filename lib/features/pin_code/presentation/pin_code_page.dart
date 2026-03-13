@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class PinCodePage extends StatefulWidget {
   const PinCodePage({super.key});
@@ -15,6 +16,8 @@ class _PinScreenState extends State<PinCodePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -23,7 +26,10 @@ class _PinScreenState extends State<PinCodePage> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text('Pin Code', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          localizations.pinCodeTitle,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -31,22 +37,22 @@ class _PinScreenState extends State<PinCodePage> {
         child: ListView(
           children: [
             const SizedBox(height: 16),
-            const Text(
-              "Share your child's pin code",
+            Text(
+              localizations.shareChildPinCodeTitle,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.",
+            Text(
+              localizations.pinCodeDescription,
               style: TextStyle(fontSize: 16, color: Colors.black54),
             ),
             const SizedBox(height: 24),
-            const Text("Master Pin", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 4),
-            const Text(
-              "(Do not share with anyone other than bus staff)",
-              style: TextStyle(color: Colors.red),
+            Text(
+              localizations.masterPinTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
+            const SizedBox(height: 4),
+            Text(localizations.masterPinWarning, style: TextStyle(color: Colors.red)),
             const SizedBox(height: 8),
             TextField(
               controller: masterPinController,
@@ -64,15 +70,12 @@ class _PinScreenState extends State<PinCodePage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              "Temporary Pin",
+            Text(
+              localizations.temporaryPinTitle,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 4),
-            const Text(
-              "(This PIN is safe to share and is valid for one day only)",
-              style: TextStyle(color: Colors.black54),
-            ),
+            Text(localizations.temporaryPinInfo, style: TextStyle(color: Colors.black54)),
             const SizedBox(height: 8),
             TextField(
               controller: tempPinController,
@@ -85,7 +88,7 @@ class _PinScreenState extends State<PinCodePage> {
                     Clipboard.setData(ClipboardData(text: tempPinController.text));
                     ScaffoldMessenger.of(
                       context,
-                    ).showSnackBar(const SnackBar(content: Text("Temporary PIN copied!")));
+                    ).showSnackBar(SnackBar(content: Text(localizations.temporaryPinCopied)));
                   },
                 ),
               ),

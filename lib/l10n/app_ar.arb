@@ -1,0 +1,123 @@
+{
+  "@@locale": "ar",
+  "appTagline": "خليك مطمن.",
+  "homeTab": "الرئيسية",
+  "locationsTab": "الأماكن",
+  "notificationsTab": "الإشعارات",
+  "profileTab": "الملف الشخصي",
+
+  "settingsTitle": "الإعدادات",
+  "logout": "تسجيل الخروج",
+  "switchLanguage": "تبديل اللغة",
+  "languagePair": "الإنجليزي/العربية",
+
+  "emailLabel": "البريد الإلكتروني",
+  "passwordLabel": "كلمة المرور",
+  "loginButton": "تسجيل الدخول",
+  "forgotPasswordPrompt": "هل نسيت كلمة المرور؟ ",
+  "resetAction": "نغير",
+
+  "verificationCodeTitle": "رمز التحقق",
+  "sentToEmail": "تم الإرسال إلى: {email}",
+  "@sentToEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "otpCodeSentSuccess": "تم إرسال الرمز! تحقق من بريدك الإلكتروني.",
+  "otpDidNotReceiveCode": "لم يصلك رمز؟ ",
+  "otpResend": "إعادة الإرسال",
+  "otpResendIn": "إعادة الإرسال خلال {time}",
+  "@otpResendIn": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "otpWrongCodeTryAgain": "رمز غير صحيح، حاول مرة أخرى",
+  "resetPasswordTitle": "إعادة تعيين كلمة المرور",
+  "resetPasswordSubtitle": "أدخل كلمة المرور الجديدة .",
+  "newPasswordLabel": "كلمة المرور الجديدة",
+  "confirmPasswordLabel": "تأكيد كلمة المرور",
+  "resetPasswordButton": "إعادة تعيين كلمة المرور",
+  "validationFillAllFields": "يرجى ملء جميع الحقول.",
+  "validationPasswordMinLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل.",
+  "validationPasswordsDoNotMatch": "كلمتا المرور غير متطابقتين.",
+  "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح!",
+
+  "quickActionsTitle": "إجراءات سريعة",
+  "pinCodeTitle": "رمز PIN",
+  "absenceTitle": "الغياب",
+  "changePickupDropoff": "تغيير نقطة الركوب/النزول",
+  "tripStatusTitle": "حالة الرحلة",
+  "noTripCurrently": "لا توجد رحلة حالياً",
+  "nextPickup": "(الركوب التالي)",
+  "homeAddressName": "المنزل",
+  "homeAddressDesc": "123 شارع مابل",
+  "grandmasHouseName": "منزل الجدة",
+  "grandmasHouseAddress": "789 شارع باين",
+
+  "selectChildrenTitle": "اختر الأطفال",
+  "absenceDateTitle": "تاريخ الغياب",
+  "todayMonday": "اليوم (الاثنين)",
+  "tomorrow": "غداً",
+  "specificDate": "تاريخ محدد",
+  "duration": "المدة",
+  "markAsAbsentButton": "تحديد كغياب",
+
+  "shareChildPinCodeTitle": "شارك رمز PIN لطفلك",
+  "pinCodeDescription": "يتيح لك هذا الرمز أو للأشخاص الذين تثق بهم استلام أطفالك بأمان عبر قول هذا الرمز لسائق الحافلة أو المشرف.",
+  "masterPinTitle": "رمز PIN الرئيسي",
+  "masterPinWarning": "(لا تشاركه مع أي شخص غير طاقم الحافلة)",
+  "temporaryPinTitle": "رمز PIN مؤقت",
+  "temporaryPinInfo": "(هذا الرمز آمن للمشاركة وصالح ليوم واحد فقط)",
+  "temporaryPinCopied": "تم نسخ الرمز المؤقت!",
+
+  "requestTitle": "طلب",
+  "changePickupDropoffFor": "تغيير نقطة الركوب أو النزول لـ",
+  "changeRequestDateSubtitle": "غداً (الأربعاء 16/3)",
+  "pickupLabel": "الركوب",
+  "dropoffLabel": "النزول",
+  "savedAddressesTitle": "العناوين المحفوظة",
+  "addNewAddress": "إضافة عنوان جديد",
+  "nextButton": "التالي",
+
+  "addLocationTitle": "إضافة موقع",
+  "addLocationDetailsTitle": "إضافة تفاصيل الموقع",
+  "doneButton": "تم",
+  "locationNameRequired": "اسم الموقع مطلوب",
+  "locationNameLabel": "اسم الموقع",
+  "locationNameHint": "مثال: منزل الجدة",
+  "addressOptionalLabel": "العنوان (اختياري)",
+  "addressOptionalHint": "مثال: سكنات المعادي شارع 9 عمارة 31",
+  "confirmLocationButton": "تأكيد الموقع",
+
+  "pasteGoogleMapsLinkHint": "الصق رابط خرائط جوجل",
+  "clipboardEmptyPasteLink": "الحافظة فارغة، يرجى نسخ رابط قبل اللصق",
+  "gmapsExampleHint": "(مثال: https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)",
+
+  "accountInformationTitle": "معلومات الحساب",
+  "yourEnrolledChildrenTitle": "الأطفال المسجلون لديك",
+  "nameLabel": "الاسم: {name}",
+  "@nameLabel": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "primaryPhoneLabel": "الهاتف الأساسي: {phone}",
+  "@primaryPhoneLabel": {
+    "placeholders": {
+      "phone": {}
+    }
+  },
+  "secondaryPhoneLabel": "الهاتف الثانوي: {phone}",
+  "@secondaryPhoneLabel": {
+    "placeholders": {
+      "phone": {}
+    }
+  },
+
+  "locationServicesDisabled": "خدمات الموقع غير مفعلة.",
+  "locationPermissionDenied": "تم رفض إذن الموقع.",
+  "locationPermissionRequired": "يرجى تفعيل إذن الموقع لعرض الخريطة.",
+  "openStreetMapContributors": "مساهمو OpenStreetMap"
+}

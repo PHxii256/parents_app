@@ -5,6 +5,7 @@ import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/home/presentation/components/map_controls.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/cust_builder.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -18,11 +19,20 @@ class MapView extends StatefulWidget {
   State<MapView> createState() => _MapViewState();
 }
 
+enum _MapViewError {
+  locationServicesDisabled,
+  locationPermissionDenied,
+  locationPermissionRequired,
+  unknown,
+}
+
 class _MapViewState extends State<MapView> {
+  static const LatLng _fallbackCenter = LatLng(30.0444, 31.2357);
   final MapController _mapController = MapController();
   LatLng? _deviceLocation;
   bool _loading = true;
-  String? _error;
+  _MapViewError? _errorKey;
+  String? _errorDetails;
 
   @override
   void initState() {
@@ -36,32 +46,31 @@ class _MapViewState extends State<MapView> {
     super.dispose();
   }
 
+  void _completeWithoutDeviceLocation(_MapViewError fallbackError, {String? details}) {
+    setState(() {
+      _loading = false;
+      _errorKey = widget.initLocation == null ? fallbackError : null;
+      _errorDetails = details;
+    });
+  }
+
   Future<void> _initLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        setState(() {
-          _loading = false;
-          _error = 'Location services are disabled.';
-        });
+        _completeWithoutDeviceLocation(_MapViewError.locationServicesDisabled);
         return;
       }
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          setState(() {
-            _loading = false;
-            _error = 'Location permission denied.';
-          });
+          _completeWithoutDeviceLocation(_MapViewError.locationPermissionDenied);
           return;
         }
       }
       if (permission == LocationPermission.deniedForever) {
-        setState(() {
-          _loading = false;
-          _error = 'Please turn on the location permission to view the map.';
-        });
+        _completeWithoutDeviceLocation(_MapViewError.locationPermissionRequired);
         return;
       }
       final pos = await Geolocator.getCurrentPosition();
@@ -70,23 +79,30 @@ class _MapViewState extends State<MapView> {
         _loading = false;
       });
     } catch (e) {
-      setState(() {
-        _loading = false;
-        _error = e.toString();
-      });
+      _completeWithoutDeviceLocation(_MapViewError.unknown, details: e.toString());
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final initialCenter = widget.initLocation ?? _deviceLocation ?? _fallbackCenter;
+    final errorText = switch (_errorKey) {
+      _MapViewError.locationServicesDisabled => localizations.locationServicesDisabled,
+      _MapViewError.locationPermissionDenied => localizations.locationPermissionDenied,
+      _MapViewError.locationPermissionRequired => localizations.locationPermissionRequired,
+      _MapViewError.unknown => _errorDetails,
+      null => null,
+    };
+
     return CustBuilder(
       loading: _loading,
-      error: _error,
+      error: errorText,
       success: Stack(
         children: [
           MapCanvas(
             mapController: _mapController,
-            initialCenter: widget.initLocation ?? _deviceLocation!,
+            initialCenter: initialCenter,
             dragMarkers: widget.dragMarkers,
           ),
           MapControls(mapController: _mapController, deviceLocation: _deviceLocation),
@@ -138,6 +154,8 @@ class MapAttributionOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: RichAttributionWidget(
@@ -145,7 +163,7 @@ class MapAttributionOverlay extends StatelessWidget {
         alignment: AttributionAlignment.bottomLeft,
         attributions: [
           TextSourceAttribution(
-            'OpenStreetMap contributors',
+            localizations.openStreetMapContributors,
             onTap: () => launchUrl(Uri.parse('https://openstreetmap.org/copyright')),
           ),
         ],

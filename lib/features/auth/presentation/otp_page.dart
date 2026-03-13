@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:parent_app/features/auth/presentation/reset_password_page.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class OtpPage extends StatelessWidget {
@@ -10,6 +11,8 @@ class OtpPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: Column(
@@ -23,9 +26,13 @@ class OtpPage extends StatelessWidget {
                 color: Colors.amber,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                    Text("Be At Ease.", style: TextStyle(fontSize: 18)),
+                  children: [
+                    Text(
+                      "Safe Route",
+
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                    Text(localizations.appTagline, style: const TextStyle(fontSize: 18)),
                   ],
                 ),
               ),
@@ -45,12 +52,12 @@ class OtpPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Verification Code",
+                  Text(
+                    localizations.verificationCodeTitle,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 2),
-                  Text("Sent to: $email", style: TextStyle(fontSize: 16)),
+                  Text(localizations.sentToEmail(email), style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 24),
                   OtpGroup(),
                   const SizedBox(height: 24),
@@ -102,13 +109,14 @@ class _ResendState extends State<Resend> {
   }
 
   void _resend() {
+    final localizations = AppLocalizations.of(context)!;
     _startTimer();
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         backgroundColor: Colors.green,
         content: Text(
-          "Code sent! Check your email.",
+          localizations.otpCodeSentSuccess,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -123,17 +131,18 @@ class _ResendState extends State<Resend> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final canResend = _secondsLeft == 0;
     return Center(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Didn't receive a code? ", style: TextStyle(fontSize: 16)),
+          Text(localizations.otpDidNotReceiveCode, style: const TextStyle(fontSize: 16)),
           if (canResend)
             GestureDetector(
               onTap: _resend,
-              child: const Text(
-                "Resend",
+              child: Text(
+                localizations.otpResend,
                 style: TextStyle(
                   fontSize: 16,
                   decoration: TextDecoration.underline,
@@ -143,7 +152,7 @@ class _ResendState extends State<Resend> {
             )
           else
             Text(
-              "Resend in $_formattedTime",
+              localizations.otpResendIn(_formattedTime),
               style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
             ),
         ],
@@ -218,12 +227,13 @@ class _OtpGroupState extends State<OtpGroup> {
         rootNavigator: true,
       ).pushReplacement(MaterialPageRoute(builder: (_) => const ResetPasswordPage()));
     } else {
+      final localizations = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.red,
           content: Text(
-            "Wrong Code, Try Again",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            localizations.otpWrongCodeTryAgain,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ),
       );

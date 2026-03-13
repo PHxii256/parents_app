@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ConfirmLocationButton extends StatefulWidget {
@@ -26,6 +27,7 @@ class _ConfirmLocationButtonState extends State<ConfirmLocationButton> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final isValid = _formKey.currentState?.validate() ?? false;
     return Positioned(
       left: 80,
@@ -45,10 +47,16 @@ class _ConfirmLocationButtonState extends State<ConfirmLocationButton> {
 
                 title: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: const Text('Add Location Details', style: TextStyle(fontSize: 18)),
+                  child: Text(
+                    localizations.addLocationDetailsTitle,
+                    style: const TextStyle(fontSize: 18),
+                  ),
                 ),
                 actions: [
-                  TextButton(onPressed: isValid ? () => submitLocation : null, child: Text("Done")),
+                  TextButton(
+                    onPressed: isValid ? () => submitLocation : null,
+                    child: Text(localizations.doneButton),
+                  ),
                 ],
                 content: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -61,15 +69,15 @@ class _ConfirmLocationButtonState extends State<ConfirmLocationButton> {
                           controller: _locationNameController,
                           validator: (value) {
                             if (value == null || value.trim().isEmpty) {
-                              return 'Location name is required';
+                              return localizations.locationNameRequired;
                             }
                             return null;
                           },
                           decoration: InputDecoration(
                             floatingLabelBehavior: FloatingLabelBehavior.always,
 
-                            labelText: "Location Name",
-                            hintText: "eg. Grandma's Home",
+                            labelText: localizations.locationNameLabel,
+                            hintText: localizations.locationNameHint,
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(width: 2, color: AppColors.brownBg),
@@ -86,8 +94,8 @@ class _ConfirmLocationButtonState extends State<ConfirmLocationButton> {
                           controller: _locationAdressLineController,
                           decoration: InputDecoration(
                             floatingLabelBehavior: FloatingLabelBehavior.always,
-                            labelText: "Address (Optional)",
-                            hintText: "eg. Sakanat El-Maadi St.9 Building 31",
+                            labelText: localizations.addressOptionalLabel,
+                            hintText: localizations.addressOptionalHint,
                             filled: true,
                             enabledBorder: OutlineInputBorder(
                               borderSide: BorderSide(width: 2, color: AppColors.brownBg),
@@ -106,8 +114,8 @@ class _ConfirmLocationButtonState extends State<ConfirmLocationButton> {
               ),
             );
           },
-          child: const Text(
-            'Confirm Location',
+          child: Text(
+            localizations.confirmLocationButton,
             style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
           ),
         ),

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 import 'package:parent_app/features/auth/cubit/auth_state.dart';
 import 'package:parent_app/features/auth/presentation/otp_page.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -50,6 +51,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is UnauthenticatedState && state.error != null) {
@@ -82,9 +85,12 @@ class _LoginPageState extends State<LoginPage> {
                 color: Colors.amber,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                    Text("Be At Ease.", style: TextStyle(fontSize: 16)),
+                  children: [
+                    Text(
+                      "Safe Route",
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    ),
+                    Text(localizations.appTagline, style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
@@ -94,10 +100,13 @@ class _LoginPageState extends State<LoginPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24),
                   child: ListView(
-                    padding: EdgeInsets.symmetric(vertical: 24),
-                    physics: BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    physics: const BouncingScrollPhysics(),
                     children: [
-                      const Text("Email", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        localizations.emailLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
                       TextField(
                         controller: emailController,
@@ -109,7 +118,10 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const Text("Password", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(
+                        localizations.passwordLabel,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       const SizedBox(height: 8),
                       TextField(
                         controller: passwordController,
@@ -148,8 +160,8 @@ class _LoginPageState extends State<LoginPage> {
                                     color: Colors.white,
                                   ),
                                 )
-                              : const Text(
-                                  "Login",
+                              : Text(
+                                  localizations.loginButton,
                                   style: TextStyle(fontSize: 16, color: Colors.white),
                                 ),
                         ),
@@ -161,11 +173,11 @@ class _LoginPageState extends State<LoginPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("Forgot Password? "),
+                            Text(localizations.forgotPasswordPrompt),
                             InkWell(
                               onTap: resetPass,
-                              child: const Text(
-                                "Reset",
+                              child: Text(
+                                localizations.resetAction,
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   decoration: TextDecoration.underline,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ResetPasswordPage extends StatefulWidget {
@@ -22,18 +23,19 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
-  String? _validate() {
+  String? _validate(AppLocalizations localizations) {
     final password = _newPasswordController.text;
     final confirm = _confirmPasswordController.text;
 
-    if (password.isEmpty || confirm.isEmpty) return "Please fill in all fields.";
-    if (password.length < 6) return "Password must be at least 6 characters.";
-    if (password != confirm) return "Passwords do not match.";
+    if (password.isEmpty || confirm.isEmpty) return localizations.validationFillAllFields;
+    if (password.length < 6) return localizations.validationPasswordMinLength;
+    if (password != confirm) return localizations.validationPasswordsDoNotMatch;
     return null;
   }
 
   void _submit() {
-    final error = _validate();
+    final localizations = AppLocalizations.of(context)!;
+    final error = _validate(localizations);
     if (error != null) {
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -51,11 +53,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     // TODO: send reset password request to backend
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
+      SnackBar(
         duration: Duration(milliseconds: 1500),
         backgroundColor: Colors.green,
         content: Text(
-          "Password reset successfully!",
+          localizations.passwordResetSuccess,
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -67,6 +69,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: Column(
@@ -78,9 +82,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             color: Colors.amber,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text("Safe Route", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
-                Text("Be At Ease.", style: TextStyle(fontSize: 18)),
+              children: [
+                Text(
+                  "Safe Route",
+
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                Text(localizations.appTagline, style: const TextStyle(fontSize: 18)),
               ],
             ),
           ),
@@ -93,19 +101,22 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 children: [
-                  const Text(
-                    "Reset Password",
+                  Text(
+                    localizations.resetPasswordTitle,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
-                  const Text(
-                    "Enter your new password below.",
+                  Text(
+                    localizations.resetPasswordSubtitle,
                     style: TextStyle(fontSize: 15, color: Colors.grey),
                   ),
                   const SizedBox(height: 28),
 
                   /// New Password
-                  const Text("New Password", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    localizations.newPasswordLabel,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _newPasswordController,
@@ -123,7 +134,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   const SizedBox(height: 20),
 
                   /// Confirm Password
-                  const Text("Confirm Password", style: TextStyle(fontWeight: FontWeight.bold)),
+                  Text(
+                    localizations.confirmPasswordLabel,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _confirmPasswordController,
@@ -150,8 +164,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       ),
                       onPressed: _submit,
-                      child: const Text(
-                        "Reset Password",
+                      child: Text(
+                        localizations.resetPasswordButton,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

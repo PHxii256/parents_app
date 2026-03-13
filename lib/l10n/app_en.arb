@@ -1,0 +1,124 @@
+{
+  "@@locale": "en",
+  "appTagline": "Be At Ease.",
+  "homeTab": "Home",
+  "locationsTab": "Locations",
+  "notificationsTab": "Notifications",
+  "profileTab": "Profile",
+
+  "settingsTitle": "Settings",
+  "logout": "Logout",
+  "switchLanguage": "Switch Language",
+  "languagePair": "English / Arabic",
+
+  "emailLabel": "Email",
+  "passwordLabel": "Password",
+  "loginButton": "Login",
+  "forgotPasswordPrompt": "Forgot Password? ",
+  "resetAction": "Reset",
+
+  "verificationCodeTitle": "Verification Code",
+  "sentToEmail": "Sent to: {email}",
+  "@sentToEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  },
+  "otpCodeSentSuccess": "Code sent! Check your email.",
+  "otpDidNotReceiveCode": "Didn't receive a code? ",
+  "otpResend": "Resend",
+  "otpResendIn": "Resend in {time}",
+  "@otpResendIn": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "otpWrongCodeTryAgain": "Wrong code, try again",
+
+  "resetPasswordTitle": "Reset Password",
+  "resetPasswordSubtitle": "Enter your new password below.",
+  "newPasswordLabel": "New Password",
+  "confirmPasswordLabel": "Confirm Password",
+  "resetPasswordButton": "Reset Password",
+  "validationFillAllFields": "Please fill in all fields.",
+  "validationPasswordMinLength": "Password must be at least 6 characters.",
+  "validationPasswordsDoNotMatch": "Passwords do not match.",
+  "passwordResetSuccess": "Password reset successfully!",
+
+  "quickActionsTitle": "Quick Actions",
+  "pinCodeTitle": "Pin Code",
+  "absenceTitle": "Absence",
+  "changePickupDropoff": "Change Pickup/Drop-off",
+  "tripStatusTitle": "Trip Status",
+  "noTripCurrently": "No trip currently",
+  "nextPickup": "(next pickup)",
+  "homeAddressName": "Home",
+  "homeAddressDesc": "123 Maple Street",
+  "grandmasHouseName": "Grandma's House",
+  "grandmasHouseAddress": "789 Pine Lane",
+
+  "selectChildrenTitle": "Select children",
+  "absenceDateTitle": "Absence date",
+  "todayMonday": "Today (Monday)",
+  "tomorrow": "Tomorrow",
+  "specificDate": "Specific date",
+  "duration": "Duration",
+  "markAsAbsentButton": "Mark as absent",
+
+  "shareChildPinCodeTitle": "Share your child's pin code",
+  "pinCodeDescription": "This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.",
+  "masterPinTitle": "Master Pin",
+  "masterPinWarning": "(Do not share with anyone other than bus staff)",
+  "temporaryPinTitle": "Temporary Pin",
+  "temporaryPinInfo": "(This PIN is safe to share and is valid for one day only)",
+  "temporaryPinCopied": "Temporary PIN copied!",
+
+  "requestTitle": "Request",
+  "changePickupDropoffFor": "Change pickup or drop-off for",
+  "changeRequestDateSubtitle": "Tomorrow (Wednesday 16/3)",
+  "pickupLabel": "Pickup",
+  "dropoffLabel": "Dropoff",
+  "savedAddressesTitle": "Saved Addresses",
+  "addNewAddress": "Add New Address",
+  "nextButton": "Next",
+
+  "addLocationTitle": "Add Location",
+  "addLocationDetailsTitle": "Add Location Details",
+  "doneButton": "Done",
+  "locationNameRequired": "Location name is required",
+  "locationNameLabel": "Location Name",
+  "locationNameHint": "eg. Grandma's Home",
+  "addressOptionalLabel": "Address (Optional)",
+  "addressOptionalHint": "eg. Sakanat El-Maadi St.9 Building 31",
+  "confirmLocationButton": "Confirm Location",
+
+  "pasteGoogleMapsLinkHint": "Paste a Google Maps Link",
+  "clipboardEmptyPasteLink": "Clipboard is empty, please copy a link before pasting",
+  "gmapsExampleHint": "(eg. https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)",
+
+  "accountInformationTitle": "Account Information",
+  "yourEnrolledChildrenTitle": "Your Enrolled Children",
+  "nameLabel": "Name: {name}",
+  "@nameLabel": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "primaryPhoneLabel": "Primary Phone: {phone}",
+  "@primaryPhoneLabel": {
+    "placeholders": {
+      "phone": {}
+    }
+  },
+  "secondaryPhoneLabel": "Secondary Phone: {phone}",
+  "@secondaryPhoneLabel": {
+    "placeholders": {
+      "phone": {}
+    }
+  },
+
+  "locationServicesDisabled": "Location services are disabled.",
+  "locationPermissionDenied": "Location permission denied.",
+  "locationPermissionRequired": "Please turn on the location permission to view the map.",
+  "openStreetMapContributors": "OpenStreetMap contributors"
+}
