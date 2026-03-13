@@ -16,6 +16,13 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   void login() {
     // first we should send a request with the jwt token(s) for auth
     // if response is successful refresh the token and move the user to home

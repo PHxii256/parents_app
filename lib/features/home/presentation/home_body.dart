@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/absence/presentation/absence_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
+import 'package:parent_app/features/home/presentation/views/map_view.dart';
 import 'package:parent_app/features/pin_code/presentation/pin_code_page.dart';
+import 'package:parent_app/shared/theme/app_colors.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class HomeBody extends StatelessWidget {
@@ -18,7 +20,7 @@ class HomeBody extends StatelessWidget {
               children: [
                 DecoratedBox(
                   decoration: BoxDecoration(color: Colors.amber),
-                  child: SizedBox(height: 460, width: double.infinity),
+                  child: SizedBox(height: 460, width: double.infinity, child: MapView()),
                 ),
                 DecoratedBox(
                   decoration: BoxDecoration(
@@ -99,7 +101,7 @@ class HomeBody extends StatelessWidget {
                         ),
                         Text(
                           "123 Maple Street",
-                          style: TextStyle(color: Color.fromARGB(255, 97, 117, 138), fontSize: 16),
+                          style: TextStyle(color: AppColors.highlightText, fontSize: 16),
                         ),
                       ],
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/shared/theme/app_colors.dart';
 
 class AbsencePage extends StatefulWidget {
   const AbsencePage({super.key});
@@ -49,7 +50,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
               final isSelected = selectedChildren.contains(name);
 
               return ListTile(
-                leading: const CircleAvatar(backgroundColor: Colors.grey, radius: 20),
+                leading: CircleAvatar(backgroundColor: AppColors.mutedBgDark, radius: 20),
                 title: Text(name),
                 subtitle: Text(grade, style: const TextStyle(color: Colors.grey)),
                 trailing: isSelected ? const Icon(Icons.check) : null,
@@ -108,19 +109,18 @@ class _AbsenceScreenState extends State<AbsencePage> {
 
           // Mark as absent button
           SizedBox(
+            width: double.infinity,
             height: 50,
-            child: Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.yellow.shade700),
-                onPressed: () {
-                  // Example: print selected children
-                  print('Selected children: $selectedChildren');
-                  print('Selected date option: $selectedDateOption');
-                },
-                child: const Text(
-                  'Mark as absent',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
+              onPressed: () {
+                // Example: print selected children
+                print('Selected children: $selectedChildren');
+                print('Selected date option: $selectedDateOption');
+              },
+              child: const Text(
+                'Mark as absent',
+                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),

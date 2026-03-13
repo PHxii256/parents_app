@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/shared/theme/app_colors.dart';
 
 class IconBox extends StatelessWidget {
   final IconData icon;
@@ -19,7 +20,7 @@ class IconBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color.fromARGB(255, 240, 242, 245),
+      color: AppColors.mutedBg,
       borderRadius: BorderRadius.circular(6),
       child: InkWell(
         splashColor: Colors.amber.withAlpha(60),

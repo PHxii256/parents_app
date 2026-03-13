@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ChangeRequestPage extends StatefulWidget {
@@ -97,7 +98,11 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (context) => AddLocationPage()));
+                  },
                   child: Text('Add New Address', style: TextStyle(color: AppColors.cta)),
                 ),
               ],
@@ -156,13 +161,12 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
             ),
             const SizedBox(height: 24),
             SizedBox(
+              width: double.infinity,
               height: 50,
-              child: Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                  onPressed: () {},
-                  child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
-                ),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
+                onPressed: () {},
+                child: const Text('Next', style: TextStyle(fontSize: 18, color: Colors.white)),
               ),
             ),
           ],
