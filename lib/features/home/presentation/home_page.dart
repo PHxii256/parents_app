@@ -6,6 +6,8 @@ import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
+import '../../profile/presentation/profile_page.dart';
+
 class HomePage extends StatefulWidget {
   final int? initialIndex;
   const HomePage({super.key, this.initialIndex});

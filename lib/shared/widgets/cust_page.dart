@@ -7,6 +7,8 @@ import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
 
+import '../../features/profile/presentation/profile_page.dart';
+
 class CustPage extends StatefulWidget {
   final Widget page;
   const CustPage({super.key, required this.page});
