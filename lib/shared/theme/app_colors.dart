@@ -8,4 +8,5 @@ abstract class AppColors {
   static Color get mutedBg => const Color.fromARGB(255, 253, 248, 231);
   static Color get mutedBgDark => const Color.fromARGB(255, 239, 233, 215);
   static Color get brownBg => const Color.fromARGB(100, 64, 52, 16);
+  static Color get onSurfaceDark => const Color.fromARGB(255, 78, 71, 58);
 }

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/home/cubit/trip_cubit.dart';
+import 'package:parent_app/features/home/cubit/trip_state.dart';
+import 'package:parent_app/features/home/presentation/components/next_pickup.dart';
 import 'package:parent_app/features/home/presentation/components/quick_actions.dart';
+import 'package:parent_app/features/home/presentation/components/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/trip_status.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 
@@ -8,40 +13,64 @@ class HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          ClipRRect(
-            child: Stack(
-              alignment: AlignmentGeometry.bottomCenter,
-              children: [
-                DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.amber),
-                  child: SizedBox(height: 460, width: double.infinity, child: MapView()),
+    return BlocProvider(
+      create: (context) => TripCubit(),
+      child: Builder(
+        builder: (context) {
+          const double activeTripPanelHeight = 74;
+          const double activeTripPanelBottomPadding = 16;
+          final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
+          final double currentTripHeight = hasActiveTrip
+              ? activeTripPanelHeight + activeTripPanelBottomPadding
+              : 0;
+
+          return Stack(
+            children: [
+              DecoratedBox(
+                decoration: BoxDecoration(color: Colors.amber),
+                child: SizedBox(
+                  height: 488 - currentTripHeight,
+                  width: double.infinity,
+                  child: MapView(),
                 ),
-                DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 8, spreadRadius: 3)],
-                    borderRadius: BorderRadiusDirectional.only(
-                      topStart: Radius.circular(16),
-                      topEnd: Radius.circular(16),
+              ),
+              Column(
+                children: [
+                  Expanded(child: Container()),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                      boxShadow: [BoxShadow(color: Colors.black38, blurRadius: 8, spreadRadius: 3)],
+                      borderRadius: BorderRadiusDirectional.only(
+                        topStart: Radius.circular(16),
+                        topEnd: Radius.circular(16),
+                      ),
+                    ),
+                    child: SizedBox(height: 20, width: double.infinity),
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(22, 12, 22, 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          TripStatus(),
+                          SizedBox(height: 12),
+                          TripPanel(height: activeTripPanelHeight),
+                          NextPickupTile(),
+                          SizedBox(height: 12),
+                          QuickActions(),
+                        ],
+                      ),
                     ),
                   ),
-                  child: SizedBox(height: 20, width: double.infinity),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(22, 12, 22, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 18,
-              children: [TripStatus(), QuickActions()],
-            ),
-          ),
-        ],
+                ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

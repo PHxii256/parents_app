@@ -29,7 +29,7 @@ class IconBox extends StatelessWidget {
         child: SizedBox(
           width: width ?? height,
           height: height,
-          child: Icon(icon, size: iconSize ?? height / 2),
+          child: Icon(icon, size: iconSize ?? height / 2, color: AppColors.onSurfaceDark),
         ),
       ),
     );

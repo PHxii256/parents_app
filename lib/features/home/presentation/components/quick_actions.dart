@@ -13,6 +13,7 @@ class QuickActions extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       spacing: 12,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

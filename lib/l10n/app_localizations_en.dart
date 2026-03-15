@@ -94,8 +94,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationFillAllFields => 'Please fill in all fields.';
 
   @override
-  String get validationPasswordMinLength =>
-      'Password must be at least 6 characters.';
+  String get validationPasswordMinLength => 'Password must be at least 6 characters.';
 
   @override
   String get validationPasswordsDoNotMatch => 'Passwords do not match.';
@@ -119,10 +118,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tripStatusTitle => 'Trip Status';
 
   @override
+  String get onTheWay => 'On the way';
+
+  @override
   String get noTripCurrently => 'No trip currently';
 
   @override
-  String get nextPickup => '(next pickup)';
+  String get youAreOffline => 'You\'re Offline';
+
+  @override
+  String get tripEtaUnitMin => 'min';
+
+  @override
+  String get assistantRoleLabel => '(Assistant)';
+
+  @override
+  String get driverRoleLabel => '(Driver)';
+
+  @override
+  String get nextPickup => '(Next Pickup)';
 
   @override
   String get homeAddressName => 'Home';
@@ -161,22 +175,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareChildPinCodeTitle => 'Share your child\'s pin code';
 
   @override
-  String get pinCodeDescription =>
-      'This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.';
+  String get pinCodeDescription => 'This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.';
 
   @override
   String get masterPinTitle => 'Master Pin';
 
   @override
-  String get masterPinWarning =>
-      '(Do not share with anyone other than bus staff)';
+  String get masterPinWarning => '(Do not share with anyone other than bus staff)';
 
   @override
   String get temporaryPinTitle => 'Temporary Pin';
 
   @override
-  String get temporaryPinInfo =>
-      '(This PIN is safe to share and is valid for one day only)';
+  String get temporaryPinInfo => '(This PIN is safe to share and is valid for one day only)';
 
   @override
   String get temporaryPinCopied => 'Temporary PIN copied!';
@@ -236,12 +247,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pasteGoogleMapsLinkHint => 'Paste a Google Maps Link';
 
   @override
-  String get clipboardEmptyPasteLink =>
-      'Clipboard is empty, please copy a link before pasting';
+  String get clipboardEmptyPasteLink => 'Clipboard is empty, please copy a link before pasting';
 
   @override
-  String get gmapsExampleHint =>
-      '(eg. https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)';
+  String get gmapsExampleHint => '(eg. https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)';
 
   @override
   String get accountInformationTitle => 'Account Information';
@@ -271,8 +280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationPermissionDenied => 'Location permission denied.';
 
   @override
-  String get locationPermissionRequired =>
-      'Please turn on the location permission to view the map.';
+  String get locationPermissionRequired => 'Please turn on the location permission to view the map.';
 
   @override
   String get openStreetMapContributors => 'OpenStreetMap contributors';

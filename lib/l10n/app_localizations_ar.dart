@@ -94,8 +94,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get validationFillAllFields => 'يرجى ملء جميع الحقول.';
 
   @override
-  String get validationPasswordMinLength =>
-      'يجب أن تكون كلمة المرور 6 أحرف على الأقل.';
+  String get validationPasswordMinLength => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل.';
 
   @override
   String get validationPasswordsDoNotMatch => 'كلمتا المرور غير متطابقتين.';
@@ -119,7 +118,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tripStatusTitle => 'حالة الرحلة';
 
   @override
+  String get onTheWay => 'في الطريق';
+
+  @override
   String get noTripCurrently => 'لا توجد رحلة حالياً';
+
+  @override
+  String get youAreOffline => 'أنت غير متصل';
+
+  @override
+  String get tripEtaUnitMin => 'د';
+
+  @override
+  String get assistantRoleLabel => '(المشرفة)';
+
+  @override
+  String get driverRoleLabel => '(السائق)';
 
   @override
   String get nextPickup => '(الركوب التالي)';
@@ -161,8 +175,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get shareChildPinCodeTitle => 'شارك رمز PIN لطفلك';
 
   @override
-  String get pinCodeDescription =>
-      'يتيح لك هذا الرمز أو للأشخاص الذين تثق بهم استلام أطفالك بأمان عبر قول هذا الرمز لسائق الحافلة أو المشرف.';
+  String get pinCodeDescription => 'يتيح لك هذا الرمز أو للأشخاص الذين تثق بهم استلام أطفالك بأمان عبر قول هذا الرمز لسائق الحافلة أو المشرف.';
 
   @override
   String get masterPinTitle => 'رمز PIN الرئيسي';
@@ -234,12 +247,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pasteGoogleMapsLinkHint => 'الصق رابط خرائط جوجل';
 
   @override
-  String get clipboardEmptyPasteLink =>
-      'الحافظة فارغة، يرجى نسخ رابط قبل اللصق';
+  String get clipboardEmptyPasteLink => 'الحافظة فارغة، يرجى نسخ رابط قبل اللصق';
 
   @override
-  String get gmapsExampleHint =>
-      '(مثال: https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)';
+  String get gmapsExampleHint => '(مثال: https://maps.app.goo.gl/ydqDZZwsZRaRHWpH7)';
 
   @override
   String get accountInformationTitle => 'معلومات الحساب';
@@ -269,8 +280,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get locationPermissionDenied => 'تم رفض إذن الموقع.';
 
   @override
-  String get locationPermissionRequired =>
-      'يرجى تفعيل إذن الموقع لعرض الخريطة.';
+  String get locationPermissionRequired => 'يرجى تفعيل إذن الموقع لعرض الخريطة.';
 
   @override
   String get openStreetMapContributors => 'مساهمو OpenStreetMap';
