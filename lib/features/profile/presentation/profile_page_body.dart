@@ -3,6 +3,7 @@ import 'package:parent_app/features/profile/presentation/profile_viewmodel.dart'
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
+import '../../../shared/theme/app_colors.dart';
 import '../data/profile_repository_impl.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -46,7 +47,9 @@ class ProfilePage extends StatelessWidget {
 
                   Text(localizations.nameLabel(profile.name)),
                   Text(localizations.primaryPhoneLabel(profile.primaryPhone)),
-                  Text(localizations.secondaryPhoneLabel(profile.secondaryPhone)),
+                  Text(
+                    localizations.secondaryPhoneLabel(profile.secondaryPhone),
+                  ),
 
                   const SizedBox(height: 30),
 
@@ -69,6 +72,31 @@ class ProfilePage extends StatelessWidget {
                           subtitle: Text(child.grade),
                         );
                       },
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusGeometry.circular(10),
+                        ),
+                      ),
+
+                      onPressed: () {
+                        //navigate to reset pass page and send request
+                      },
+                      child: Text(
+                        localizations.resetPasswordButton,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                   ),
                 ],

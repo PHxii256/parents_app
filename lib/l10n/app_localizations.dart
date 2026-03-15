@@ -554,7 +554,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmLocationButton.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Location'**
+  /// **'Confirm Location'*
   String get confirmLocationButton;
 
   /// No description provided for @pasteGoogleMapsLinkHint.
