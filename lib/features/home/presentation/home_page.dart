@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
+import 'package:parent_app/features/notifications/cubit/notifications_cubit.dart';
+import 'package:parent_app/features/notifications/cubit/notifications_state.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
@@ -63,33 +66,52 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Divider(color: Color.fromARGB(40, 97, 117, 138), thickness: 1),
-            NavigationBar(
-              labelPadding: EdgeInsets.only(top: 6),
-              backgroundColor: Colors.transparent,
-              selectedIndex: _currentIndex,
-              onDestinationSelected: (value) {
-                if (value == _currentIndex) {
-                  // Tap same tab — pop to root of that tab
-                  _navigatorKeys[value].currentState?.popUntil((route) => route.isFirst);
-                } else {
-                  setState(() => _currentIndex = value);
-                }
+            BlocBuilder<NotificationsCubit, NotificationsState>(
+              builder: (context, notificationsState) {
+                final unread = notificationsState.unreadCount;
+                final notificationsIcon = unread > 0
+                    ? Badge(
+                        label: Text(unread > 99 ? '99+' : '$unread'),
+                        child: const Icon(Icons.notifications),
+                      )
+                    : const Icon(Icons.notifications);
+
+                return NavigationBar(
+                  labelPadding: EdgeInsets.only(top: 6),
+                  backgroundColor: Colors.transparent,
+                  selectedIndex: _currentIndex,
+                  onDestinationSelected: (value) {
+                    if (value == 2) {
+                      context.read<NotificationsCubit>().markAllAsRead();
+                    }
+
+                    if (value == _currentIndex) {
+                      // Tap same tab — pop to root of that tab
+                      _navigatorKeys[value].currentState?.popUntil((route) => route.isFirst);
+                    } else {
+                      setState(() => _currentIndex = value);
+                    }
+                  },
+                  destinations: [
+                    NavigationDestination(
+                      icon: const Icon(Icons.home),
+                      label: localizations.homeTab,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.pin_drop),
+                      label: localizations.locationsTab,
+                    ),
+                    NavigationDestination(
+                      icon: notificationsIcon,
+                      label: localizations.notificationsTab,
+                    ),
+                    NavigationDestination(
+                      icon: const Icon(Icons.person),
+                      label: localizations.profileTab,
+                    ),
+                  ],
+                );
               },
-              destinations: [
-                NavigationDestination(icon: const Icon(Icons.home), label: localizations.homeTab),
-                NavigationDestination(
-                  icon: const Icon(Icons.pin_drop),
-                  label: localizations.locationsTab,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.notifications),
-                  label: localizations.notificationsTab,
-                ),
-                NavigationDestination(
-                  icon: const Icon(Icons.person),
-                  label: localizations.profileTab,
-                ),
-              ],
             ),
           ],
         ),

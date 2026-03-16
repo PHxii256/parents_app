@@ -28,7 +28,6 @@ class TripStatus extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
                 ),
                 InkWell(
-                  // for testing
                   onTap: () {
                     context.read<TripCubit>().cycleState();
                   },
