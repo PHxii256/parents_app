@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/theme/app_colors.dart';
 import '../data/Parent.dart';
 import '../data/apiService.dart';
@@ -24,6 +25,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
   @override
   Widget build(BuildContext context) {
     final repository = AbsenceRepository(FakeApiService());
+    final localizations = AppLocalizations.of(context)!;
 
     return BlocProvider(
       create: (_) => AbsenceCubit(repository),
@@ -36,7 +38,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
             onPressed: () => Navigator.of(context).pop(),
           ),
           title: Text(
-            "Absence Request (${currentParent.name})",
+            localizations.absenceTitle,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -45,7 +47,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             Text(
-              "Select Children",
+             localizations.selectChildrenTitle,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 12),
