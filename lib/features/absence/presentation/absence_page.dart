@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/theme/app_colors.dart';
-import '../data/Parent.dart';
-import '../data/apiService.dart';
+import '../data/parent.dart';
+import '../data/api_service.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
@@ -47,7 +46,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
           padding: const EdgeInsets.all(16.0),
           children: [
             Text(
-             localizations.selectChildrenTitle,
+              localizations.selectChildrenTitle,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
             const SizedBox(height: 12),
@@ -57,10 +56,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
                 print("fffffff$selectedChildrenIds");
 
                 return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColors.mutedBgDark,
-                    radius: 20,
-                  ),
+                  leading: CircleAvatar(backgroundColor: AppColors.mutedBgDark, radius: 20),
                   title: Text(student.name),
                   subtitle: Text(student.grade),
                   trailing: isSelected ? const Icon(Icons.check) : null,
@@ -68,10 +64,8 @@ class _AbsenceScreenState extends State<AbsencePage> {
                     setState(() {
                       if (isSelected) {
                         selectedChildrenIds.remove(student.id);
-
                       } else {
                         selectedChildrenIds.add(student.id);
-
                       }
                     });
                   },
@@ -97,27 +91,20 @@ class _AbsenceScreenState extends State<AbsencePage> {
                 if (state.status == RequestStatus.success) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        state.isAbsent
-                            ? "Absence request sent"
-                            : "Absence removed",
-                      ),
+                      content: Text(state.isAbsent ? "Absence request sent" : "Absence removed"),
                     ),
                   );
                 }
                 if (state.status == RequestStatus.error) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.message ?? "Something went wrong"),
-                    ),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(state.message ?? "Something went wrong")));
                 }
               },
               builder: (context, state) {
                 final cubit = context.read<AbsenceCubit>();
                 final buttonDisabled =
-                    selectedChildrenIds.isEmpty ||
-                    state.status == RequestStatus.loading;
+                    selectedChildrenIds.isEmpty || state.status == RequestStatus.loading;
 
                 if (state.isAbsent) {
                   return SizedBox(
@@ -126,9 +113,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                       ),
                       onPressed: buttonDisabled
                           ? null
@@ -153,9 +138,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.cta,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                     onPressed: buttonDisabled
                         ? null

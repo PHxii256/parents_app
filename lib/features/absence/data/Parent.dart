@@ -1,14 +1,9 @@
-
 class Student {
   final int id;
   final String name;
   final String grade;
 
-  Student({
-    required this.id,
-    required this.name,
-    required this.grade,
-  });
+  Student({required this.id, required this.name, required this.grade});
 }
 
 // Example Parent account
@@ -26,9 +21,5 @@ class Parent {
   final String name;
   final List<Student> students;
 
-  Parent({
-    required this.id,
-    required this.name,
-    required this.students
-});
+  Parent({required this.id, required this.name, required this.students});
 }

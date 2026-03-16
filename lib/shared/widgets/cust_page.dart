@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
-import 'package:parent_app/features/profile/presentation/profile_page_body.dart' hide ProfilePage;
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
