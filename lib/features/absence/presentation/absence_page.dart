@@ -1,6 +1,15 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:parent_app/l10n/app_localizations.dart';
-import 'package:parent_app/shared/theme/app_colors.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/theme/app_colors.dart';
+import '../data/Parent.dart';
+import '../data/apiService.dart';
+import '../domain/absence_cubit.dart';
+import '../domain/absence_repo.dart';
+import '../domain/absence_state.dart';
+import '../domain/request_state.dart';
 
 class AbsencePage extends StatefulWidget {
   const AbsencePage({super.key});
@@ -10,130 +19,163 @@ class AbsencePage extends StatefulWidget {
 }
 
 class _AbsenceScreenState extends State<AbsencePage> {
-  // Selected children (multiple)
-  List<String> selectedChildren = [];
-
-  // Absence date selection
+  List<int> selectedChildrenIds = [];
   String selectedDateOption = 'Tomorrow';
-
-  // List of children
-  final List<Map<String, String>> children = [
-    {'name': 'Ahmed Mohsen', 'grade': 'Grade 2'},
-    {'name': 'Mohamed Salah', 'grade': 'Grade 5'},
-  ];
 
   @override
   Widget build(BuildContext context) {
+    final repository = AbsenceRepository(FakeApiService());
     final localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(),
+    return BlocProvider(
+      create: (_) => AbsenceCubit(repository),
+      child: Scaffold(
+        appBar: AppBar(
+          foregroundColor: Colors.black,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: Text(
+            localizations.absenceTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
         ),
-        title: Text(
-          localizations.absenceTitle,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          // Select children
-          Text(
-            localizations.selectChildrenTitle,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          const SizedBox(height: 12),
-          Column(
-            children: children.map((child) {
-              final name = child['name']!;
-              final grade = child['grade']!;
-              final isSelected = selectedChildren.contains(name);
-
-              return ListTile(
-                leading: CircleAvatar(backgroundColor: AppColors.mutedBgDark, radius: 20),
-                title: Text(name),
-                subtitle: Text(grade, style: const TextStyle(color: Colors.grey)),
-                trailing: isSelected ? const Icon(Icons.check) : null,
-                onTap: () {
-                  setState(() {
-                    if (isSelected) {
-                      selectedChildren.remove(name);
-                    } else {
-                      selectedChildren.add(name);
-                    }
-                  });
-                },
-              );
-            }).toList(),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Absence date
-          Text(
-            localizations.absenceDateTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          const SizedBox(height: 12),
-          RadioGroup<String>(
-            onChanged: (value) => setState(() => selectedDateOption = value!),
-            groupValue: selectedDateOption,
-            child: Column(
-              children: [
-                RadioListTile<String>(
-                  title: Text(localizations.todayMonday),
-                  value: 'Today',
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                RadioListTile<String>(
-                  title: Text(localizations.tomorrow),
-                  value: 'Tomorrow',
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                RadioListTile<String>(
-                  title: Text(localizations.specificDate),
-                  value: 'Specific date',
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                RadioListTile<String>(
-                  title: Text(localizations.duration),
-                  value: 'Duration',
-                  controlAffinity: ListTileControlAffinity.trailing,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-              ],
+        body: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Text(
+             localizations.selectChildrenTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
-          ),
+            const SizedBox(height: 12),
+            Column(
+              children: currentParent.students.map((student) {
+                final isSelected = selectedChildrenIds.contains(student.id);
+                print("fffffff$selectedChildrenIds");
 
-          const SizedBox(height: 24),
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundColor: AppColors.mutedBgDark,
+                    radius: 20,
+                  ),
+                  title: Text(student.name),
+                  subtitle: Text(student.grade),
+                  trailing: isSelected ? const Icon(Icons.check) : null,
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        selectedChildrenIds.remove(student.id);
 
-          // Mark as absent button
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-              onPressed: () {
-                // Example: print selected children
-                debugPrint('Selected children: $selectedChildren');
-                debugPrint('Selected date option: $selectedDateOption');
+                      } else {
+                        selectedChildrenIds.add(student.id);
+
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 20),
+            Text(
+              "Select Absence Date",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 8),
+            RadioListTile<String>(
+              title: const Text("Tomorrow"),
+              value: 'Tomorrow',
+              groupValue: selectedDateOption,
+              onChanged: (value) => setState(() => selectedDateOption = value!),
+            ),
+            const SizedBox(height: 40),
+            BlocConsumer<AbsenceCubit, AbsenceState>(
+              listener: (context, state) {
+                if (state.status == RequestStatus.success) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        state.isAbsent
+                            ? "Absence request sent"
+                            : "Absence removed",
+                      ),
+                    ),
+                  );
+                }
+                if (state.status == RequestStatus.error) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message ?? "Something went wrong"),
+                    ),
+                  );
+                }
               },
-              child: Text(
-                localizations.markAsAbsentButton,
-                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
-              ),
+              builder: (context, state) {
+                final cubit = context.read<AbsenceCubit>();
+                final buttonDisabled =
+                    selectedChildrenIds.isEmpty ||
+                    state.status == RequestStatus.loading;
+
+                if (state.isAbsent) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      onPressed: buttonDisabled
+                          ? null
+                          : () => cubit.toggleAbsence(selectedChildrenIds),
+                      child: state.status == RequestStatus.loading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              "Undo Absence",
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                    ),
+                  );
+                }
+
+                return SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.cta,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onPressed: buttonDisabled
+                        ? null
+                        : () => cubit.toggleAbsence(selectedChildrenIds),
+                    child: state.status == RequestStatus.loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            "Mark as Absent",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
+                );
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

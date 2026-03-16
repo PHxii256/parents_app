@@ -6,7 +6,7 @@ import 'package:parent_app/features/auth/presentation/login_page.dart';
 import 'package:parent_app/features/home/presentation/home_page.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  const   AuthGate({super.key});
 
   @override
   Widget build(BuildContext context) {
