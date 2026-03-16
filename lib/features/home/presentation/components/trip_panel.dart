@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/home/data/staff_data.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TripPanel extends StatefulWidget {
   final double height;
@@ -16,6 +18,24 @@ class TripPanel extends StatefulWidget {
 class _TripPanelState extends State<TripPanel> {
   bool _showDriverInfo = false;
 
+  Future<void> _launchPhoneCall(String phoneNumber) async {
+    final normalizedPhone = phoneNumber.trim();
+    if (normalizedPhone.isEmpty) {
+      return;
+    }
+
+    await launchUrl(Uri(scheme: 'tel', path: normalizedPhone));
+  }
+
+  Future<void> _launchWhatsApp(StaffData staff) async {
+    final rawLink = staff.whatsappLink?.trim();
+    final whatsappUri = rawLink != null && rawLink.isNotEmpty
+        ? Uri.parse(rawLink)
+        : Uri.parse('https://wa.me/${staff.phoneNum.replaceAll(RegExp(r'[^0-9+]'), '')}');
+
+    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeTrip = context.select<TripCubit, ActiveTripState?>(
@@ -25,6 +45,8 @@ class _TripPanelState extends State<TripPanel> {
     if (activeTrip == null) {
       return const SizedBox.shrink();
     }
+
+    final selectedStaff = _showDriverInfo ? activeTrip.driverInfo : activeTrip.assistantInfo;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -55,8 +77,14 @@ class _TripPanelState extends State<TripPanel> {
                     licensePlateLetters: activeTrip.licensePlateLetters,
                     licensePlateNumbers: activeTrip.licensePlateNumbers,
                   ),
-                  ActionAvatarButton(icon: Icons.message, onTap: () {}),
-                  ActionAvatarButton(icon: Icons.call, onTap: () {}),
+                  CircularActionButton(
+                    icon: Icons.message,
+                    onTap: () => _launchWhatsApp(selectedStaff),
+                  ),
+                  CircularActionButton(
+                    icon: Icons.call,
+                    onTap: () => _launchPhoneCall(selectedStaff.phoneNum),
+                  ),
                   Eta(eta: activeTrip.eta),
                 ],
               ),
@@ -96,11 +124,11 @@ class Eta extends StatelessWidget {
   }
 }
 
-class ActionAvatarButton extends StatelessWidget {
+class CircularActionButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const ActionAvatarButton({super.key, required this.icon, this.onTap});
+  const CircularActionButton({super.key, required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
