@@ -73,6 +73,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
               }).toList(),
             ),
 
+
             const SizedBox(height: 20),
             Text(
               "Select Absence Date",
@@ -131,7 +132,7 @@ class _AbsenceScreenState extends State<AbsencePage> {
                     ),
                   );
                 }
-
+                print("fffffff$selectedChildrenIds");
                 return SizedBox(
                   width: double.infinity,
                   height: 50,
