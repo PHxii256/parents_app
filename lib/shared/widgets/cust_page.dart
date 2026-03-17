@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/home/presentation/components/parent_home_destinations.dart';
 import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
@@ -64,9 +65,11 @@ class _CustPageState extends State<CustPage> {
             selectedIndex: currentWidgetIndex,
             onDestinationSelected: (value) {
               Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.of(
-                context,
-              ).pushReplacement(MaterialPageRoute(builder: (_) => HomePage(initialIndex: value)));
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (_) => HomePage(nav: ParentHomeNav(initialIndex: value)),
+                ),
+              );
             },
           ),
         ],

@@ -13,34 +13,63 @@ class AuthRepository {
   final JwtStorage _jwtStorage = JwtStorage();
 
   // TODO: replace with real API call once backend is ready
-  static const _testEmail = 'e@test.com';
-  static const _testPassword = 'password';
+  static const _parentTestEmail = 'e@test.com';
+  static const _parentTestPassword = 'password';
+  static const _staffTestEmail = 's@test.com';
+  static const _staffTestPassword = 'password';
 
-  static const _mockAccessToken = 'mock_access_token';
-  static const _mockRefreshToken = 'mock_refresh_token';
+  static const _mockParentAccessToken = 'mock_parent_access_token';
+  static const _mockParentRefreshToken = 'mock_parent_refresh_token';
+  static const _mockStaffAccessToken = 'mock_staff_access_token';
+  static const _mockStaffRefreshToken = 'mock_staff_refresh_token';
 
   Future<LoginResult> passwordLogin({required String email, required String password}) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    if (email == _testEmail && password == _testPassword) {
-      await _jwtStorage.save(accessToken: _mockAccessToken, refreshToken: _mockRefreshToken);
+    if (email == _parentTestEmail && password == _parentTestPassword) {
+      await _jwtStorage.save(
+        accessToken: _mockParentAccessToken,
+        refreshToken: _mockParentRefreshToken,
+      );
       return LoginSuccess(
-        user: User(id: '1', email: email, username: 'TestUser'),
-        accessToken: _mockAccessToken,
-        refreshToken: _mockRefreshToken,
+        user: User(id: '1', email: email, username: 'TestUser', role: 'parent'),
+        accessToken: _mockParentAccessToken,
+        refreshToken: _mockParentRefreshToken,
       );
     }
+
+    if (email == _staffTestEmail && password == _staffTestPassword) {
+      await _jwtStorage.save(
+        accessToken: _mockStaffAccessToken,
+        refreshToken: _mockStaffRefreshToken,
+      );
+      return LoginSuccess(
+        user: User(id: '2', email: email, username: 'TestStaff', role: 'driver'),
+        accessToken: _mockStaffAccessToken,
+        refreshToken: _mockStaffRefreshToken,
+      );
+    }
+
     return LoginFailure('Invalid email or password');
   }
 
   Future<LoginResult> jwtLogin({required String accessToken, required String refreshToken}) async {
     // TODO: replace with real API call once backend is ready
-    if (accessToken == _mockAccessToken && refreshToken == _mockRefreshToken) {
+    if (accessToken == _mockParentAccessToken && refreshToken == _mockParentRefreshToken) {
       return LoginSuccess(
-        user: User(id: '1', email: _testEmail, username: 'TestUser'),
+        user: User(id: '1', email: _parentTestEmail, username: 'TestUser', role: 'parent'),
         accessToken: accessToken,
         refreshToken: refreshToken,
       );
     }
+
+    if (accessToken == _mockStaffAccessToken && refreshToken == _mockStaffRefreshToken) {
+      return LoginSuccess(
+        user: User(id: '2', email: _staffTestEmail, username: 'TestStaff', role: 'staff'),
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    }
+
     try {
       final response = await authData.jwtLogin(
         accessToken: accessToken,
