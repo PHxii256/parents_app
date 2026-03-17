@@ -157,7 +157,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get absenceDateTitle => 'تاريخ الغياب';
 
   @override
-  String get todayMonday => 'اليوم (الاثنين)';
+  String get monday => 'الاثنين';
+
+  @override
+  String get tuesday => 'الثلاثاء';
+
+  @override
+  String get wednesday => 'الأربعاء';
+
+  @override
+  String get thursday => 'الخميس';
+
+  @override
+  String get friday => 'الجمعة';
+
+  @override
+  String get saturday => 'السبت';
+
+  @override
+  String get sunday => 'الأحد';
+
+  @override
+  String get today => 'اليوم';
 
   @override
   String get tomorrow => 'غداً';

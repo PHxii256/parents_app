@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/core/utils/truncate_text.dart';
+import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
@@ -20,7 +21,12 @@ class AddressTile extends StatelessWidget {
       horizontalTitleGap: 12,
       contentPadding: EdgeInsets.all(0),
       leading: IconBox(icon: Icons.home, width: 48, height: 48),
-      trailing: InkWell(child: Icon(Icons.edit, size: 22), onTap: () {}),
+      trailing: InkWell(
+        child: Icon(Icons.edit, size: 22),
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => ChangeRequestPage()));
+        },
+      ),
       title: SizedBox(
         child: Column(
           spacing: 2,

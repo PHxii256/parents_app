@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
+import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
@@ -15,13 +16,11 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
   bool isPickup = true;
   // Saved addresses selection
   String selectedAddress = 'Home';
-  // Date selection
-  String selectedDateOption = 'Tomorrow';
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -64,10 +63,15 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: isPickup ? AppColors.highlight : Colors.transparent,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            bottomLeft: Radius.circular(32),
-                          ),
+                          borderRadius: isRtl
+                              ? BorderRadius.only(
+                                  topRight: Radius.circular(32),
+                                  bottomRight: Radius.circular(32),
+                                )
+                              : BorderRadius.only(
+                                  topLeft: Radius.circular(32),
+                                  bottomLeft: Radius.circular(32),
+                                ),
                         ),
                         child: Center(child: Text(localizations.pickupLabel)),
                       ),
@@ -80,10 +84,15 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: !isPickup ? AppColors.highlight : Colors.transparent,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(32),
-                            bottomRight: Radius.circular(32),
-                          ),
+                          borderRadius: isRtl
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(32),
+                                  bottomLeft: Radius.circular(32),
+                                )
+                              : BorderRadius.only(
+                                  topRight: Radius.circular(32),
+                                  bottomRight: Radius.circular(32),
+                                ),
                         ),
                         child: Center(child: Text(localizations.dropoffLabel)),
                       ),
@@ -133,38 +142,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
             ),
             const SizedBox(height: 12),
             // Date options
-            RadioGroup<String>(
-              groupValue: selectedDateOption,
-              onChanged: (value) => setState(() => selectedDateOption = value!),
-              child: Column(
-                children: [
-                  RadioListTile<String>(
-                    title: Text(localizations.todayMonday),
-                    value: 'Today',
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                  ),
-                  RadioListTile<String>(
-                    title: Text(localizations.tomorrow),
-                    value: 'Tomorrow',
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                  ),
-                  RadioListTile<String>(
-                    title: Text(localizations.specificDate),
-                    value: 'Specific date',
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                  ),
-                  RadioListTile<String>(
-                    title: Text(localizations.duration),
-                    value: 'Duration',
-                    controlAffinity: ListTileControlAffinity.trailing,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                  ),
-                ],
-              ),
-            ),
+            DateRadioGroup(),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,

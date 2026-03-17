@@ -383,11 +383,53 @@ abstract class AppLocalizations {
   /// **'Absence date'**
   String get absenceDateTitle;
 
-  /// No description provided for @todayMonday.
+  /// No description provided for @monday.
   ///
   /// In en, this message translates to:
-  /// **'Today (Monday)'**
-  String get todayMonday;
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
 
   /// No description provided for @tomorrow.
   ///
@@ -554,7 +596,7 @@ abstract class AppLocalizations {
   /// No description provided for @confirmLocationButton.
   ///
   /// In en, this message translates to:
-  /// **'Confirm Location'*
+  /// **'Confirm Location'**
   String get confirmLocationButton;
 
   /// No description provided for @pasteGoogleMapsLinkHint.

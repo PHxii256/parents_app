@@ -2,17 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
-import 'package:parent_app/features/home/presentation/components/next_pickup.dart';
+import 'package:parent_app/features/home/presentation/components/address_tile.dart';
 import 'package:parent_app/features/home/presentation/components/quick_actions.dart';
 import 'package:parent_app/features/home/presentation/components/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/trip_status.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class HomeBody extends StatelessWidget {
   const HomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return BlocProvider(
       create: (context) => TripCubit(),
       child: Builder(
@@ -59,7 +61,11 @@ class HomeBody extends StatelessWidget {
                           TripStatus(),
                           SizedBox(height: 12),
                           TripPanel(height: activeTripPanelHeight),
-                          NextPickupTile(),
+                          AddressTile(
+                            addressName: localizations.homeAddressName,
+                            addressDesc: localizations.homeAddressDesc,
+                            trailing: localizations.nextPickup,
+                          ),
                           SizedBox(height: 12),
                           QuickActions(),
                         ],
