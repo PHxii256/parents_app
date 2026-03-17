@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/components/parent_home_destinations.dart';
 import 'package:parent_app/features/home/presentation/home_page.dart';
-import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
-import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
-
-import '../../features/profile/presentation/profile_page.dart';
 
 class CustPage extends StatefulWidget {
   final Widget page;
@@ -20,13 +16,7 @@ class CustPage extends StatefulWidget {
 class _CustPageState extends State<CustPage> {
   bool showAppBar = true;
   int currentWidgetIndex = 0;
-  Widget currentBody = HomeBody();
-  final List<Widget> destinations = [
-    HomeBody(),
-    LocationsPage(),
-    NotificationsPage(),
-    ProfilePage(),
-  ];
+  Widget currentBody = const SizedBox.shrink();
 
   @override
   void initState() {
@@ -75,7 +65,7 @@ class _CustPageState extends State<CustPage> {
         ],
       ),
       body: currentBody,
-      appBar: currentWidgetIndex == 0 && currentBody.runtimeType == HomeBody().runtimeType
+      appBar: currentWidgetIndex == 0 && currentBody is HomeBody
           ? AppBar(
               backgroundColor: Colors.transparent,
               actionsPadding: EdgeInsets.only(right: 8),
