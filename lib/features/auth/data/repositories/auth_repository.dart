@@ -64,7 +64,7 @@ class AuthRepository {
 
     if (accessToken == _mockStaffAccessToken && refreshToken == _mockStaffRefreshToken) {
       return LoginSuccess(
-        user: User(id: '2', email: _staffTestEmail, username: 'TestStaff', role: 'staff'),
+        user: User(id: '2', email: _staffTestEmail, username: 'TestStaff', role: 'driver'),
         accessToken: accessToken,
         refreshToken: refreshToken,
       );

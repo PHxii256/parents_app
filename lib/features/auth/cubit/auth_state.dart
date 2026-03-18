@@ -24,3 +24,15 @@ class OtpSentState extends AuthState {
 
 /// Emitted after a successful password reset — app should return to login.
 class PasswordResetSuccessState extends AuthState {}
+
+extension AuthStateX on AuthState {
+  User? get userOrNull {
+    final current = this;
+    if (current is AuthenticatedState) {
+      return current.user;
+    }
+    return null;
+  }
+
+  String? get roleOrNull => userOrNull?.role;
+}
