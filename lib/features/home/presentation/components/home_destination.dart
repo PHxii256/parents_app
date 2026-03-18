@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/components/parent_home_destinations.dart';
-import 'package:parent_app/features/home/presentation/components/staff_home_destinations.dart';
+import 'package:parent_app/features/home/presentation/components/parent/parent_home_destinations.dart';
+import 'package:parent_app/features/home/presentation/components/staff/staff_home_destinations.dart';
 
 final class HomeDestinationConfig {
   final NavigationDestination Function(BuildContext context, int unreadCount) destinationBuilder;

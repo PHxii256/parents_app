@@ -5,8 +5,8 @@ import 'package:parent_app/features/pin_code/presentation/pin_code_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
-class QuickActions extends StatelessWidget {
-  const QuickActions({super.key});
+class ParentQuickActions extends StatelessWidget {
+  const ParentQuickActions({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/components/home_destination.dart';
-import 'package:parent_app/features/home/presentation/components/parent_home_body.dart';
+import 'package:parent_app/features/home/presentation/components/staff/staff_home_body.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
-import 'package:parent_app/features/locations/presentation/locations_page_body.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
-import 'package:parent_app/features/profile/presentation/profile_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
-final class ParentHomeNav extends HomeNav {
-  ParentHomeNav({super.initialIndex = 0}) : assert(initialIndex >= 0 && initialIndex < 4);
+final class StaffHomeNav extends HomeNav {
+  StaffHomeNav({super.initialIndex = 0});
 
   @override
   List<HomeDestinationConfig> get destinations => [
@@ -17,17 +15,22 @@ final class ParentHomeNav extends HomeNav {
         final localizations = AppLocalizations.of(context)!;
         return NavigationDestination(icon: const Icon(Icons.home), label: localizations.homeTab);
       },
-      pageBuilder: () => const HomeBody(body: ParentHomeBody()),
+      pageBuilder: () => const HomeBody(body: StaffHomeBody()),
+    ),
+
+    HomeDestinationConfig(
+      destinationBuilder: (context, _) {
+        final localizations = AppLocalizations.of(context)!;
+        return NavigationDestination(icon: const Icon(Icons.location_on), label: "Students");
+      },
+      pageBuilder: () => Scaffold(),
     ),
     HomeDestinationConfig(
       destinationBuilder: (context, _) {
         final localizations = AppLocalizations.of(context)!;
-        return NavigationDestination(
-          icon: const Icon(Icons.pin_drop),
-          label: localizations.locationsTab,
-        );
+        return NavigationDestination(icon: const Icon(Icons.person), label: "Attendance");
       },
-      pageBuilder: () => LocationsPage(),
+      pageBuilder: () => Scaffold(),
     ),
     HomeDestinationConfig(
       destinationBuilder: (context, unread) {
@@ -39,16 +42,6 @@ final class ParentHomeNav extends HomeNav {
       },
       pageBuilder: () => NotificationsPage(),
       markNotificationsAsReadOnSelect: true,
-    ),
-    HomeDestinationConfig(
-      destinationBuilder: (context, _) {
-        final localizations = AppLocalizations.of(context)!;
-        return NavigationDestination(
-          icon: const Icon(Icons.person),
-          label: localizations.profileTab,
-        );
-      },
-      pageBuilder: () => ProfilePage(),
     ),
   ];
 }

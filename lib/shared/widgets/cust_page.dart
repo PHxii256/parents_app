@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/components/parent_home_destinations.dart';
+import 'package:parent_app/features/home/presentation/components/parent/parent_home_destinations.dart';
 import 'package:parent_app/features/home/presentation/home_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';

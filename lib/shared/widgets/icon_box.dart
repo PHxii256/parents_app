@@ -23,7 +23,7 @@ class IconBox extends StatelessWidget {
       color: AppColors.mutedBg,
       borderRadius: BorderRadius.circular(6),
       child: InkWell(
-        splashColor: Colors.amber.withAlpha(60),
+        splashColor: AppColors.highlightText.withAlpha(60),
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
         child: SizedBox(

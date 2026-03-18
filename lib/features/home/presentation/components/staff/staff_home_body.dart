@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/auth/cubit/auth_context_extensions.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
-import 'package:parent_app/features/home/presentation/components/address_tile.dart';
-import 'package:parent_app/features/home/presentation/components/quick_actions.dart';
-import 'package:parent_app/features/home/presentation/components/trip_panel.dart';
-import 'package:parent_app/features/home/presentation/components/trip_status.dart';
+import 'package:parent_app/features/home/presentation/components/staff/communication_bar.dart';
+import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
+import 'package:parent_app/features/home/presentation/components/staff/student_info_tile.dart';
+import 'package:parent_app/features/home/presentation/components/staff/student_progress.dart';
+import 'package:parent_app/features/home/presentation/components/staff/student_status.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
-class ParentHomeBody extends StatelessWidget {
-  const ParentHomeBody({super.key});
+class StaffHomeBody extends StatelessWidget {
+  const StaffHomeBody({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final role = context.authRole;
+    Center(child: Text('Bus staff home ($role)'));
     final localizations = AppLocalizations.of(context)!;
 
     return BlocProvider(
@@ -21,7 +25,7 @@ class ParentHomeBody extends StatelessWidget {
       child: Builder(
         builder: (context) {
           const double activeTripPanelHeight = 74;
-          const double activeTripPanelBottomPadding = 16;
+          const double activeTripPanelBottomPadding = 6;
           final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
@@ -54,21 +58,25 @@ class ParentHomeBody extends StatelessWidget {
                   DecoratedBox(
                     decoration: BoxDecoration(color: Theme.of(context).scaffoldBackgroundColor),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(22, 12, 22, 16),
+                      padding: EdgeInsets.fromLTRB(22, 8, 22, 8),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TripStatus(),
+                          StudentProgress(),
                           SizedBox(height: 12),
-                          TripPanel(height: activeTripPanelHeight),
-                          AddressTile(
-                            addressName: localizations.homeAddressName,
-                            addressDesc: localizations.homeAddressDesc,
-                            trailing: localizations.nextPickup,
+                          StudentInfoTile(
+                            name: "Ahmed Mohsen",
+                            address: localizations.homeAddressDesc,
+                            grade: "Grade 6",
+                            pinCodes: ["12345", "67890"],
                           ),
+                          SizedBox(height: 4),
+                          StudentStatus(),
+                          SizedBox(height: 8),
+                          CommunicationBar(),
                           SizedBox(height: 12),
-                          QuickActions(),
+                          StaffQuickActions(),
                         ],
                       ),
                     ),
