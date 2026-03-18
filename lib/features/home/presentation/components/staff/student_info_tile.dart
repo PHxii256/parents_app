@@ -18,6 +18,7 @@ class StudentInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var textStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975);
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,33 +45,15 @@ class StudentInfoTile extends StatelessWidget {
                   Row(
                     spacing: 6,
                     children: [
-                      Text(
-                        grade,
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975),
-                      ),
-                      Text(
-                        "•",
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975),
-                      ),
-                      Text(
-                        "PIN codes:",
-                        style: TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975),
-                      ),
-                      ...pinCodes.map(
-                        (pin) => Text(
-                          pin,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w300,
-                            fontSize: 15,
-                            height: 0.975,
-                          ),
-                        ),
-                      ),
+                      Text(grade, style: textStyle),
+                      Text("•", style: textStyle),
+                      Text("PIN codes:", style: textStyle),
+                      ...pinCodes.map((pin) => Text(pin, style: textStyle)),
                     ],
                   ),
                   Text(
                     truncateText(address),
-                    style: TextStyle(color: AppColors.highlightText, fontSize: 16),
+                    style: TextStyle(color: AppColors.highlightText, fontSize: 15),
                   ),
                 ],
               ),

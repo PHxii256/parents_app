@@ -25,7 +25,7 @@ class StaffHomeBody extends StatelessWidget {
       child: Builder(
         builder: (context) {
           const double activeTripPanelHeight = 74;
-          const double activeTripPanelBottomPadding = 6;
+          const double activeTripPanelBottomPadding = 8;
           final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
@@ -73,7 +73,7 @@ class StaffHomeBody extends StatelessWidget {
                           ),
                           SizedBox(height: 4),
                           StudentStatus(),
-                          SizedBox(height: 8),
+                          SizedBox(height: 18),
                           CommunicationBar(),
                           SizedBox(height: 12),
                           StaffQuickActions(),
