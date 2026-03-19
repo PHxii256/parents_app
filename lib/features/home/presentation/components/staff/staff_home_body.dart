@@ -3,13 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_context_extensions.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
-import 'package:parent_app/features/home/presentation/components/staff/communication_bar.dart';
 import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
-import 'package:parent_app/features/home/presentation/components/staff/student_info_tile.dart';
-import 'package:parent_app/features/home/presentation/components/staff/student_progress.dart';
-import 'package:parent_app/features/home/presentation/components/staff/student_status.dart';
+import 'package:parent_app/features/home/presentation/components/staff/student_viewer.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
-import 'package:parent_app/l10n/app_localizations.dart';
 
 class StaffHomeBody extends StatelessWidget {
   const StaffHomeBody({super.key});
@@ -18,8 +14,6 @@ class StaffHomeBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final role = context.authRole;
     Center(child: Text('Bus staff home ($role)'));
-    final localizations = AppLocalizations.of(context)!;
-
     return BlocProvider(
       create: (context) => TripCubit(),
       child: Builder(
@@ -30,7 +24,6 @@ class StaffHomeBody extends StatelessWidget {
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
               : 0;
-
           return Stack(
             children: [
               DecoratedBox(
@@ -62,22 +55,7 @@ class StaffHomeBody extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          StudentProgress(),
-                          SizedBox(height: 12),
-                          StudentInfoTile(
-                            name: "Ahmed Mohsen",
-                            address: localizations.homeAddressDesc,
-                            grade: "Grade 6",
-                            pinCodes: ["12345", "67890"],
-                          ),
-                          SizedBox(height: 4),
-                          StudentStatus(),
-                          SizedBox(height: 18),
-                          CommunicationBar(),
-                          SizedBox(height: 12),
-                          StaffQuickActions(),
-                        ],
+                        children: [StudentViewer(), SizedBox(height: 12), StaffQuickActions()],
                       ),
                     ),
                   ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/components/home_destination.dart';
 import 'package:parent_app/features/home/presentation/components/staff/staff_home_body.dart';
+import 'package:parent_app/features/students/presentation/students_page.dart';
 import 'package:parent_app/features/home/presentation/home_body.dart';
 import 'package:parent_app/features/notifications/presentation/notifications_page_body.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
@@ -21,17 +22,11 @@ final class StaffHomeNav extends HomeNav {
     HomeDestinationConfig(
       destinationBuilder: (context, _) {
         final localizations = AppLocalizations.of(context)!;
-        return NavigationDestination(icon: const Icon(Icons.location_on), label: "Students");
+        return NavigationDestination(icon: const Icon(Icons.person), label: "Students");
       },
-      pageBuilder: () => Scaffold(),
+      pageBuilder: () => StudentsPage(),
     ),
-    HomeDestinationConfig(
-      destinationBuilder: (context, _) {
-        final localizations = AppLocalizations.of(context)!;
-        return NavigationDestination(icon: const Icon(Icons.person), label: "Attendance");
-      },
-      pageBuilder: () => Scaffold(),
-    ),
+
     HomeDestinationConfig(
       destinationBuilder: (context, unread) {
         final localizations = AppLocalizations.of(context)!;

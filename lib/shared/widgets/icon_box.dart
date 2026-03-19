@@ -19,6 +19,12 @@ class IconBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedHeight = height.isFinite ? height : 48.0;
+    final resolvedWidth = (width != null && width!.isFinite) ? width! : resolvedHeight;
+    final resolvedIconSize = (iconSize != null && iconSize!.isFinite)
+        ? iconSize!
+        : resolvedHeight / 2;
+
     return Material(
       color: AppColors.mutedBg,
       borderRadius: BorderRadius.circular(6),
@@ -27,9 +33,9 @@ class IconBox extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(6),
         child: SizedBox(
-          width: width ?? height,
-          height: height,
-          child: Icon(icon, size: iconSize ?? height / 2, color: AppColors.onSurfaceDark),
+          width: resolvedWidth,
+          height: resolvedHeight,
+          child: Icon(icon, size: resolvedIconSize, color: AppColors.onSurfaceDark),
         ),
       ),
     );

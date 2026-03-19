@@ -1,4 +1,4 @@
-import 'package:parent_app/features/home/data/staff_data.dart';
+import 'package:parent_app/features/home/data/models/staff_data.dart';
 
 sealed class TripState {}
 

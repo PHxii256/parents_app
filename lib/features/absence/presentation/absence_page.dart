@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/theme/app_colors.dart';
-import '../data/parent.dart';
+import '../data/parent_data.dart';
 import '../data/api_service.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_repo.dart';

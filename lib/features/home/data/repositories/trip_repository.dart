@@ -1,6 +1,6 @@
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/data/provider/trip_data_provider.dart';
-import 'package:parent_app/features/home/data/staff_data.dart';
+import 'package:parent_app/features/home/data/models/staff_data.dart';
 
 class TripRepository {
   final TripDataProvider tripData = TripDataProvider();

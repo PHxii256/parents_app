@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/home/presentation/components/staff/rounded_cta_button.dart';
+import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
@@ -11,8 +11,15 @@ class StaffQuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
-    const firstLabel = "Mark Present/Absent";
+    const firstLabelAM = "Mark Present/Absent";
+    const firstLabelPM = "Confirm Drop-off";
     const secondLabel = "Open In Google Maps";
+    // depends on if it's am or pm trip
+    final bool am = true;
+    String getCurrentFirstLabel() {
+      // ignore: dead_code
+      return am ? firstLabelAM : firstLabelPM;
+    }
 
     double measureLabelWidth(String text) {
       final painter = TextPainter(
@@ -23,7 +30,10 @@ class StaffQuickActions extends StatelessWidget {
       return painter.width;
     }
 
-    final maxLabelWidth = math.max(measureLabelWidth(firstLabel), measureLabelWidth(secondLabel));
+    final maxLabelWidth = math.max(
+      measureLabelWidth(getCurrentFirstLabel()),
+      measureLabelWidth(secondLabel),
+    );
     final minTileWidth = maxLabelWidth + 24;
 
     return Column(
@@ -40,7 +50,7 @@ class StaffQuickActions extends StatelessWidget {
                 localizations.quickActionsTitle,
                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
               ),
-              RoundedCtaButton(),
+              RoundedCtaButton(text: "End Trip"),
             ],
           ),
         ),
@@ -60,30 +70,9 @@ class StaffQuickActions extends StatelessWidget {
                   child: Column(
                     spacing: 6,
                     children: [
-                      Row(
-                        spacing: 6,
-                        children: [
-                          Expanded(
-                            child: IconBox(
-                              icon: Icons.check_circle_outline,
-                              width: (tileWidth - 2) / 2,
-                              height: 80,
-                              iconSize: 32,
-                              onTap: () {},
-                            ),
-                          ),
-                          Expanded(
-                            child: IconBox(
-                              icon: Icons.cancel_outlined,
-                              width: (tileWidth - 2) / 2,
-                              height: 80,
-                              iconSize: 32,
-                              onTap: () {},
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(firstLabel, style: labelStyle),
+                      // ignore: dead_code
+                      am ? _AmActions(tileWidth: tileWidth) : _PmActions(tileWidth: tileWidth),
+                      Text(getCurrentFirstLabel(), style: labelStyle),
                     ],
                   ),
                 ),
@@ -106,6 +95,62 @@ class StaffQuickActions extends StatelessWidget {
               ],
             );
           },
+        ),
+      ],
+    );
+  }
+}
+
+class _AmActions extends StatelessWidget {
+  const _AmActions({super.key, required this.tileWidth});
+
+  final double tileWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      spacing: 6,
+      children: [
+        Expanded(
+          child: IconBox(
+            icon: Icons.check_circle_outline,
+            width: (tileWidth - 2) / 2,
+            height: 80,
+            iconSize: 32,
+            onTap: () {},
+          ),
+        ),
+        Expanded(
+          child: IconBox(
+            icon: Icons.cancel_outlined,
+            width: (tileWidth - 2) / 2,
+            height: 80,
+            iconSize: 32,
+            onTap: () {},
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PmActions extends StatelessWidget {
+  const _PmActions({super.key, required this.tileWidth});
+
+  final double tileWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: IconBox(
+            icon: Icons.check_circle_outline,
+            width: (tileWidth - 2) / 2,
+            height: 80,
+            iconSize: 32,
+            onTap: () {},
+          ),
         ),
       ],
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parent_app/features/home/data/staff_data.dart';
+import 'package:parent_app/features/home/data/models/staff_data.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
