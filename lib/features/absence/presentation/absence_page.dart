@@ -10,21 +10,18 @@ import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
 import '../domain/request_state.dart';
 
-class AbsencePage extends StatefulWidget {
+class AbsencePage extends StatelessWidget {
   const AbsencePage({super.key});
-
-  @override
-  State<AbsencePage> createState() => _AbsenceScreenState();
-}
-
-class _AbsenceScreenState extends State<AbsencePage> {
-  List<int> selectedChildrenIds = [];
-  String selectedDateOption = 'Tomorrow';
 
   @override
   Widget build(BuildContext context) {
     final repository = AbsenceRepository(FakeApiService());
     final localizations = AppLocalizations.of(context)!;
+
+    // Calculate tomorrow's timestamp
+    final tomorrow = DateTime.now().add(const Duration(days: 1));
+    final tomorrowTimestamp = tomorrow.millisecondsSinceEpoch;
+    print("Tomorrow timestamp: $tomorrowTimestamp");
 
     return BlocProvider(
       create: (_) => AbsenceCubit(repository),
@@ -42,123 +39,116 @@ class _AbsenceScreenState extends State<AbsencePage> {
           ),
           centerTitle: true,
         ),
-        body: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            Text(
-              localizations.selectChildrenTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            const SizedBox(height: 12),
-            Column(
-              children: currentParent.students.map((student) {
-                final isSelected = selectedChildrenIds.contains(student.id);
-                print("fffffff$selectedChildrenIds");
+        body: BlocConsumer<AbsenceCubit, AbsenceState>(
+          listener: (context, state) {
+            if (state.errorMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.errorMessage!)),
+              );
+            }
 
-                return ListTile(
-                  leading: CircleAvatar(backgroundColor: AppColors.mutedBgDark, radius: 20),
-                  title: Text(student.name),
-                  subtitle: Text(student.grade),
-                  trailing: isSelected ? const Icon(Icons.check) : null,
-                  onTap: () {
-                    setState(() {
-                      if (isSelected) {
-                        selectedChildrenIds.remove(student.id);
-                      } else {
-                        selectedChildrenIds.add(student.id);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
+            if (!state.isLoading &&
+                state.selectedChildrenIds.isEmpty &&
+                state.absentChildrenIds.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Absence request sent")),
+              );
+            }
+          },
+          builder: (context, state) {
+            final cubit = context.read<AbsenceCubit>();
 
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  localizations.selectChildrenTitle,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 12),
+                Column(
+                  children: currentParent.students.map((student) {
+                    final isSelected =
+                    state.selectedChildrenIds.contains(student.id);
+                    final isAbsent =
+                    state.absentChildrenIds.contains(student.id);
 
-            const SizedBox(height: 20),
-            Text(
-              "Select Absence Date",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            const SizedBox(height: 8),
-            RadioListTile<String>(
-              title: const Text("Tomorrow"),
-              value: 'Tomorrow',
-              groupValue: selectedDateOption,
-              onChanged: (value) => setState(() => selectedDateOption = value!),
-            ),
-            const SizedBox(height: 40),
-            BlocConsumer<AbsenceCubit, AbsenceState>(
-              listener: (context, state) {
-                if (state.status == RequestStatus.success) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(state.isAbsent ? "Absence request sent" : "Absence removed"),
-                    ),
-                  );
-                }
-                if (state.status == RequestStatus.error) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text(state.message ?? "Something went wrong")));
-                }
-              },
-              builder: (context, state) {
-                final cubit = context.read<AbsenceCubit>();
-                final buttonDisabled =
-                    selectedChildrenIds.isEmpty || state.status == RequestStatus.loading;
-
-                if (state.isAbsent) {
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: AppColors.mutedBgDark,
+                        radius: 20,
+                        child: isAbsent
+                            ? const Icon(Icons.check, color: Colors.white)
+                            : null,
                       ),
-                      onPressed: buttonDisabled
-                          ? null
-                          : () => cubit.toggleAbsence(selectedChildrenIds),
-                      child: state.status == RequestStatus.loading
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text(
-                              "Undo Absence",
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    ),
-                  );
-                }
-                print("fffffff$selectedChildrenIds");
-                return SizedBox(
+                      title: Text(student.name),
+                      subtitle: Text(student.grade),
+                      trailing: isAbsent
+                          ? IconButton(
+                        icon: const Icon(Icons.undo, color: Colors.red),
+                        onPressed: state.isLoading
+                            ? null
+                            : () => cubit.undoAbsence(student.id),
+                      )
+                          : Checkbox(
+                        value: isSelected,
+                        onChanged: state.isLoading
+                            ? null
+                            : (_) {
+                          cubit.toggleSelectChild(student.id);
+                          print(
+                              "Selected IDs: ${cubit.state.selectedChildrenIds}");
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  "Select Absence Date",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  "Tomorrow: ${tomorrow.year}-${tomorrow.month}-${tomorrow.day}",
+                  style: const TextStyle(fontSize: 18),
+
+                ),
+                const SizedBox(height: 40),
+                SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.cta,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: buttonDisabled
+                    onPressed: state.selectedChildrenIds.isEmpty ||
+                        state.isLoading
                         ? null
-                        : () => cubit.toggleAbsence(selectedChildrenIds),
-                    child: state.status == RequestStatus.loading
+                        : () {
+                      print(
+                          "Marking absent for IDs: ${state.selectedChildrenIds}");
+                      cubit.markAbsent();
+                    },
+                    child: state.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                            "Mark as Absent",
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                      "Mark as Absent",
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

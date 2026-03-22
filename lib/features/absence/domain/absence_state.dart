@@ -1,38 +1,33 @@
 import 'package:equatable/equatable.dart';
-import 'package:parent_app/features/absence/domain/request_state.dart';
 
 class AbsenceState extends Equatable {
-
-  final bool isAbsent;
-  final RequestStatus status;
-  final String? message;
+  final List<int> selectedChildrenIds; // currently selected for absence
+  final List<int> absentChildrenIds;   // already marked absent
+  final bool isLoading;
+  final String? errorMessage;
 
   const AbsenceState({
-    required this.isAbsent,
-    required this.status,
-    this.message,
+    this.selectedChildrenIds = const [],
+    this.absentChildrenIds = const [],
+    this.isLoading = false,
+    this.errorMessage,
   });
 
-  factory AbsenceState.initial() {
-    return const AbsenceState(
-      isAbsent: false,
-      status: RequestStatus.initial,
-    );
-  }
-
   AbsenceState copyWith({
-    bool? isAbsent,
-    RequestStatus? status,
-    String? message,
+    List<int>? selectedChildrenIds,
+    List<int>? absentChildrenIds,
+    bool? isLoading,
+    String? errorMessage,
   }) {
     return AbsenceState(
-      isAbsent: isAbsent ?? this.isAbsent,
-      status: status ?? this.status,
-      message: message ?? this.message,
+      selectedChildrenIds: selectedChildrenIds ?? this.selectedChildrenIds,
+      absentChildrenIds: absentChildrenIds ?? this.absentChildrenIds,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [isAbsent, status, message];
+  List<Object?> get props =>
+      [selectedChildrenIds, absentChildrenIds, isLoading, errorMessage];
 }
-
