@@ -106,7 +106,7 @@ class AbsencePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  "Select Absence Date",
+                  "Absence Date",
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 18),
                 ),
