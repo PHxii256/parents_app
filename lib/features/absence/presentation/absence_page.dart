@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/theme/app_colors.dart';
@@ -8,7 +9,6 @@ import '../data/api_service.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
-import '../domain/request_state.dart';
 
 class AbsencePage extends StatelessWidget {
   const AbsencePage({super.key});
@@ -18,10 +18,10 @@ class AbsencePage extends StatelessWidget {
     final repository = AbsenceRepository(FakeApiService());
     final localizations = AppLocalizations.of(context)!;
 
-    // Calculate tomorrow's timestamp
+    // Tomorrow's date
     final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowTimestamp = tomorrow.millisecondsSinceEpoch;
-    print("Tomorrow timestamp: $tomorrowTimestamp");
+    final tomorrowFormatted = DateFormat('yyyy-MM-dd').format(tomorrow);
+    print("Tomorrow timestamp: ${tomorrow.millisecondsSinceEpoch}");
 
     return BlocProvider(
       create: (_) => AbsenceCubit(repository),
@@ -46,7 +46,6 @@ class AbsencePage extends StatelessWidget {
                 SnackBar(content: Text(state.errorMessage!)),
               );
             }
-
             if (!state.isLoading &&
                 state.selectedChildrenIds.isEmpty &&
                 state.absentChildrenIds.isNotEmpty) {
@@ -63,59 +62,53 @@ class AbsencePage extends StatelessWidget {
               children: [
                 Text(
                   localizations.selectChildrenTitle,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 12),
+
+                // Children list
                 Column(
                   children: currentParent.students.map((student) {
-                    final isSelected =
-                    state.selectedChildrenIds.contains(student.id);
-                    final isAbsent =
-                    state.absentChildrenIds.contains(student.id);
+                    final isSelected = state.selectedChildrenIds.contains(student.id);
+                    final isAbsent = state.absentChildrenIds.contains(student.id);
 
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundColor: AppColors.mutedBgDark,
                         radius: 20,
-                        child: isAbsent
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
+                        child: isAbsent ? const Icon(Icons.check, color: Colors.white) : null,
                       ),
-                      title: Text(student.name),
-                      subtitle: Text(student.grade),
+                      title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text(student.grade, style: const TextStyle(color: Colors.grey)),
                       trailing: isAbsent
                           ? IconButton(
                         icon: const Icon(Icons.undo, color: Colors.red),
-                        onPressed: state.isLoading
-                            ? null
-                            : () => cubit.undoAbsence(student.id),
+                        onPressed: state.isLoading ? null : () => cubit.undoAbsence(student.id),
                       )
-                          : Checkbox(
-                        value: isSelected,
-                        onChanged: state.isLoading
-                            ? null
-                            : (_) {
-                          cubit.toggleSelectChild(student.id);
-                          print(
-                              "Selected IDs: ${cubit.state.selectedChildrenIds}");
-                        },
-                      ),
+                          : isSelected
+                          ? const Icon(Icons.check, color: Colors.green)
+                          : null,
+                      onTap: isAbsent
+                          ? null
+                          : () {
+                        cubit.toggleSelectChild(student.id);
+                        print("Selected IDs: ${cubit.state.selectedChildrenIds}");
+                      },
                     );
                   }).toList(),
                 ),
+
                 const SizedBox(height: 20),
                 Text(
-                  "Absence Date",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 18),
+                  "Absence date",
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  "Tomorrow: ${tomorrow.year}-${tomorrow.month}-${tomorrow.day}",
-                  style: const TextStyle(fontSize: 18),
-
+                  "Tomorrow: $tomorrowFormatted",
+                  style: const TextStyle(fontSize: 16),
                 ),
+
                 const SizedBox(height: 40),
                 SizedBox(
                   width: double.infinity,
@@ -123,26 +116,19 @@ class AbsencePage extends StatelessWidget {
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.cta,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    onPressed: state.selectedChildrenIds.isEmpty ||
-                        state.isLoading
+                    onPressed: state.selectedChildrenIds.isEmpty || state.isLoading
                         ? null
                         : () {
-                      print(
-                          "Marking absent for IDs: ${state.selectedChildrenIds}");
+                      print("Marking absent for IDs: ${state.selectedChildrenIds}");
                       cubit.markAbsent();
                     },
                     child: state.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
                       "Mark as Absent",
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                     ),
                   ),
                 ),
