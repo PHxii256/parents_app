@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:get_it/get_it.dart';
 import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 import 'package:parent_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:parent_app/features/auth/presentation/auth_gate.dart';
@@ -14,11 +15,13 @@ import 'package:parent_app/features/settings/cubit/settings_state.dart';
 import 'package:parent_app/firebase_options.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
+import 'features/absence/domain/service_locator.dart';
+final sl = GetIt.instance;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-
+  setupServiceLocator();
   runApp(const MyApp());
 }
 

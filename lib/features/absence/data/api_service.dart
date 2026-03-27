@@ -24,16 +24,16 @@
 //     );
 //   }
 // }
+import 'package:parent_app/features/absence/data/student_data.dart';
+
 class FakeApiService {
-  Future<void> markAbsent(List<int> studentIds) async {
-    await Future.delayed(const Duration(seconds: 1));
-    // simulate success
-    return;
+  Future<void> markAbsent(List<int> ids, DateTime date) async {
+    await Future.delayed(Duration(seconds: 1));
+    print("Marked absent: $ids at $date");
   }
 
-  Future<void> undoAbsent(List<int> studentIds) async {
-    await Future.delayed(const Duration(seconds: 1));
-    // simulate success
-    return;
+  Future<void> undoAbsent(List<int> ids, DateTime date) async {
+    await Future.delayed(Duration(seconds: 1));
+    print("Undo absent: $ids at $date");
   }
 }

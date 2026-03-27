@@ -1,15 +1,16 @@
 import '../data/api_service.dart';
+import '../data/student_data.dart';
 
 class AbsenceRepository {
-  final FakeApiService apiService;
+  final FakeApiService api;
 
-  AbsenceRepository(this.apiService);
+  AbsenceRepository(this.api);
 
-  Future<void> markAbsent(List<int> studentIds) async {
-    await apiService.markAbsent(studentIds);
+  Future<void> markAbsent(List<int> ids, DateTime date) async {
+    await api.markAbsent(ids, date);
   }
 
-  Future<void> undoAbsence(List<int> studentIds) async {
-    await apiService.undoAbsent(studentIds);
+  Future<void> undoAbsence(List<int> ids, DateTime date) async {
+    await api.undoAbsent(ids, date);
   }
 }

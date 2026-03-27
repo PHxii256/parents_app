@@ -2,55 +2,64 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../l10n/app_localizations.dart';
-import '../../../shared/theme/app_colors.dart';
-import '../data/parent_data.dart';
+import '../../../main.dart';
 import '../data/api_service.dart';
+import '../data/student_data.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
 
-class AbsencePage extends StatelessWidget {
+enum AbsenceDateOption { none, tomorrow, specific }
+
+class AbsencePage extends StatefulWidget {
   const AbsencePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final repository = AbsenceRepository(FakeApiService());
-    final localizations = AppLocalizations.of(context)!;
+  State<AbsencePage> createState() => _AbsencePageState();
+}
 
-    // Tomorrow's date
+class _AbsencePageState extends State<AbsencePage> {
+  AbsenceDateOption selectedOption = AbsenceDateOption.none;
+  DateTime? specificDate;
+
+  @override
+  Widget build(BuildContext context) {
     final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowFormatted = DateFormat('yyyy-MM-dd').format(tomorrow);
-    print("Tomorrow timestamp: ${tomorrow.millisecondsSinceEpoch}");
+    final tomorrowDayName = DateFormat('EEEE').format(tomorrow);
+    final students = StudentData.mockStudentData;
+
+    DateTime? dateToUse;
+    if (selectedOption == AbsenceDateOption.tomorrow) {
+      dateToUse = tomorrow;
+    } else if (selectedOption == AbsenceDateOption.specific) {
+      dateToUse = specificDate;
+    }
 
     return BlocProvider(
-      create: (_) => AbsenceCubit(repository),
+      create: (_) => sl<AbsenceCubit>(),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-          title: Text(
-            localizations.absenceTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          title: const Text(
+            "Mark Absence",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
         ),
         body: BlocConsumer<AbsenceCubit, AbsenceState>(
           listener: (context, state) {
             if (state.errorMessage != null) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.errorMessage!)),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
             }
             if (!state.isLoading &&
                 state.selectedChildrenIds.isEmpty &&
                 state.absentChildrenIds.isNotEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Absence request sent")),
+                const SnackBar(content: Text("Absence successfully marked")),
               );
             }
           },
@@ -60,76 +69,207 @@ class AbsencePage extends StatelessWidget {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text(
-                  localizations.selectChildrenTitle,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                const Text(
+                  "Select Students",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 12),
 
-                // Children list
+                // Students list
                 Column(
-                  children: currentParent.students.map((student) {
-                    final isSelected = state.selectedChildrenIds.contains(student.id);
-                    final isAbsent = state.absentChildrenIds.contains(student.id);
+                  children: students.map((student) {
+                    final isSelected = state.selectedChildrenIds.contains(
+                      student.id,
+                    );
+                    final isAbsent = state.absentChildrenIds.contains(
+                      student.id,
+                    );
 
                     return ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: AppColors.mutedBgDark,
-                        radius: 20,
-                        child: isAbsent ? const Icon(Icons.check, color: Colors.white) : null,
+                        backgroundColor: Colors.grey.shade300,
+                        child: isAbsent
+                            ? const Icon(Icons.check, color: Colors.white)
+                            : null,
                       ),
-                      title: Text(student.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      subtitle: Text(student.grade, style: const TextStyle(color: Colors.grey)),
+                      title: Text(
+                        student.name,
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(student.grade),
                       trailing: isAbsent
                           ? IconButton(
-                        icon: const Icon(Icons.undo, color: Colors.red),
-                        onPressed: state.isLoading ? null : () => cubit.undoAbsence(student.id),
-                      )
+                              icon: const Icon(Icons.undo, color: Colors.red),
+                              onPressed: state.isLoading || dateToUse == null
+                                  ? null
+                                  : () => cubit.undoAbsence(
+                                      student.id,
+                                      dateToUse!,
+                                    ),
+                            )
                           : isSelected
                           ? const Icon(Icons.check, color: Colors.green)
                           : null,
                       onTap: isAbsent
                           ? null
-                          : () {
-                        cubit.toggleSelectChild(student.id);
-                        print("Selected IDs: ${cubit.state.selectedChildrenIds}");
-                      },
+                          : () => cubit.toggleSelectChild(student.id),
                     );
                   }).toList(),
                 ),
 
                 const SizedBox(height: 20),
-                Text(
-                  "Absence date",
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                const Text(
+                  "Absence Date",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  "Tomorrow: $tomorrowFormatted",
-                  style: const TextStyle(fontSize: 16),
-                ),
 
-                const SizedBox(height: 40),
+                Column(
+                  children: [
+                    GestureDetector(
+                      onTap: () => setState(() {
+                        selectedOption = AbsenceDateOption.tomorrow;
+                        specificDate = null;
+                      }),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade200),
+
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: RichText(
+                                text: TextSpan(
+                                  style: const TextStyle(
+                                    fontFamily: 'Lexend',
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  children: [
+                                    const TextSpan(
+                                      text: "Tomorrow ",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: "($tomorrowDayName)",
+
+                                      style: TextStyle(
+                                        color: Colors.grey.shade500,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Radio<AbsenceDateOption>(
+                              value: AbsenceDateOption.tomorrow,
+                              groupValue: selectedOption,
+                              activeColor: Colors.black,
+
+                              onChanged: (value) => setState(() {
+                                selectedOption = value!;
+                                specificDate = null;
+                              }),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    GestureDetector(
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: specificDate ?? DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365),
+                          ),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            specificDate = picked;
+                            selectedOption = AbsenceDateOption.specific;
+                          });
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(color: Colors.grey.shade200),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                specificDate != null
+                                    ? DateFormat(
+                                        'EEEE, d MMMM',
+                                      ).format(specificDate!)
+                                    : "Specific date",
+                                style: const TextStyle(
+                                  fontFamily: 'Lexend',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                            Radio<AbsenceDateOption>(
+                              value: AbsenceDateOption.specific,
+                              groupValue: selectedOption,
+                              activeColor: Colors.black,
+                              onChanged: (value) =>
+                                  setState(() => selectedOption = value!),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 200),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.cta,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    ),
-                    onPressed: state.selectedChildrenIds.isEmpty || state.isLoading
+                    onPressed:
+                        state.selectedChildrenIds.isEmpty ||
+                            state.isLoading ||
+                            dateToUse == null
                         ? null
-                        : () {
-                      print("Marking absent for IDs: ${state.selectedChildrenIds}");
-                      cubit.markAbsent();
-                    },
+                        : () => cubit.markAbsent(dateToUse!),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(
+                          12,
+                        ), // optional rounded corners
+                      ),
+                    ),
                     child: state.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
                         : const Text(
-                      "Mark as Absent",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                    ),
+                            "Mark as Absent",
+                            style: TextStyle(fontSize: 18),
+                          ),
                   ),
                 ),
               ],
