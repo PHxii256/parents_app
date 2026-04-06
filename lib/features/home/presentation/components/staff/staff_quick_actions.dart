@@ -5,7 +5,10 @@ import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class StaffQuickActions extends StatelessWidget {
-  const StaffQuickActions({super.key});
+  final VoidCallback? onDone;
+  final VoidCallback? onCancel;
+
+  const StaffQuickActions({super.key, this.onDone, this.onCancel});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +51,10 @@ class StaffQuickActions extends StatelessWidget {
             children: [
               Text(
                 localizations.quickActionsTitle,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 23,
+                ),
               ),
               RoundedCtaButton(text: "End Trip"),
             ],
@@ -71,7 +77,9 @@ class StaffQuickActions extends StatelessWidget {
                     spacing: 6,
                     children: [
                       // ignore: dead_code
-                      am ? _AmActions(tileWidth: tileWidth) : _PmActions(tileWidth: tileWidth),
+                      am
+                          ? _AmActions(tileWidth: tileWidth,onDone: onDone,onCancel: onCancel,)
+                          : _PmActions(tileWidth: tileWidth),
                       Text(getCurrentFirstLabel(), style: labelStyle),
                     ],
                   ),
@@ -102,9 +110,16 @@ class StaffQuickActions extends StatelessWidget {
 }
 
 class _AmActions extends StatelessWidget {
-  const _AmActions({super.key, required this.tileWidth});
+  const _AmActions({
+    super.key,
+    required this.tileWidth,
+    this.onDone,
+    this.onCancel,
+  });
 
   final double tileWidth;
+  final VoidCallback? onDone;
+  final VoidCallback? onCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +132,10 @@ class _AmActions extends StatelessWidget {
             width: (tileWidth - 2) / 2,
             height: 80,
             iconSize: 32,
-            onTap: () {},
+            onTap: onDone
+              //navigate to the next one in the list
+
+            ,
           ),
         ),
         Expanded(
@@ -126,7 +144,9 @@ class _AmActions extends StatelessWidget {
             width: (tileWidth - 2) / 2,
             height: 80,
             iconSize: 32,
-            onTap: () {},
+            onTap: onCancel
+              //navigate to the next one in the list
+            ,
           ),
         ),
       ],

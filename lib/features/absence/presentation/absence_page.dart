@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../main.dart';
+import '../../change_request/presentation/components/date_radio_group.dart';
 import '../data/api_service.dart';
 import '../data/student_data.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
 
-enum AbsenceDateOption { none, tomorrow, specific }
+enum AbsenceDateOption { today, tomorrow, specific }
 
 class AbsencePage extends StatefulWidget {
   const AbsencePage({super.key});
@@ -19,21 +20,14 @@ class AbsencePage extends StatefulWidget {
 }
 
 class _AbsencePageState extends State<AbsencePage> {
-  AbsenceDateOption selectedOption = AbsenceDateOption.none;
+  AbsenceDateOption selectedOption = AbsenceDateOption.today;
   DateTime? specificDate;
 
   @override
   Widget build(BuildContext context) {
-    final tomorrow = DateTime.now().add(const Duration(days: 1));
-    final tomorrowDayName = DateFormat('EEEE').format(tomorrow);
     final students = StudentData.mockStudentData;
 
     DateTime? dateToUse;
-    if (selectedOption == AbsenceDateOption.tomorrow) {
-      dateToUse = tomorrow;
-    } else if (selectedOption == AbsenceDateOption.specific) {
-      dateToUse = specificDate;
-    }
 
     return BlocProvider(
       create: (_) => sl<AbsenceCubit>(),
@@ -123,128 +117,134 @@ class _AbsencePageState extends State<AbsencePage> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
-
-                Column(
-                  children: [
-                    GestureDetector(
-                      onTap: () => setState(() {
-                        selectedOption = AbsenceDateOption.tomorrow;
-                        specificDate = null;
-                      }),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey.shade200),
-
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(
-                                    fontFamily: 'Lexend',
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                  children: [
-                                    const TextSpan(
-                                      text: "Tomorrow ",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: "($tomorrowDayName)",
-
-                                      style: TextStyle(
-                                        color: Colors.grey.shade500,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Radio<AbsenceDateOption>(
-                              value: AbsenceDateOption.tomorrow,
-                              groupValue: selectedOption,
-                              activeColor: Colors.black,
-
-                              onChanged: (value) => setState(() {
-                                selectedOption = value!;
-                                specificDate = null;
-                              }),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-
-                    GestureDetector(
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: specificDate ?? DateTime.now(),
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(
-                            const Duration(days: 365),
-                          ),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            specificDate = picked;
-                            selectedOption = AbsenceDateOption.specific;
-                          });
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.grey.shade200),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                specificDate != null
-                                    ? DateFormat(
-                                        'EEEE, d MMMM',
-                                      ).format(specificDate!)
-                                    : "Specific date",
-                                style: const TextStyle(
-                                  fontFamily: 'Lexend',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                            Radio<AbsenceDateOption>(
-                              value: AbsenceDateOption.specific,
-                              groupValue: selectedOption,
-                              activeColor: Colors.black,
-                              onChanged: (value) =>
-                                  setState(() => selectedOption = value!),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                DateRadioGroup(
+                  onDateSelected: (DateTime selectedDate) {
+                    dateToUse=selectedDate;
+                    print("dddddd$dateToUse");
+                  },
                 ),
-                const SizedBox(height: 200),
+
+                // Column(
+                //   children: [
+                //     GestureDetector(
+                //       onTap: () => setState(() {
+                //         selectedOption = AbsenceDateOption.tomorrow;
+                //         specificDate = null;
+                //       }),
+                //       child: Container(
+                //         padding: const EdgeInsets.symmetric(
+                //           horizontal: 16,
+                //           vertical: 8,
+                //         ),
+                //         decoration: BoxDecoration(
+                //           color: Colors.white,
+                //           border: Border.all(color: Colors.grey.shade200),
+                //
+                //           borderRadius: BorderRadius.circular(12),
+                //         ),
+                //         child: Row(
+                //           children: [
+                //             Expanded(
+                //               child: RichText(
+                //                 text: TextSpan(
+                //                   style: const TextStyle(
+                //                     fontFamily: 'Lexend',
+                //                     fontSize: 16,
+                //                     color: Colors.black,
+                //                   ),
+                //                   children: [
+                //                     const TextSpan(
+                //                       text: "Tomorrow ",
+                //                       style: TextStyle(
+                //                         fontWeight: FontWeight.w700,
+                //                       ),
+                //                     ),
+                //                     TextSpan(
+                //                       text: "($tomorrowDayName)",
+                //
+                //                       style: TextStyle(
+                //                         color: Colors.grey.shade500,
+                //                         fontWeight: FontWeight.w400,
+                //                       ),
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ),
+                //             ),
+                //             Radio<AbsenceDateOption>(
+                //               value: AbsenceDateOption.tomorrow,
+                //               groupValue: selectedOption,
+                //               activeColor: Colors.black,
+                //
+                //               onChanged: (value) => setState(() {
+                //                 selectedOption = value!;
+                //                 specificDate = null;
+                //               }),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //     ),
+                //     const SizedBox(height: 12),
+                //
+                //     GestureDetector(
+                //       onTap: () async {
+                //         final picked = await showDatePicker(
+                //           context: context,
+                //           initialDate: specificDate ?? DateTime.now(),
+                //           firstDate: DateTime.now(),
+                //           lastDate: DateTime.now().add(
+                //             const Duration(days: 365),
+                //           ),
+                //         );
+                //         if (picked != null) {
+                //           setState(() {
+                //             specificDate = picked;
+                //             selectedOption = AbsenceDateOption.specific;
+                //           });
+                //         }
+                //       },
+                //       child: Container(
+                //         padding: const EdgeInsets.symmetric(
+                //           horizontal: 16,
+                //           vertical: 8,
+                //         ),
+                //         decoration: BoxDecoration(
+                //           color: Colors.white,
+                //           border: Border.all(color: Colors.grey.shade200),
+                //           borderRadius: BorderRadius.circular(12),
+                //         ),
+                //         child: Row(
+                //           children: [
+                //             Expanded(
+                //               child: Text(
+                //                 specificDate != null
+                //                     ? DateFormat(
+                //                         'EEEE, d MMMM,ar',
+                //                       ).format(specificDate!)
+                //                     : "Specific date",
+                //                 style: const TextStyle(
+                //                   fontFamily: 'Lexend',
+                //                   fontWeight: FontWeight.w700,
+                //                   fontSize: 16,
+                //                   color: Colors.black,
+                //                 ),
+                //               ),
+                //             ),
+                //             Radio<AbsenceDateOption>(
+                //               value: AbsenceDateOption.specific,
+                //               groupValue: selectedOption,
+                //               activeColor: Colors.black,
+                //               onChanged: (value) =>
+                //                   setState(() => selectedOption = value!),
+                //             ),
+                //           ],
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // )
+                const SizedBox(height: 100),
                 SizedBox(
                   width: double.infinity,
                   height: 50,

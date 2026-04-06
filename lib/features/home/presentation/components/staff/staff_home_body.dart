@@ -55,7 +55,7 @@ class StaffHomeBody extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [StudentViewer(), SizedBox(height: 12), StaffQuickActions()],
+                        children: [StudentViewer(), SizedBox(height: 12)],
                       ),
                     ),
                   ),

@@ -24,6 +24,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTab => 'Profile';
 
   @override
+  String get returnAndEdit => 'Return and edit';
+
+  @override
+  String get requestSummaryFor => 'Request summary for';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

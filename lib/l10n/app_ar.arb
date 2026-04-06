@@ -5,7 +5,8 @@
   "locationsTab": "الأماكن",
   "notificationsTab": "الإشعارات",
   "profileTab": "الملف الشخصي",
-
+   "returnAndEdit": "العودة والتعديل",
+    "requestSummaryFor": "ملخص الطلب لـ",
   "settingsTitle": "الإعدادات",
   "logout": "تسجيل الخروج",
   "switchLanguage": "تبديل اللغة",

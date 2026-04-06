@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/home/presentation/components/staff/communication_bar.dart';
+import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_info_tile.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_progress.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_status.dart';
@@ -91,6 +92,7 @@ class _StudentViewerState extends State<StudentViewer> {
                 ),
                 const SizedBox(height: 4),
                 const StudentStatus(),
+
               ],
             ),
           ),
@@ -98,6 +100,12 @@ class _StudentViewerState extends State<StudentViewer> {
 
         const SizedBox(height: 18),
         const CommunicationBar(),
+        const SizedBox(height: 18),
+        StaffQuickActions(
+          onDone: goNext(maxIndex),
+          onCancel: goNext(maxIndex),
+        ),
+
       ],
     );
   }

@@ -95,7 +95,7 @@ class HomeBody extends StatelessWidget {
                               trailing: localizations.nextPickup,
                             ),
                             SizedBox(height: 12),
-                            ParentQuickActions(),
+
                           ],
                         ),
                       ),

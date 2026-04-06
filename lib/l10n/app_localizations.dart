@@ -125,6 +125,18 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get profileTab;
 
+  /// No description provided for @returnAndEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Return and edit'**
+  String get returnAndEdit;
+
+  /// No description provided for @requestSummaryFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Request summary for'**
+  String get requestSummaryFor;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

@@ -5,6 +5,8 @@
   "locationsTab": "Locations",
   "notificationsTab": "Notifications",
   "profileTab": "Profile",
+  "returnAndEdit": "Return and edit",
+  "requestSummaryFor": "Request summary for",
 
   "settingsTitle": "Settings",
   "logout": "Logout",

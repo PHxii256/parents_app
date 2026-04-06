@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
-import 'package:parent_app/features/change_request/presentation/changeRequest(summary).dart';
+import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
 import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
+import 'package:parent_app/features/home/presentation/components/home_body.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 import '../../absence/presentation/absence_page.dart';
 
-class ChangeRequestPage extends StatefulWidget {
-  const ChangeRequestPage({super.key});
+class ChangeRequestSummaryPage extends StatefulWidget {
+  const ChangeRequestSummaryPage({super.key});
 
   @override
-  State<ChangeRequestPage> createState() => _ChangeRequestPage();
+  State<ChangeRequestSummaryPage> createState() => _ChangeRequestPage();
 }
 
-class _ChangeRequestPage extends State<ChangeRequestPage> {
+class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
   // Pickup / Dropoff selection
   bool isPickup = true;
-  DateTime? dateTime;
 
   // Saved addresses selection
   String selectedAddress = 'Home';
+
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +51,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
             ),
             Text(
-              localizations.changeRequestDateSubtitle,
+              localizations.requestSummaryFor,
               style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
             ),
             const SizedBox(height: 18),
@@ -112,7 +113,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
               ),
             ),
 
-            const SizedBox(height: 24),
+         //   const SizedBox(height: 20),
 
             // Saved Addresses
             Row(
@@ -122,19 +123,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                   localizations.savedAddressesTitle,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => AddLocationPage(),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    localizations.addNewAddress,
-                    style: TextStyle(color: AppColors.cta),
-                  ),
-                ),
+
               ],
             ),
             Column(
@@ -160,27 +149,43 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            // Date options
-            DateRadioGroup(onDateSelected: (DateTime selectedDate) {
-              selectedDate=dateTime!;
 
-            }),
-            const SizedBox(height: 24),
+
+            const SizedBox(height: 250),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil<void>(
+                  Navigator.of(
                     context,
-                    MaterialPageRoute<void>(builder: (BuildContext context) => const ChangeRequestSummaryPage()),
+                    rootNavigator: true,
+                  ).push(MaterialPageRoute(builder: (_) => ChangeRequestPage()));
+                },
+                child: Text(
+                  localizations.returnAndEdit,
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
+                onPressed: () {
+                  //send a request to backend and show snack bar that request is accepted or not
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (BuildContext context) => const HomeBody()),
                     ModalRoute.withName('/'),
                   );
                 },
                 child: Text(
-                  localizations.nextButton,
+                  localizations.doneButton,
                   style: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),

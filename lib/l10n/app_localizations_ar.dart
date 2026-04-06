@@ -24,6 +24,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileTab => 'الملف الشخصي';
 
   @override
+  String get returnAndEdit => 'العودة والتعديل';
+
+  @override
+  String get requestSummaryFor => 'ملخص الطلب لـ';
+
+  @override
   String get settingsTitle => 'الإعدادات';
 
   @override

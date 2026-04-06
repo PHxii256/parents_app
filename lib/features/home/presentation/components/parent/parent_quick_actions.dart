@@ -71,7 +71,7 @@ class ParentQuickActions extends StatelessWidget {
                     icon: Icons.pin_drop,
                     height: 80,
                     iconSize: 32,
-                    width: double.infinity,
+                    width: double.maxFinite,
                     onTap: () {
                       Navigator.of(
                         context,
