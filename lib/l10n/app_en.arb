@@ -48,6 +48,27 @@
   "passwordResetSuccess": "Password reset successfully!",
 
   "quickActionsTitle": "Quick Actions",
+  "staffOpenInGoogleMaps": "View In Google Maps",
+  "staffEndTrip": "End Trip",
+  "studentBoardedBusLabel": "Boarded Bus",
+  "studentDroppedOffLabel": "Dropped off",
+  "statusConfirmTitle": "Confirm Action",
+  "statusConfirmQuestion": "Are you sure {studentName} {actionText}?",
+  "@statusConfirmQuestion": {
+    "placeholders": {
+      "studentName": {},
+      "actionText": {}
+    }
+  },
+  "statusParentNotificationNotice": "A notification will be sent to the parent.",
+  "statusActionBoardedBusTrue": "boarded the bus",
+  "statusActionBoardedBusFalse": "has not boarded the bus",
+  "statusActionDroppedOffTrue": "has been dropped off",
+  "statusActionDroppedOffFalse": "has not been dropped off",
+  "commonYes": "Yes",
+  "commonNo": "No",
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
   "pinCodeTitle": "Pin Code",
   "absenceTitle": "Absence",
   "changePickupDropoff": "Change Pickup/Drop-off",

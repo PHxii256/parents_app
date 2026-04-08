@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/home/presentation/components/parent/trip_panel.dart';
+import 'package:parent_app/features/home/presentation/components/staff/latest_message_viewer.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
-import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
 
 class ContactParentsTile extends StatelessWidget {
   const ContactParentsTile({super.key});
@@ -11,20 +12,26 @@ class ContactParentsTile extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 6,
       children: [
-        IconBox(icon: Icons.group, height: 48, iconSize: 24, width: 48),
+        IconBox(icon: Icons.group, height: 42, iconSize: 24, width: 48),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                spacing: 6,
-                children: [
-                  RoundedCtaButton(text: "Call Parents", icon: Icons.call),
-                  RoundedCtaButton(text: "Message", icon: Icons.message),
-                ],
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4.0),
+            child: SizedBox(
+              height: 48,
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  spacing: 6,
+                  children: [
+                    Expanded(child: LatestMessageViewer()),
+                    CircularActionButton(icon: Icons.location_pin, size: 16, onTap: () => {}),
+                    CircularActionButton(icon: Icons.call, size: 16, onTap: () => {}),
+                    //RoundedCtaButton(text: "", icon: Icons.call, height: 48),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         ),
       ],

@@ -16,7 +16,7 @@ class StudentPageTile extends StatelessWidget {
         SizedBox(height: 4),
         ContactParentsTile(),
         SizedBox(height: 4),
-        StudentPageTileStatus(),
+        StudentPageTileStatus(studentName: student.name),
       ],
     );
   }

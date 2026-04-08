@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../main.dart';
 import '../../change_request/presentation/components/date_radio_group.dart';
-import '../data/api_service.dart';
 import '../data/student_data.dart';
 import '../domain/absence_cubit.dart';
-import '../domain/absence_repo.dart';
 import '../domain/absence_state.dart';
 
 enum AbsenceDateOption { today, tomorrow, specific }
@@ -36,10 +33,7 @@ class _AbsencePageState extends State<AbsencePage> {
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
           elevation: 0,
-          title: const Text(
-            "Mark Absence",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          title: const Text("Mark Absence", style: TextStyle(fontWeight: FontWeight.bold)),
           centerTitle: true,
         ),
         body: BlocConsumer<AbsenceCubit, AbsenceState>(
@@ -52,9 +46,9 @@ class _AbsencePageState extends State<AbsencePage> {
             if (!state.isLoading &&
                 state.selectedChildrenIds.isEmpty &&
                 state.absentChildrenIds.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Absence successfully marked")),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text("Absence successfully marked")));
             }
           },
           builder: (context, state) {
@@ -72,19 +66,13 @@ class _AbsencePageState extends State<AbsencePage> {
                 // Students list
                 Column(
                   children: students.map((student) {
-                    final isSelected = state.selectedChildrenIds.contains(
-                      student.id,
-                    );
-                    final isAbsent = state.absentChildrenIds.contains(
-                      student.id,
-                    );
+                    final isSelected = state.selectedChildrenIds.contains(student.id);
+                    final isAbsent = state.absentChildrenIds.contains(student.id);
 
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundColor: Colors.grey.shade300,
-                        child: isAbsent
-                            ? const Icon(Icons.check, color: Colors.white)
-                            : null,
+                        child: isAbsent ? const Icon(Icons.check, color: Colors.white) : null,
                       ),
                       title: Text(
                         student.name,
@@ -96,17 +84,12 @@ class _AbsencePageState extends State<AbsencePage> {
                               icon: const Icon(Icons.undo, color: Colors.red),
                               onPressed: state.isLoading || dateToUse == null
                                   ? null
-                                  : () => cubit.undoAbsence(
-                                      student.id,
-                                      dateToUse!,
-                                    ),
+                                  : () => cubit.undoAbsence(student.id, dateToUse!),
                             )
                           : isSelected
                           ? const Icon(Icons.check, color: Colors.green)
                           : null,
-                      onTap: isAbsent
-                          ? null
-                          : () => cubit.toggleSelectChild(student.id),
+                      onTap: isAbsent ? null : () => cubit.toggleSelectChild(student.id),
                     );
                   }).toList(),
                 ),
@@ -119,7 +102,7 @@ class _AbsencePageState extends State<AbsencePage> {
                 const SizedBox(height: 8),
                 DateRadioGroup(
                   onDateSelected: (DateTime selectedDate) {
-                    dateToUse=selectedDate;
+                    dateToUse = selectedDate;
                     print("dddddd$dateToUse");
                   },
                 ),
@@ -250,26 +233,19 @@ class _AbsencePageState extends State<AbsencePage> {
                   height: 50,
                   child: ElevatedButton(
                     onPressed:
-                        state.selectedChildrenIds.isEmpty ||
-                            state.isLoading ||
-                            dateToUse == null
+                        state.selectedChildrenIds.isEmpty || state.isLoading || dateToUse == null
                         ? null
                         : () => cubit.markAbsent(dateToUse!),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.amber,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ), // optional rounded corners
+                        borderRadius: BorderRadius.circular(12), // optional rounded corners
                       ),
                     ),
                     child: state.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            "Mark as Absent",
-                            style: TextStyle(fontSize: 18),
-                          ),
+                        : const Text("Mark as Absent", style: TextStyle(fontSize: 18)),
                   ),
                 ),
               ],

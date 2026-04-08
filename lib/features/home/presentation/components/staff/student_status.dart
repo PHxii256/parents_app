@@ -7,11 +7,11 @@ class StudentStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 26,
+      height: 28,
       child: Row(
         spacing: 6,
         children: [
-          IconBox(icon: Icons.info_outline, height: 42, width: 48),
+          IconBox(icon: Icons.info_outline, height: 40, width: 48),
           Text("Status:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
           Text("(Coming Today)", style: TextStyle(fontSize: 14)),
         ],

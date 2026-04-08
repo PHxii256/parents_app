@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_context_extensions.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
-import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_viewer.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 
@@ -18,7 +17,7 @@ class StaffHomeBody extends StatelessWidget {
       create: (context) => TripCubit(),
       child: Builder(
         builder: (context) {
-          const double activeTripPanelHeight = 74;
+          const double activeTripPanelHeight = 42;
           const double activeTripPanelBottomPadding = 8;
           final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip

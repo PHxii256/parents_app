@@ -293,6 +293,96 @@ abstract class AppLocalizations {
   /// **'Quick Actions'**
   String get quickActionsTitle;
 
+  /// No description provided for @staffOpenInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'View In Google Maps'**
+  String get staffOpenInGoogleMaps;
+
+  /// No description provided for @staffEndTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'End Trip'**
+  String get staffEndTrip;
+
+  /// No description provided for @studentBoardedBusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Boarded Bus'**
+  String get studentBoardedBusLabel;
+
+  /// No description provided for @studentDroppedOffLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dropped off'**
+  String get studentDroppedOffLabel;
+
+  /// No description provided for @statusConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Action'**
+  String get statusConfirmTitle;
+
+  /// No description provided for @statusConfirmQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure {studentName} {actionText}?'**
+  String statusConfirmQuestion(Object studentName, Object actionText);
+
+  /// No description provided for @statusParentNotificationNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'A notification will be sent to the parent.'**
+  String get statusParentNotificationNotice;
+
+  /// No description provided for @statusActionBoardedBusTrue.
+  ///
+  /// In en, this message translates to:
+  /// **'boarded the bus'**
+  String get statusActionBoardedBusTrue;
+
+  /// No description provided for @statusActionBoardedBusFalse.
+  ///
+  /// In en, this message translates to:
+  /// **'has not boarded the bus'**
+  String get statusActionBoardedBusFalse;
+
+  /// No description provided for @statusActionDroppedOffTrue.
+  ///
+  /// In en, this message translates to:
+  /// **'has been dropped off'**
+  String get statusActionDroppedOffTrue;
+
+  /// No description provided for @statusActionDroppedOffFalse.
+  ///
+  /// In en, this message translates to:
+  /// **'has not been dropped off'**
+  String get statusActionDroppedOffFalse;
+
+  /// No description provided for @commonYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get commonYes;
+
+  /// No description provided for @commonNo.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get commonNo;
+
+  /// No description provided for @commonCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get commonCancel;
+
+  /// No description provided for @commonConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get commonConfirm;
+
   /// No description provided for @pinCodeTitle.
   ///
   /// In en, this message translates to:

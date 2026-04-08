@@ -16,6 +16,7 @@ import 'package:parent_app/firebase_options.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
 import 'features/absence/domain/service_locator.dart';
+
 final sl = GetIt.instance;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

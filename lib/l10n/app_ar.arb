@@ -46,6 +46,27 @@
   "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح!",
 
   "quickActionsTitle": "إجراءات سريعة",
+  "staffOpenInGoogleMaps": "عرض في خرائط جوجل",
+  "staffEndTrip": "إنهاء الرحلة",
+  "studentBoardedBusLabel": "ركب الأتوبيس",
+  "studentDroppedOffLabel": "تم توصيله",
+  "statusConfirmTitle": "تأكيد الإجراء",
+  "statusConfirmQuestion": "هل أنت متأكد أن {studentName} {actionText}؟",
+  "@statusConfirmQuestion": {
+    "placeholders": {
+      "studentName": {},
+      "actionText": {}
+    }
+  },
+  "statusParentNotificationNotice": "سيتم إرسال إشعار إلى ولي الأمر.",
+  "statusActionBoardedBusTrue": "ركب الأتوبيس",
+  "statusActionBoardedBusFalse": "لم يركب الأتوبيس",
+  "statusActionDroppedOffTrue": "تم توصيله",
+  "statusActionDroppedOffFalse": "لم يتم توصيله",
+  "commonYes": "نعم",
+  "commonNo": "لا",
+  "commonCancel": "إلغاء",
+  "commonConfirm": "تأكيد",
   "pinCodeTitle": "رمز PIN",
   "absenceTitle": "الغياب",
   "changePickupDropoff": "تغيير نقطة الركوب/النزول",

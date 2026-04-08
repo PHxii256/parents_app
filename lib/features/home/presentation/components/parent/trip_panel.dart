@@ -126,9 +126,10 @@ class Eta extends StatelessWidget {
 
 class CircularActionButton extends StatelessWidget {
   final IconData icon;
+  final double? size;
   final VoidCallback? onTap;
 
-  const CircularActionButton({super.key, required this.icon, this.onTap});
+  const CircularActionButton({super.key, required this.icon, this.onTap, this.size});
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +141,7 @@ class CircularActionButton extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
-          child: Icon(icon, color: AppColors.brownBg),
+          child: Icon(icon, color: AppColors.highlightText, size: size),
         ),
       ),
     );

@@ -4,12 +4,14 @@ import 'package:parent_app/shared/theme/app_colors.dart';
 class RoundedCtaButton extends StatelessWidget {
   final String text;
   final IconData? icon;
-  const RoundedCtaButton({super.key, required this.text, this.icon});
+  final double height;
+
+  const RoundedCtaButton({super.key, required this.text, this.icon, this.height = 30});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 30,
+      height: height,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.mutedBgDark,
@@ -19,7 +21,6 @@ class RoundedCtaButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          spacing: 4,
           mainAxisSize: MainAxisSize.min,
           children: [
             icon != null
@@ -31,6 +32,7 @@ class RoundedCtaButton extends StatelessWidget {
                     ),
                   )
                 : SizedBox.shrink(),
+            SizedBox(width: text.isNotEmpty ? 4 : 0),
             Text(
               text,
               style: TextStyle(

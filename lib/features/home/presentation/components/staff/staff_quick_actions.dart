@@ -1,43 +1,18 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class StaffQuickActions extends StatelessWidget {
   final VoidCallback? onDone;
-  final VoidCallback? onCancel;
 
-  const StaffQuickActions({super.key, this.onDone, this.onCancel});
+  const StaffQuickActions({super.key, this.onDone});
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
-    const firstLabelAM = "Mark Present/Absent";
-    const firstLabelPM = "Confirm Drop-off";
-    const secondLabel = "Open In Google Maps";
-    // depends on if it's am or pm trip
-    final bool am = true;
-    String getCurrentFirstLabel() {
-      // ignore: dead_code
-      return am ? firstLabelAM : firstLabelPM;
-    }
-
-    double measureLabelWidth(String text) {
-      final painter = TextPainter(
-        text: TextSpan(text: text, style: labelStyle),
-        textDirection: Directionality.of(context),
-        maxLines: 1,
-      )..layout();
-      return painter.width;
-    }
-
-    final maxLabelWidth = math.max(
-      measureLabelWidth(getCurrentFirstLabel()),
-      measureLabelWidth(secondLabel),
-    );
-    final minTileWidth = maxLabelWidth + 24;
+    final openMapsLabel = localizations.staffOpenInGoogleMaps;
+    final endTripLabel = localizations.staffEndTrip;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -46,46 +21,41 @@ class StaffQuickActions extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 6.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                localizations.quickActionsTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 23,
-                ),
-              ),
-              RoundedCtaButton(text: "End Trip"),
-            ],
+          child: Text(
+            localizations.quickActionsTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
           ),
         ),
 
         LayoutBuilder(
           builder: (context, constraints) {
             const spacing = 8.0;
-            final equalWidth = (constraints.maxWidth - spacing) / 2;
-            final tileWidth = math.max(equalWidth, minTileWidth);
+            final availableWidth = constraints.maxWidth - spacing;
+            final mapsTileWidth = availableWidth * (2 / 3);
+            final endTripTileWidth = availableWidth - mapsTileWidth;
 
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
+            return Row(
               children: [
                 SizedBox(
-                  width: tileWidth,
+                  width: endTripTileWidth,
                   child: Column(
                     spacing: 6,
                     children: [
-                      // ignore: dead_code
-                      am
-                          ? _AmActions(tileWidth: tileWidth,onDone: onDone,onCancel: onCancel,)
-                          : _PmActions(tileWidth: tileWidth),
-                      Text(getCurrentFirstLabel(), style: labelStyle),
+                      IconBox(
+                        icon: Icons.check_circle_outline,
+                        height: 80,
+                        iconSize: 32,
+                        width: endTripTileWidth,
+                        onTap: onDone,
+                      ),
+                      Text(endTripLabel, style: labelStyle),
                     ],
                   ),
                 ),
+                const SizedBox(width: spacing),
+
                 SizedBox(
-                  width: tileWidth,
+                  width: mapsTileWidth,
                   child: Column(
                     spacing: 6,
                     children: [
@@ -93,84 +63,16 @@ class StaffQuickActions extends StatelessWidget {
                         icon: Icons.navigation_outlined,
                         height: 80,
                         iconSize: 32,
-                        width: tileWidth,
+                        width: mapsTileWidth,
                         onTap: () {},
                       ),
-                      Text(secondLabel, style: labelStyle),
+                      Text(openMapsLabel, style: labelStyle),
                     ],
                   ),
                 ),
               ],
             );
           },
-        ),
-      ],
-    );
-  }
-}
-
-class _AmActions extends StatelessWidget {
-  const _AmActions({
-    super.key,
-    required this.tileWidth,
-    this.onDone,
-    this.onCancel,
-  });
-
-  final double tileWidth;
-  final VoidCallback? onDone;
-  final VoidCallback? onCancel;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      spacing: 6,
-      children: [
-        Expanded(
-          child: IconBox(
-            icon: Icons.check_circle_outline,
-            width: (tileWidth - 2) / 2,
-            height: 80,
-            iconSize: 32,
-            onTap: onDone
-              //navigate to the next one in the list
-
-            ,
-          ),
-        ),
-        Expanded(
-          child: IconBox(
-            icon: Icons.cancel_outlined,
-            width: (tileWidth - 2) / 2,
-            height: 80,
-            iconSize: 32,
-            onTap: onCancel
-              //navigate to the next one in the list
-            ,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PmActions extends StatelessWidget {
-  const _PmActions({super.key, required this.tileWidth});
-
-  final double tileWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: IconBox(
-            icon: Icons.check_circle_outline,
-            width: (tileWidth - 2) / 2,
-            height: 80,
-            iconSize: 32,
-            onTap: () {},
-          ),
         ),
       ],
     );

@@ -30,7 +30,7 @@ class StudentData {
       name: "Fatma Ali",
       grade: "Grade 1",
       pinCodes: ["54563", "12642"],
-      address: 'Street 9 Maadi',
+      address: 'Street 9 Maadi, Building 31 Next to Mc\'cdonalds And Metro El-Maadi',
       gMapsLink: 'https://maps.app.goo.gl/wGzN3oaVeLaKTMHo6',
     ),
   ];

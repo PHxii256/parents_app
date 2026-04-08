@@ -112,6 +112,53 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickActionsTitle => 'إجراءات سريعة';
 
   @override
+  String get staffOpenInGoogleMaps => 'عرض في خرائط جوجل';
+
+  @override
+  String get staffEndTrip => 'إنهاء الرحلة';
+
+  @override
+  String get studentBoardedBusLabel => 'ركب الأتوبيس';
+
+  @override
+  String get studentDroppedOffLabel => 'تم توصيله';
+
+  @override
+  String get statusConfirmTitle => 'تأكيد الإجراء';
+
+  @override
+  String statusConfirmQuestion(Object studentName, Object actionText) {
+    return 'هل أنت متأكد أن $studentName $actionText؟';
+  }
+
+  @override
+  String get statusParentNotificationNotice => 'سيتم إرسال إشعار إلى ولي الأمر.';
+
+  @override
+  String get statusActionBoardedBusTrue => 'ركب الأتوبيس';
+
+  @override
+  String get statusActionBoardedBusFalse => 'لم يركب الأتوبيس';
+
+  @override
+  String get statusActionDroppedOffTrue => 'تم توصيله';
+
+  @override
+  String get statusActionDroppedOffFalse => 'لم يتم توصيله';
+
+  @override
+  String get commonYes => 'نعم';
+
+  @override
+  String get commonNo => 'لا';
+
+  @override
+  String get commonCancel => 'إلغاء';
+
+  @override
+  String get commonConfirm => 'تأكيد';
+
+  @override
   String get pinCodeTitle => 'رمز PIN';
 
   @override

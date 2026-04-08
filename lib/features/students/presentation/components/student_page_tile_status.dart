@@ -1,66 +1,107 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/students/presentation/components/cust_checkbox_group.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class StudentPageTileStatus extends StatefulWidget {
-  const StudentPageTileStatus({super.key});
+  final String studentName;
+
+  const StudentPageTileStatus({super.key, required this.studentName});
 
   @override
   State<StudentPageTileStatus> createState() => _StudentPageTileStatusState();
 }
 
 class _StudentPageTileStatusState extends State<StudentPageTileStatus> {
-  bool busBoarded = true;
+  bool _boardedBus = false;
+  bool _droppedOff = false;
+
+  Future<bool> _confirmStatusChange({required String actionText}) async {
+    final localizations = AppLocalizations.of(context)!;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(localizations.statusConfirmTitle),
+          content: Text(
+            '${localizations.statusConfirmQuestion(widget.studentName, actionText)}\n\n${localizations.statusParentNotificationNotice}',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(false),
+              child: Text(localizations.commonCancel),
+            ),
+
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(localizations.commonConfirm),
+            ),
+          ],
+        );
+      },
+    );
+
+    return result ?? false;
+  }
+
+  Future<void> _onBoardedBusChanged(bool nextValue) async {
+    final localizations = AppLocalizations.of(context)!;
+    final boardedBusAction = nextValue
+        ? localizations.statusActionBoardedBusTrue
+        : localizations.statusActionBoardedBusFalse;
+    final confirmed = await _confirmStatusChange(actionText: boardedBusAction);
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _boardedBus = nextValue;
+      if (!_boardedBus) {
+        _droppedOff = false;
+      }
+    });
+  }
+
+  Future<void> _onDroppedOffChanged(bool nextValue) async {
+    final localizations = AppLocalizations.of(context)!;
+    final droppedOffAction = nextValue
+        ? localizations.statusActionDroppedOffTrue
+        : localizations.statusActionDroppedOffFalse;
+    final confirmed = await _confirmStatusChange(actionText: droppedOffAction);
+    if (!confirmed || !mounted) {
+      return;
+    }
+
+    setState(() {
+      _droppedOff = nextValue;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 6,
       children: [
-        IconBox(icon: Icons.info_outline, height: 62, iconSize: 24, width: 48),
+        IconBox(icon: Icons.info_outline, height: 72, iconSize: 24, width: 48),
         Expanded(
           child: Column(
+            spacing: 10,
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Row(
-                spacing: 6,
-                children: [
-                  Text("Status:", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  Text("(Coming Today)", style: TextStyle(fontSize: 14)),
-                ],
+              CustCheckboxGroup(
+                title: localizations.studentBoardedBusLabel,
+                value: _boardedBus,
+                onChanged: _onBoardedBusChanged,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    spacing: 4,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "Boarded Bus:",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      Text(
-                        busBoarded ? "Yes" : "No",
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w300),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                    child: Switch(
-                      padding: EdgeInsets.all(0),
-                      value: busBoarded,
-                      onChanged: (current) {
-                        setState(() {
-                          busBoarded = current;
-                        });
-                      },
-                    ),
-                  ),
-                ],
+              CustCheckboxGroup(
+                title: localizations.studentDroppedOffLabel,
+                value: _droppedOff,
+                enabled: _boardedBus,
+                onChanged: _onDroppedOffChanged,
               ),
             ],
           ),

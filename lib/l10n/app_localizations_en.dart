@@ -112,6 +112,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActionsTitle => 'Quick Actions';
 
   @override
+  String get staffOpenInGoogleMaps => 'View In Google Maps';
+
+  @override
+  String get staffEndTrip => 'End Trip';
+
+  @override
+  String get studentBoardedBusLabel => 'Boarded Bus';
+
+  @override
+  String get studentDroppedOffLabel => 'Dropped off';
+
+  @override
+  String get statusConfirmTitle => 'Confirm Action';
+
+  @override
+  String statusConfirmQuestion(Object studentName, Object actionText) {
+    return 'Are you sure $studentName $actionText?';
+  }
+
+  @override
+  String get statusParentNotificationNotice => 'A notification will be sent to the parent.';
+
+  @override
+  String get statusActionBoardedBusTrue => 'boarded the bus';
+
+  @override
+  String get statusActionBoardedBusFalse => 'has not boarded the bus';
+
+  @override
+  String get statusActionDroppedOffTrue => 'has been dropped off';
+
+  @override
+  String get statusActionDroppedOffFalse => 'has not been dropped off';
+
+  @override
+  String get commonYes => 'Yes';
+
+  @override
+  String get commonNo => 'No';
+
+  @override
+  String get commonCancel => 'Cancel';
+
+  @override
+  String get commonConfirm => 'Confirm';
+
+  @override
   String get pinCodeTitle => 'Pin Code';
 
   @override
