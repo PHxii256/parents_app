@@ -13,7 +13,16 @@ class MapView extends StatefulWidget {
   final List<Widget>? stackWidgets;
   final LatLng? initLocation;
   final DragMarkers? dragMarkers;
-  const MapView({super.key, this.stackWidgets, this.initLocation, this.dragMarkers});
+  final LatLng? focusTarget;
+  final int focusRequestKey;
+  const MapView({
+    super.key,
+    this.stackWidgets,
+    this.initLocation,
+    this.dragMarkers,
+    this.focusTarget,
+    this.focusRequestKey = 0,
+  });
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -26,10 +35,14 @@ enum _MapViewError {
   unknown,
 }
 
-class _MapViewState extends State<MapView> {
+class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   static const LatLng _fallbackCenter = LatLng(30.0444, 31.2357);
   final MapController _mapController = MapController();
   LatLng? _deviceLocation;
+  LatLng? _focusedLocation;
+  LatLng? _pendingFocusTarget;
+  AnimationController? _focusAnimationController;
+  bool _isMapReady = false;
   bool _loading = true;
   _MapViewError? _errorKey;
   String? _errorDetails;
@@ -42,8 +55,88 @@ class _MapViewState extends State<MapView> {
 
   @override
   void dispose() {
+    _focusAnimationController?.dispose();
     _mapController.dispose();
     super.dispose();
+  }
+
+  void _animateFocusTo(LatLng target) {
+    if (!_isMapReady) {
+      _pendingFocusTarget = target;
+      return;
+    }
+
+    LatLng from;
+    double fromZoom;
+    try {
+      from = _mapController.camera.center;
+      fromZoom = _mapController.camera.zoom;
+    } catch (_) {
+      _pendingFocusTarget = target;
+      return;
+    }
+
+    if (from == target) {
+      _mapController.move(target, fromZoom);
+      return;
+    }
+
+    final toZoom = fromZoom < 16.0 ? 16.0 : fromZoom;
+
+    _focusAnimationController?.dispose();
+    final controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _focusAnimationController = controller;
+
+    final animation = CurvedAnimation(parent: controller, curve: Curves.easeInOutCubic);
+    final latitudeTween = Tween<double>(begin: from.latitude, end: target.latitude);
+    final longitudeTween = Tween<double>(begin: from.longitude, end: target.longitude);
+    final zoomTween = Tween<double>(begin: fromZoom, end: toZoom);
+
+    controller.addListener(() {
+      _mapController.move(
+        LatLng(latitudeTween.evaluate(animation), longitudeTween.evaluate(animation)),
+        zoomTween.evaluate(animation),
+      );
+    });
+
+    controller.forward();
+  }
+
+  void _handleMapReady() {
+    _isMapReady = true;
+
+    final pending = _pendingFocusTarget;
+    if (pending != null) {
+      _pendingFocusTarget = null;
+      _animateFocusTo(pending);
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant MapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.focusTarget == null) {
+      return;
+    }
+
+    final didRequestNewFocus = widget.focusRequestKey != oldWidget.focusRequestKey;
+    final didFocusTargetChange = widget.focusTarget != oldWidget.focusTarget;
+    if (!didRequestNewFocus && !didFocusTargetChange) {
+      return;
+    }
+
+    final target = widget.focusTarget!;
+    setState(() => _focusedLocation = target);
+    if (_loading) {
+      _pendingFocusTarget = target;
+      return;
+    }
+
+    _animateFocusTo(target);
   }
 
   void _completeWithoutDeviceLocation(_MapViewError fallbackError, {String? details}) {
@@ -104,8 +197,14 @@ class _MapViewState extends State<MapView> {
             mapController: _mapController,
             initialCenter: initialCenter,
             dragMarkers: widget.dragMarkers,
+            focusedLocation: _focusedLocation,
+            onMapReady: _handleMapReady,
           ),
-          MapControls(mapController: _mapController, deviceLocation: _deviceLocation),
+          MapControls(
+            mapController: _mapController,
+            deviceLocation: _deviceLocation,
+            onCenterToDeviceLocation: _animateFocusTo,
+          ),
           ...(widget.stackWidgets ?? [SizedBox.shrink()]),
         ],
       ),
@@ -117,19 +216,23 @@ class MapCanvas extends StatelessWidget {
   final MapController mapController;
   final LatLng initialCenter;
   final DragMarkers? dragMarkers;
+  final LatLng? focusedLocation;
+  final VoidCallback? onMapReady;
 
   const MapCanvas({
     super.key,
     required this.mapController,
     required this.initialCenter,
     this.dragMarkers,
+    this.focusedLocation,
+    this.onMapReady,
   });
 
   @override
   Widget build(BuildContext context) {
     return FlutterMap(
       mapController: mapController,
-      options: MapOptions(initialCenter: initialCenter, initialZoom: 16),
+      options: MapOptions(initialCenter: initialCenter, initialZoom: 16, onMapReady: onMapReady),
       children: [
         TileLayer(
           errorTileCallback: (tile, error, stackTrace) {
@@ -143,6 +246,17 @@ class MapCanvas extends StatelessWidget {
         ),
         const MapAttributionOverlay(),
         CurrentLocationLayer(),
+        if (focusedLocation != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: focusedLocation!,
+                width: 40,
+                height: 40,
+                child: const Icon(Icons.location_pin, color: Colors.red, size: 36),
+              ),
+            ],
+          ),
         if (dragMarkers != null) dragMarkers!,
       ],
     );

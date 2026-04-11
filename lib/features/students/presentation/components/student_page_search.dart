@@ -9,6 +9,7 @@ class StudentPageSearch extends StatelessWidget {
       height: 46,
       child: SearchBar(
         trailing: [Icon(Icons.search)],
+        //TODO localise and call this student search hint
         hintText: "Search Students By Name",
         elevation: WidgetStatePropertyAll(0),
         shape: WidgetStatePropertyAll(

@@ -48,8 +48,28 @@
   "passwordResetSuccess": "Password reset successfully!",
 
   "quickActionsTitle": "Quick Actions",
+  "students": "Students",
+  "pinCodes": "PIN codes",
+  "status": "Status",
+  "comingToday": "Coming Today",
+  "selectAMessage": "Select a Message",
+  "send": "Send",
+  "noNewMessages": "No new messages",
+  "viewInGoogleMaps": "View in Google Maps",
+  "gradeWithNumber": "Grade {number}",
+  "@gradeWithNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "messageIHaveArrived": "I Have arrived",
+  "messagePleaseHurryUp": "Please Hurry Up",
+  "messagePleaseBeReadyAtPickupPoint": "Please be ready at pickup point",
+  "messageIHaveLeft": "I Have Left",
+  "messageOkay": "Okay",
   "staffOpenInGoogleMaps": "View In Google Maps",
   "staffEndTrip": "End Trip",
+  "locateStudent": "Locate Student",
   "studentBoardedBusLabel": "Boarded Bus",
   "studentDroppedOffLabel": "Dropped off",
   "statusConfirmTitle": "Confirm Action",
@@ -155,5 +175,6 @@
   "locationServicesDisabled": "Location services are disabled.",
   "locationPermissionDenied": "Location permission denied.",
   "locationPermissionRequired": "Please turn on the location permission to view the map.",
-  "openStreetMapContributors": "OpenStreetMap contributors"
+  "openStreetMapContributors": "OpenStreetMap contributors",
+  "schoolSuffix": "School"
 }

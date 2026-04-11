@@ -112,10 +112,57 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickActionsTitle => 'إجراءات سريعة';
 
   @override
+  String get students => 'الطلاب';
+
+  @override
+  String get pinCodes => 'رموز PIN';
+
+  @override
+  String get status => 'الحالة';
+
+  @override
+  String get comingToday => 'سيحضر اليوم';
+
+  @override
+  String get selectAMessage => 'اختر رسالة';
+
+  @override
+  String get send => 'إرسال';
+
+  @override
+  String get noNewMessages => 'لا توجد رسائل جديدة';
+
+  @override
+  String get viewInGoogleMaps => 'عرض في خرائط جوجل';
+
+  @override
+  String gradeWithNumber(Object number) {
+    return 'سنة $number';
+  }
+
+  @override
+  String get messageIHaveArrived => 'لقد وصلت';
+
+  @override
+  String get messagePleaseHurryUp => 'من فضلك أسرع';
+
+  @override
+  String get messagePleaseBeReadyAtPickupPoint => 'يرجى التواجد في نقطة الاستلام';
+
+  @override
+  String get messageIHaveLeft => 'لقد غادرت';
+
+  @override
+  String get messageOkay => 'حسنًا';
+
+  @override
   String get staffOpenInGoogleMaps => 'عرض في خرائط جوجل';
 
   @override
   String get staffEndTrip => 'إنهاء الرحلة';
+
+  @override
+  String get locateStudent => 'تحديد المكان';
 
   @override
   String get studentBoardedBusLabel => 'ركب الأتوبيس';
@@ -358,4 +405,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get openStreetMapContributors => 'مساهمو OpenStreetMap';
+
+  @override
+  String get schoolSuffix => 'المدرسة';
 }

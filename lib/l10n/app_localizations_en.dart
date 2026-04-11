@@ -112,10 +112,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickActionsTitle => 'Quick Actions';
 
   @override
+  String get students => 'Students';
+
+  @override
+  String get pinCodes => 'PIN codes';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get comingToday => 'Coming Today';
+
+  @override
+  String get selectAMessage => 'Select a Message';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get noNewMessages => 'No new messages';
+
+  @override
+  String get viewInGoogleMaps => 'View in Google Maps';
+
+  @override
+  String gradeWithNumber(Object number) {
+    return 'Grade $number';
+  }
+
+  @override
+  String get messageIHaveArrived => 'I Have arrived';
+
+  @override
+  String get messagePleaseHurryUp => 'Please Hurry Up';
+
+  @override
+  String get messagePleaseBeReadyAtPickupPoint => 'Please be ready at pickup point';
+
+  @override
+  String get messageIHaveLeft => 'I Have Left';
+
+  @override
+  String get messageOkay => 'Okay';
+
+  @override
   String get staffOpenInGoogleMaps => 'View In Google Maps';
 
   @override
   String get staffEndTrip => 'End Trip';
+
+  @override
+  String get locateStudent => 'Locate Student';
 
   @override
   String get studentBoardedBusLabel => 'Boarded Bus';
@@ -358,4 +405,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openStreetMapContributors => 'OpenStreetMap contributors';
+
+  @override
+  String get schoolSuffix => 'School';
 }

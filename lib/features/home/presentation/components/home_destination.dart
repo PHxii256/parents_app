@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/components/parent/parent_home_destinations.dart';
-import 'package:parent_app/features/home/presentation/components/staff/staff_home_destinations.dart';
+import 'package:parent_app/features/home/presentation/components/staff/assistant_home_destinations.dart';
+import 'package:parent_app/features/home/presentation/components/staff/driver_home_destinations%20copy.dart';
 
 final class HomeDestinationConfig {
   final NavigationDestination Function(BuildContext context, int unreadCount) destinationBuilder;
@@ -22,11 +23,12 @@ abstract class HomeNav {
 
   static HomeNav forRole(String role) {
     switch (role.toLowerCase()) {
+      case 'driver':
+        return DriverHomeNav();
       case 'bus_staff':
       case 'staff':
-      case 'driver':
       case 'assistant':
-        return StaffHomeNav();
+        return AssistantHomeNav();
       case 'parent':
       case 'guardian':
       default:

@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
+import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class StaffQuickActions extends StatelessWidget {
-  final VoidCallback? onDone;
+  final StudentData? currentStudent;
+  final ValueChanged<LatLng> onLocateStudent;
 
-  const StaffQuickActions({super.key, this.onDone});
+  const StaffQuickActions({super.key, required this.currentStudent, required this.onLocateStudent});
 
   @override
   Widget build(BuildContext context) {
@@ -13,18 +18,26 @@ class StaffQuickActions extends StatelessWidget {
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
     final openMapsLabel = localizations.staffOpenInGoogleMaps;
     final endTripLabel = localizations.staffEndTrip;
+    final locateStudentLabel = localizations.locateStudent;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       spacing: 12,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 6.0),
-          child: Text(
-            localizations.quickActionsTitle,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 6.0),
+              child: Text(
+                localizations.quickActionsTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+              ),
+            ),
+
+            RoundedCtaButton(text: endTripLabel),
+          ],
         ),
 
         LayoutBuilder(
@@ -42,13 +55,20 @@ class StaffQuickActions extends StatelessWidget {
                     spacing: 6,
                     children: [
                       IconBox(
-                        icon: Icons.check_circle_outline,
+                        icon: Icons.gps_fixed,
                         height: 80,
                         iconSize: 32,
                         width: endTripTileWidth,
-                        onTap: onDone,
+                        onTap: currentStudent != null
+                            ? () {
+                                final parsed = currentStudent!.toLatLng();
+                                if (parsed != null) {
+                                  onLocateStudent(parsed);
+                                }
+                              }
+                            : null,
                       ),
-                      Text(endTripLabel, style: labelStyle),
+                      Text(locateStudentLabel, style: labelStyle),
                     ],
                   ),
                 ),
@@ -64,7 +84,12 @@ class StaffQuickActions extends StatelessWidget {
                         height: 80,
                         iconSize: 32,
                         width: mapsTileWidth,
-                        onTap: () {},
+                        onTap: currentStudent != null
+                            ? () => launchUrl(
+                                Uri.parse(currentStudent!.gMapsLink),
+                                mode: LaunchMode.externalApplication,
+                              )
+                            : null,
                       ),
                       Text(openMapsLabel, style: labelStyle),
                     ],

@@ -7,11 +7,13 @@ class MapControls extends StatelessWidget {
     super.key,
     required MapController mapController,
     required LatLng? deviceLocation,
+    this.onCenterToDeviceLocation,
   }) : _mapController = mapController,
        _deviceLocation = deviceLocation;
 
   final MapController _mapController;
   final LatLng? _deviceLocation;
+  final ValueChanged<LatLng>? onCenterToDeviceLocation;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +49,12 @@ class MapControls extends StatelessWidget {
             onPressed: _deviceLocation == null
                 ? null
                 : () {
-                    _mapController.move(_deviceLocation, _mapController.camera.zoom);
+                    final target = _deviceLocation;
+                    if (onCenterToDeviceLocation != null) {
+                      onCenterToDeviceLocation!(target);
+                      return;
+                    }
+                    _mapController.move(target, _mapController.camera.zoom);
                   },
             child: const Icon(Icons.gps_fixed),
           ),

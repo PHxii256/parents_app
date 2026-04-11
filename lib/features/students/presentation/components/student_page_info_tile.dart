@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 
@@ -9,6 +10,8 @@ class StudentPageInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     var textStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975);
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 72),
@@ -38,9 +41,9 @@ class StudentPageInfoTile extends StatelessWidget {
                     Row(
                       spacing: 6,
                       children: [
-                        Text(studentData.grade, style: textStyle),
-                        Text("•", style: textStyle),
-                        Text("PIN codes:", style: textStyle),
+                        Text(studentData.localizedGrade(localizations), style: textStyle),
+                        Text('•', style: textStyle),
+                        Text('${localizations.pinCodes}: ', style: textStyle),
                         ...studentData.pinCodes.map((pin) => Text(pin, style: textStyle)),
                       ],
                     ),
@@ -66,11 +69,13 @@ class Hypertext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+
     return Row(
       spacing: 4,
       children: [
         Text(
-          "View in Google Maps",
+          localizations.viewInGoogleMaps,
           style: TextStyle(
             color: AppColors.highlightText,
             fontSize: 15,

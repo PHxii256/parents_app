@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -31,7 +30,6 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
 
     return Column(
       children: [
-
         GestureDetector(
           onTap: () {
             setState(() {
@@ -95,10 +93,7 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
     );
   }
 
-  Widget _buildItem({
-    required String title,
-    required AbsenceDateOption value,
-  }) {
+  Widget _buildItem({required String title, required AbsenceDateOption value}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -109,13 +104,7 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-            ),
+            child: Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
           ),
           Radio<AbsenceDateOption>(
             value: value,

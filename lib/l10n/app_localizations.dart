@@ -293,6 +293,90 @@ abstract class AppLocalizations {
   /// **'Quick Actions'**
   String get quickActionsTitle;
 
+  /// No description provided for @students.
+  ///
+  /// In en, this message translates to:
+  /// **'Students'**
+  String get students;
+
+  /// No description provided for @pinCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN codes'**
+  String get pinCodes;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @comingToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Today'**
+  String get comingToday;
+
+  /// No description provided for @selectAMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a Message'**
+  String get selectAMessage;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @noNewMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No new messages'**
+  String get noNewMessages;
+
+  /// No description provided for @viewInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'View in Google Maps'**
+  String get viewInGoogleMaps;
+
+  /// No description provided for @gradeWithNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Grade {number}'**
+  String gradeWithNumber(Object number);
+
+  /// No description provided for @messageIHaveArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'I Have arrived'**
+  String get messageIHaveArrived;
+
+  /// No description provided for @messagePleaseHurryUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Please Hurry Up'**
+  String get messagePleaseHurryUp;
+
+  /// No description provided for @messagePleaseBeReadyAtPickupPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please be ready at pickup point'**
+  String get messagePleaseBeReadyAtPickupPoint;
+
+  /// No description provided for @messageIHaveLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'I Have Left'**
+  String get messageIHaveLeft;
+
+  /// No description provided for @messageOkay.
+  ///
+  /// In en, this message translates to:
+  /// **'Okay'**
+  String get messageOkay;
+
   /// No description provided for @staffOpenInGoogleMaps.
   ///
   /// In en, this message translates to:
@@ -304,6 +388,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'End Trip'**
   String get staffEndTrip;
+
+  /// No description provided for @locateStudent.
+  ///
+  /// In en, this message translates to:
+  /// **'Locate Student'**
+  String get locateStudent;
 
   /// No description provided for @studentBoardedBusLabel.
   ///
@@ -772,6 +862,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OpenStreetMap contributors'**
   String get openStreetMapContributors;
+
+  /// No description provided for @schoolSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get schoolSuffix;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

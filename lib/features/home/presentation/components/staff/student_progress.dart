@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/staff/attendance_status_circle.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class StudentProgress extends StatelessWidget {
   final int currentIndex;
@@ -18,6 +19,7 @@ class StudentProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Column(
       spacing: 12,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,7 +27,10 @@ class StudentProgress extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Students", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23)),
+            Text(
+              localizations.students,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
+            ),
             SizedBox(
               height: 28,
               child: Row(

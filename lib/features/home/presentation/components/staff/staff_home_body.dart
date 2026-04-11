@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/auth/cubit/auth_context_extensions.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_viewer.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 
-class StaffHomeBody extends StatelessWidget {
+class StaffHomeBody extends StatefulWidget {
   const StaffHomeBody({super.key});
+
+  @override
+  State<StaffHomeBody> createState() => _StaffHomeBodyState();
+}
+
+class _StaffHomeBodyState extends State<StaffHomeBody> {
+  LatLng? _focusedStudentLocation;
+  int _focusRequestKey = 0;
+
+  void _onLocateStudent(LatLng coords) {
+    setState(() {
+      _focusedStudentLocation = coords;
+      _focusRequestKey++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +33,7 @@ class StaffHomeBody extends StatelessWidget {
       create: (context) => TripCubit(),
       child: Builder(
         builder: (context) {
-          const double activeTripPanelHeight = 42;
+          const double activeTripPanelHeight = 0;
           const double activeTripPanelBottomPadding = 8;
           final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip
@@ -28,9 +44,12 @@ class StaffHomeBody extends StatelessWidget {
               DecoratedBox(
                 decoration: BoxDecoration(color: Colors.amber),
                 child: SizedBox(
-                  height: 488 - currentTripHeight,
+                  height: 530 - currentTripHeight,
                   width: double.infinity,
-                  child: MapView(),
+                  child: MapView(
+                    focusTarget: _focusedStudentLocation,
+                    focusRequestKey: _focusRequestKey,
+                  ),
                 ),
               ),
               Column(
@@ -54,7 +73,10 @@ class StaffHomeBody extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [StudentViewer(), SizedBox(height: 12)],
+                        children: [
+                          StudentViewer(onLocateStudent: _onLocateStudent),
+                          SizedBox(height: 48),
+                        ],
                       ),
                     ),
                   ),

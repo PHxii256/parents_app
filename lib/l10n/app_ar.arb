@@ -46,8 +46,28 @@
   "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح!",
 
   "quickActionsTitle": "إجراءات سريعة",
+  "students": "الطلاب",
+  "pinCodes": "رموز PIN",
+  "status": "الحالة",
+  "comingToday": "سيحضر اليوم",
+  "selectAMessage": "اختر رسالة",
+  "send": "إرسال",
+  "noNewMessages": "لا توجد رسائل جديدة",
+  "viewInGoogleMaps": "عرض في خرائط جوجل",
+  "gradeWithNumber": "سنة {number}",
+  "@gradeWithNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "messageIHaveArrived": "لقد وصلت",
+  "messagePleaseHurryUp": "من فضلك أسرع",
+  "messagePleaseBeReadyAtPickupPoint": "يرجى التواجد في نقطة الاستلام",
+  "messageIHaveLeft": "لقد غادرت",
+  "messageOkay": "حسنًا",
   "staffOpenInGoogleMaps": "عرض في خرائط جوجل",
   "staffEndTrip": "إنهاء الرحلة",
+  "locateStudent": "تحديد المكان",
   "studentBoardedBusLabel": "ركب الأتوبيس",
   "studentDroppedOffLabel": "تم توصيله",
   "statusConfirmTitle": "تأكيد الإجراء",
@@ -153,5 +173,6 @@
   "locationServicesDisabled": "خدمات الموقع غير مفعلة.",
   "locationPermissionDenied": "تم رفض إذن الموقع.",
   "locationPermissionRequired": "يرجى تفعيل إذن الموقع لعرض الخريطة.",
-  "openStreetMapContributors": "مساهمو OpenStreetMap"
+  "openStreetMapContributors": "مساهمو OpenStreetMap",
+  "schoolSuffix": "المدرسة"
 }
