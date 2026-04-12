@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
-import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
 import 'package:parent_app/features/home/presentation/components/home_body.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
-
-import '../../absence/presentation/absence_page.dart';
 
 class ChangeRequestSummaryPage extends StatefulWidget {
   const ChangeRequestSummaryPage({super.key});
@@ -21,7 +17,6 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
 
   // Saved addresses selection
   String selectedAddress = 'Home';
-
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +50,7 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
               style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
             ),
             const SizedBox(height: 18),
+
             // Pickup / Dropoff toggle
             Container(
               decoration: BoxDecoration(
@@ -69,18 +65,16 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: isPickup
-                              ? AppColors.highlight
-                              : Colors.transparent,
+                          color: isPickup ? AppColors.highlight : Colors.transparent,
                           borderRadius: isRtl
-                              ? BorderRadius.only(
-                                  topRight: Radius.circular(32),
-                                  bottomRight: Radius.circular(32),
-                                )
-                              : BorderRadius.only(
-                                  topLeft: Radius.circular(32),
-                                  bottomLeft: Radius.circular(32),
-                                ),
+                              ? const BorderRadius.only(
+                            topRight: Radius.circular(32),
+                            bottomRight: Radius.circular(32),
+                          )
+                              : const BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            bottomLeft: Radius.circular(32),
+                          ),
                         ),
                         child: Center(child: Text(localizations.pickupLabel)),
                       ),
@@ -92,18 +86,16 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
-                          color: !isPickup
-                              ? AppColors.highlight
-                              : Colors.transparent,
+                          color: !isPickup ? AppColors.highlight : Colors.transparent,
                           borderRadius: isRtl
-                              ? BorderRadius.only(
-                                  topLeft: Radius.circular(32),
-                                  bottomLeft: Radius.circular(32),
-                                )
-                              : BorderRadius.only(
-                                  topRight: Radius.circular(32),
-                                  bottomRight: Radius.circular(32),
-                                ),
+                              ? const BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            bottomLeft: Radius.circular(32),
+                          )
+                              : const BorderRadius.only(
+                            topRight: Radius.circular(32),
+                            bottomRight: Radius.circular(32),
+                          ),
                         ),
                         child: Center(child: Text(localizations.dropoffLabel)),
                       ),
@@ -113,55 +105,50 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
               ),
             ),
 
-         //   const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-            // Saved Addresses
+            // Saved Addresses Title
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   localizations.savedAddressesTitle,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
-
               ],
             ),
+
             Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.home),
                   title: Text(localizations.homeAddressName),
                   subtitle: Text(localizations.homeAddressDesc),
-                  trailing: selectedAddress == 'Home'
-                      ? const Icon(Icons.check)
-                      : null,
+                  trailing: selectedAddress == 'Home' ? const Icon(Icons.check) : null,
                   onTap: () => setState(() => selectedAddress = 'Home'),
                 ),
                 ListTile(
                   leading: const Icon(Icons.home),
                   title: Text(localizations.grandmasHouseName),
                   subtitle: Text(localizations.grandmasHouseAddress),
-                  trailing: selectedAddress == "Grandma's House"
-                      ? const Icon(Icons.check)
-                      : null,
-                  onTap: () =>
-                      setState(() => selectedAddress = "Grandma's House"),
+                  trailing: selectedAddress == "Grandma's House" ? const Icon(Icons.check) : null,
+                  onTap: () => setState(() => selectedAddress = "Grandma's House"),
                 ),
               ],
             ),
 
+            const SizedBox(height: 40), // Adjusted spacing so buttons are visible
 
-            const SizedBox(height: 250),
+            // Return and Edit Button
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                 onPressed: () {
-                  Navigator.of(
-                    context,
-                    rootNavigator: true,
-                  ).push(MaterialPageRoute(builder: (_) => ChangeRequestPage()));
+                  Navigator.of(context, rootNavigator: true).push(
+                    MaterialPageRoute(builder: (_) => const ChangeRequestPage()),
+                  );
                 },
                 child: Text(
                   localizations.returnAndEdit,
@@ -169,20 +156,38 @@ class _ChangeRequestPage extends State<ChangeRequestSummaryPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 10),
 
+            const SizedBox(height: 12),
+
+            // Submit / Done Button
             SizedBox(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                onPressed: () {
-                  //send a request to backend and show snack bar that request is accepted or not
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (BuildContext context) => const HomeBody()),
-                    ModalRoute.withName('/'),
-                  );
+                onPressed: () async {
+                  // 1. Mock backend request
+                  bool isAccepted = true;
+
+                  // 2. Show SnackBar
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(isAccepted ? 'Request Accepted' : 'Request Failed'),
+                        backgroundColor: isAccepted ? Colors.green : Colors.red,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  }
+
+
+                  // if (mounted) {
+                  //   Navigator.pushAndRemoveUntil(
+                  //     context,
+                  //     MaterialPageRoute(builder: (context) => const ),
+                  //         (route) => false,
+                  //   );
+                  // }
                 },
                 child: Text(
                   localizations.doneButton,
