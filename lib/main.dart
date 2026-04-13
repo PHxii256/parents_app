@@ -16,13 +16,10 @@ import 'package:parent_app/firebase_options.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
 import 'features/absence/domain/service_locator.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:parent_app/features/animated_splash_screen.dart'; // 1. ADD THIS IMPORT
+
 final sl = GetIt.instance;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   setupServiceLocator();
@@ -34,7 +31,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    FlutterNativeSplash.remove();
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider(create: (_) => AuthRepository()),
