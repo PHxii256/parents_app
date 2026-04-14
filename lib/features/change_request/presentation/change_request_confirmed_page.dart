@@ -25,6 +25,10 @@ class ChangeRequestConfirmedPage extends StatelessWidget {
           localizations.requestTitle,
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
