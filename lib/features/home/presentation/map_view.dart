@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
-import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/home/presentation/components/map_controls.dart';
@@ -37,6 +36,7 @@ enum _MapViewError {
 
 class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   static const LatLng _fallbackCenter = LatLng(30.0444, 31.2357);
+  static const Duration _locationLookupTimeout = Duration(seconds: 5);
   final MapController _mapController = MapController();
   LatLng? _deviceLocation;
   LatLng? _focusedLocation;
@@ -140,14 +140,18 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   }
 
   void _completeWithoutDeviceLocation(_MapViewError fallbackError, {String? details}) {
+    if (!mounted) return;
     setState(() {
-      _loading = false;
       _errorKey = widget.initLocation == null ? fallbackError : null;
       _errorDetails = details;
     });
   }
 
   Future<void> _initLocation() async {
+    if (mounted && _loading) {
+      setState(() => _loading = false);
+    }
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -166,10 +170,18 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
         _completeWithoutDeviceLocation(_MapViewError.locationPermissionRequired);
         return;
       }
-      final pos = await Geolocator.getCurrentPosition();
+
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: _locationLookupTimeout,
+        ),
+      );
+      if (!mounted) return;
       setState(() {
         _deviceLocation = LatLng(pos.latitude, pos.longitude);
-        _loading = false;
+        _errorKey = null;
+        _errorDetails = null;
       });
     } catch (e) {
       _completeWithoutDeviceLocation(_MapViewError.unknown, details: e.toString());
@@ -198,6 +210,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
             initialCenter: initialCenter,
             dragMarkers: widget.dragMarkers,
             focusedLocation: _focusedLocation,
+            deviceLocation: _deviceLocation,
             onMapReady: _handleMapReady,
           ),
           MapControls(
@@ -217,6 +230,7 @@ class MapCanvas extends StatelessWidget {
   final LatLng initialCenter;
   final DragMarkers? dragMarkers;
   final LatLng? focusedLocation;
+  final LatLng? deviceLocation;
   final VoidCallback? onMapReady;
 
   const MapCanvas({
@@ -225,6 +239,7 @@ class MapCanvas extends StatelessWidget {
     required this.initialCenter,
     this.dragMarkers,
     this.focusedLocation,
+    this.deviceLocation,
     this.onMapReady,
   });
 
@@ -245,7 +260,23 @@ class MapCanvas extends StatelessWidget {
           userAgentPackageName: 'com.safe_route.app',
         ),
         const MapAttributionOverlay(),
-        CurrentLocationLayer(),
+        if (deviceLocation != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: deviceLocation!,
+                width: 24,
+                height: 24,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 3),
+                  ),
+                ),
+              ),
+            ],
+          ),
         if (focusedLocation != null)
           MarkerLayer(
             markers: [

@@ -15,8 +15,21 @@ class StaffHomeBody extends StatefulWidget {
 }
 
 class _StaffHomeBodyState extends State<StaffHomeBody> {
+  late final TripCubit _tripCubit;
   LatLng? _focusedStudentLocation;
   int _focusRequestKey = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _tripCubit = TripCubit();
+  }
+
+  @override
+  void dispose() {
+    _tripCubit.close();
+    super.dispose();
+  }
 
   void _onLocateStudent(LatLng coords) {
     setState(() {
@@ -27,15 +40,14 @@ class _StaffHomeBodyState extends State<StaffHomeBody> {
 
   @override
   Widget build(BuildContext context) {
-    final role = context.authRole;
-    Center(child: Text('Bus staff home ($role)'));
-    return BlocProvider(
-      create: (context) => TripCubit(),
-      child: Builder(
-        builder: (context) {
+    context.authRole;
+    return BlocProvider.value(
+      value: _tripCubit,
+      child: BlocBuilder<TripCubit, TripState>(
+        builder: (context, state) {
           const double activeTripPanelHeight = 0;
           const double activeTripPanelBottomPadding = 8;
-          final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
+          final bool hasActiveTrip = state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
               : 0;

@@ -17,7 +17,15 @@ class HomeBody extends StatelessWidget {
           child: Row(
             spacing: 6,
             children: [
-              const Icon(Icons.bus_alert, size: 24),
+              SizedBox(
+                width: 24,
+                height: 24,
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(image: AssetImage('lib/shared/assets/images/logo.png')),
+                  ),
+                ),
+              ),
               Text('Safe Route', style: const TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),

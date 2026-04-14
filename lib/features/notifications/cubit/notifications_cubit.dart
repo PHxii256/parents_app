@@ -8,12 +8,16 @@ import 'package:parent_app/features/notifications/data/repositories/notification
 class NotificationsCubit extends Cubit<NotificationsState> {
   final NotificationsRepository _repository;
   StreamSubscription<NotificationHistoryItem>? _incomingSubscription;
+  bool _isInitialized = false;
+  bool _isInitializing = false;
 
   NotificationsCubit({required NotificationsRepository repository})
     : _repository = repository,
       super(NotificationsState.initial());
 
   Future<void> init() async {
+    if (_isInitialized || _isInitializing) return;
+    _isInitializing = true;
     try {
       final history = await _repository.loadHistory();
       emit(state.copyWith(loading: false, history: history, unreadCount: 0, clearError: true));
@@ -26,8 +30,11 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           state.copyWith(history: updated, unreadCount: state.unreadCount + 1, clearError: true),
         );
       });
+      _isInitialized = true;
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));
+    } finally {
+      _isInitializing = false;
     }
   }
 

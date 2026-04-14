@@ -2,7 +2,14 @@ import 'package:dio/dio.dart';
 import 'package:parent_app/core/models/server_exception.dart';
 
 class AuthDataProvider {
-  final _dio = Dio(BaseOptions(baseUrl: "http://localhost:5000"));
+  final _dio = Dio(
+    BaseOptions(
+      baseUrl: "http://localhost:5000",
+      connectTimeout: const Duration(seconds: 4),
+      sendTimeout: const Duration(seconds: 4),
+      receiveTimeout: const Duration(seconds: 4),
+    ),
+  );
 
   Future<Response> passwordLogin(String email, String password) async {
     try {

@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late int _currentIndex;
   late List<GlobalKey<NavigatorState>> _navigatorKeys;
+  late Set<int> _initializedTabs;
 
   int _clampIndex(int desiredIndex, int length) {
     if (length <= 0) {
@@ -36,6 +37,12 @@ class _HomePageState extends State<HomePage> {
     final destinationsLength = widget.nav.destinations.length;
     _currentIndex = _clampIndex(widget.nav.initialIndex, destinationsLength);
     _navigatorKeys = List.generate(destinationsLength, (_) => GlobalKey());
+    _initializedTabs = {_currentIndex};
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<NotificationsCubit>().init();
+    });
   }
 
   @override
@@ -46,6 +53,7 @@ class _HomePageState extends State<HomePage> {
       final destinationsLength = widget.nav.destinations.length;
       _currentIndex = _clampIndex(widget.nav.initialIndex, destinationsLength);
       _navigatorKeys = List.generate(destinationsLength, (_) => GlobalKey());
+      _initializedTabs = {_currentIndex};
     }
   }
 
@@ -74,13 +82,18 @@ class _HomePageState extends State<HomePage> {
           children: List.generate(destinations.length, (index) {
             return Offstage(
               offstage: _currentIndex != index,
-              child: Navigator(
-                key: _navigatorKeys[index],
-                onGenerateRoute: (settings) => MaterialPageRoute(
-                  settings: settings,
-                  builder: (_) => destinations[index].pageBuilder(),
-                ),
-              ),
+              child: _initializedTabs.contains(index)
+                  ? TickerMode(
+                      enabled: _currentIndex == index,
+                      child: Navigator(
+                        key: _navigatorKeys[index],
+                        onGenerateRoute: (settings) => MaterialPageRoute(
+                          settings: settings,
+                          builder: (_) => destinations[index].pageBuilder(),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             );
           }),
         ),
@@ -104,7 +117,10 @@ class _HomePageState extends State<HomePage> {
                           if (value == _currentIndex) {
                             _navigatorKeys[value].currentState?.popUntil((route) => route.isFirst);
                           } else {
-                            setState(() => _currentIndex = value);
+                            setState(() {
+                              _currentIndex = value;
+                              _initializedTabs.add(value);
+                            });
                           }
                         },
                         destinations: destinations

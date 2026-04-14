@@ -137,6 +137,24 @@ abstract class AppLocalizations {
   /// **'Request summary for'**
   String get requestSummaryFor;
 
+  /// No description provided for @requestConfirmedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Confirmed'**
+  String get requestConfirmedTitle;
+
+  /// No description provided for @lastRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Request'**
+  String get lastRequestTitle;
+
+  /// No description provided for @undoLastRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo Last Request'**
+  String get undoLastRequest;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -730,6 +748,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add New Address'**
   String get addNewAddress;
+
+  /// No description provided for @primaryLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get primaryLocationLabel;
+
+  /// No description provided for @editLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Locations'**
+  String get editLocations;
+
+  /// No description provided for @deleteLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete location'**
+  String get deleteLocation;
+
+  /// No description provided for @undoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undoAction;
+
+  /// No description provided for @locationDeletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {locationName}'**
+  String locationDeletedMessage(Object locationName);
 
   /// No description provided for @nextButton.
   ///

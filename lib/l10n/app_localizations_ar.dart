@@ -30,6 +30,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requestSummaryFor => 'ملخص الطلب لـ';
 
   @override
+  String get requestConfirmedTitle => 'تم تأكيد الطلب';
+
+  @override
+  String get lastRequestTitle => 'آخر طلب';
+
+  @override
+  String get undoLastRequest => 'التراجع عن آخر طلب';
+
+  @override
   String get settingsTitle => 'الإعدادات';
 
   @override
@@ -333,6 +342,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addNewAddress => 'إضافة عنوان جديد';
+
+  @override
+  String get primaryLocationLabel => 'أساسي';
+
+  @override
+  String get editLocations => 'تعديل العناوين';
+
+  @override
+  String get deleteLocation => 'حذف العنوان';
+
+  @override
+  String get undoAction => 'تراجع';
+
+  @override
+  String locationDeletedMessage(Object locationName) {
+    return 'تم حذف $locationName';
+  }
 
   @override
   String get nextButton => 'التالي';

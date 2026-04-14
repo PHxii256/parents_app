@@ -9,20 +9,41 @@ import 'package:parent_app/features/home/presentation/components/parent/trip_sta
 import 'package:parent_app/features/home/presentation/map_view.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
-class ParentHomeBody extends StatelessWidget {
+class ParentHomeBody extends StatefulWidget {
   const ParentHomeBody({super.key});
+
+  @override
+  State<ParentHomeBody> createState() => _ParentHomeBodyState();
+}
+
+class _ParentHomeBodyState extends State<ParentHomeBody> {
+  late final TripCubit _tripCubit;
+  late final Widget _mapView;
+
+  @override
+  void initState() {
+    super.initState();
+    _tripCubit = TripCubit();
+    _mapView = const MapView();
+  }
+
+  @override
+  void dispose() {
+    _tripCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return BlocProvider(
-      create: (context) => TripCubit(),
-      child: Builder(
-        builder: (context) {
+    return BlocProvider.value(
+      value: _tripCubit,
+      child: BlocBuilder<TripCubit, TripState>(
+        builder: (context, state) {
           const double activeTripPanelHeight = 74;
           const double activeTripPanelBottomPadding = 6;
-          final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
+          final bool hasActiveTrip = state is ActiveTripState;
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
               : 0;
@@ -34,7 +55,7 @@ class ParentHomeBody extends StatelessWidget {
                 child: SizedBox(
                   height: 488 - currentTripHeight,
                   width: double.infinity,
-                  child: MapView(),
+                  child: _mapView,
                 ),
               ),
               Column(

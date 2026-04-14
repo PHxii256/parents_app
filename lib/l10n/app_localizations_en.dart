@@ -30,6 +30,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestSummaryFor => 'Request summary for';
 
   @override
+  String get requestConfirmedTitle => 'Request Confirmed';
+
+  @override
+  String get lastRequestTitle => 'Last Request';
+
+  @override
+  String get undoLastRequest => 'Undo Last Request';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -333,6 +342,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addNewAddress => 'Add New Address';
+
+  @override
+  String get primaryLocationLabel => 'Primary';
+
+  @override
+  String get editLocations => 'Edit Locations';
+
+  @override
+  String get deleteLocation => 'Delete location';
+
+  @override
+  String get undoAction => 'Undo';
+
+  @override
+  String locationDeletedMessage(Object locationName) {
+    return 'Deleted $locationName';
+  }
 
   @override
   String get nextButton => 'Next';

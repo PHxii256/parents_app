@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import '../../cubit/change_location_cubit.dart';
@@ -68,8 +68,6 @@ class _LocationDialogState extends State<_LocationDialog> {
   final TextEditingController _locationNameController = TextEditingController();
   final TextEditingController _locationAddressLineController = TextEditingController();
 
-  bool _isValid = false;
-
   @override
   void dispose() {
     _locationNameController.dispose();
@@ -77,85 +75,104 @@ class _LocationDialogState extends State<_LocationDialog> {
     super.dispose();
   }
 
-  void _onChanged() {
-    setState(() {
-      _isValid = _locationNameController.text.trim().isNotEmpty;
-    });
+  void submitLocation(BuildContext dialogContext) {
+    final isValid = _formKey.currentState?.validate() ?? false;
+    if (!isValid) return;
+
+    SavedLocationsStore.instance.addLocation(
+      name: _locationNameController.text,
+      addressLine: _locationAddressLineController.text,
+    );
+
+    Navigator.of(dialogContext).pop();
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    return Positioned(
+      left: 80,
+      right: 80,
+      bottom: 12,
+      child: SizedBox(
+        height: 50,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (c) => AlertDialog(
+                titlePadding: EdgeInsets.fromLTRB(16, 28, 16, 0),
+                contentPadding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+                actionsPadding: EdgeInsets.fromLTRB(16, 0, 16, 16),
 
-    return AlertDialog(
-      titlePadding: const EdgeInsets.fromLTRB(16, 28, 16, 0),
-      contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-      title: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(
-          localizations.addLocationDetailsTitle,
-          style: const TextStyle(fontSize: 18),
-        ),
-      ),
-      actions: [
-        TextButton(
-          // ✅ Enabled only when name is filled
-          onPressed: _isValid
-              ? () => widget.onSubmit(
-            _locationNameController.text.trim(),
-            _locationAddressLineController.text.trim(),
-          )
-              : null,
-          child: Text(localizations.doneButton),
-        ),
-      ],
-      content: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: _locationNameController,
-                onChanged: (_) => _onChanged(),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return localizations.locationNameRequired;
-                  }
-                  return null;
-                },
-                decoration: InputDecoration(
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  labelText: localizations.locationNameLabel,
-                  hintText: localizations.locationNameHint,
-                  filled: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: AppColors.brownBg),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 2),
-                    borderRadius: BorderRadius.circular(8),
+                title: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    localizations.addLocationDetailsTitle,
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: _locationAddressLineController,
-                decoration: InputDecoration(
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                  labelText: localizations.addressOptionalLabel,
-                  hintText: localizations.addressOptionalHint,
-                  filled: true,
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2, color: AppColors.brownBg),
-                    borderRadius: BorderRadius.circular(8),
+                actions: [
+                  TextButton(
+                    onPressed: () => submitLocation(c),
+                    child: Text(localizations.doneButton),
                   ),
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(width: 2),
-                    borderRadius: BorderRadius.circular(8),
+                ],
+                content: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _locationNameController,
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return localizations.locationNameRequired;
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+
+                            labelText: localizations.locationNameLabel,
+                            hintText: localizations.locationNameHint,
+                            filled: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2, color: AppColors.brownBg),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        TextFormField(
+                          controller: _locationAddressLineController,
+                          decoration: InputDecoration(
+                            floatingLabelBehavior: FloatingLabelBehavior.always,
+                            labelText: localizations.addressOptionalLabel,
+                            hintText: localizations.addressOptionalHint,
+                            filled: true,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2, color: AppColors.brownBg),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            border: OutlineInputBorder(
+                              borderSide: BorderSide(width: 2),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

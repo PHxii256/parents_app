@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
-import 'package:parent_app/features/change_request/presentation/changeRequest(summary).dart';
+import 'package:parent_app/features/change_request/presentation/change_request_summary.dart';
 import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
+import 'package:parent_app/features/change_request/presentation/models/change_request_payload.dart';
+import 'package:parent_app/features/locations/data/models/saved_location.dart';
+import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
+import 'package:parent_app/features/locations/presentation/components/saved_location_tile.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import '../cubit/change_location_cubit.dart';
 import '../cubit/change_location_state.dart';
 
-class ChangeRequestPage extends StatelessWidget {
+class ChangeRequestPage extends StatefulWidget {
   const ChangeRequestPage({super.key});
 
   @override
@@ -20,13 +24,46 @@ class ChangeRequestPage extends StatelessWidget {
   }
 }
 
-class _ChangeRequestView extends StatelessWidget {
-  const _ChangeRequestView();
+class _ChangeRequestPage extends State<ChangeRequestPage> {
+  // Pickup / Dropoff selection (at least one must remain selected)
+  bool isPickupSelected = true;
+  bool isDropoffSelected = false;
+  DateTime? dateTime;
+
+  // Saved addresses selection
+  String selectedAddress = 'grandma';
+
+  void _togglePickup() {
+    final willUnselectPickup = isPickupSelected;
+    final wouldLeaveNoneSelected = willUnselectPickup && !isDropoffSelected;
+    if (wouldLeaveNoneSelected) return;
+    setState(() => isPickupSelected = !isPickupSelected);
+  }
+
+  void _toggleDropoff() {
+    final willUnselectDropoff = isDropoffSelected;
+    final wouldLeaveNoneSelected = willUnselectDropoff && !isPickupSelected;
+    if (wouldLeaveNoneSelected) return;
+    setState(() => isDropoffSelected = !isDropoffSelected);
+  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final primaryLocation = SavedLocation(
+      id: 'home',
+      name: localizations.homeAddressName,
+      addressLine: localizations.homeAddressDesc,
+      isPrimary: true,
+    );
+    final nonPrimaryDefaultLocations = <SavedLocation>[
+      SavedLocation(
+        id: 'grandma',
+        name: localizations.grandmasHouseName,
+        addressLine: localizations.grandmasHouseAddress,
+      ),
+    ];
 
     return Scaffold(
       appBar: AppBar(
@@ -50,65 +87,55 @@ class _ChangeRequestView extends StatelessWidget {
               localizations.changePickupDropoff,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
             ),
-            const SizedBox(height: 18),
-
+            Text(
+              localizations.changeRequestDateSubtitle,
+              style: const TextStyle(fontWeight: FontWeight.w300, fontSize: 22),
+            ),
+            const SizedBox(height: 12),
             // Pickup / Dropoff toggle
-            BlocBuilder<ChangeLocationCubit, ChangeLocationState>(
-              buildWhen: (prev, curr) => prev.isPickup != curr.isPickup,
-              builder: (context, state) {
-                return Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(32),
-                    border: Border.all(),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () =>
-                              context.read<ChangeLocationCubit>().setPickup(true),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: state.isPickup
-                                  ? AppColors.highlight
-                                  : Colors.transparent,
-                              borderRadius: isRtl
-                                  ? const BorderRadius.only(
-                                topRight: Radius.circular(32),
-                                bottomRight: Radius.circular(32),
-                              )
-                                  : const BorderRadius.only(
-                                topLeft: Radius.circular(32),
-                                bottomLeft: Radius.circular(32),
-                              ),
-                            ),
-                            child: Center(child: Text(localizations.pickupLabel)),
-                          ),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _togglePickup,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isPickupSelected ? AppColors.highlight : Colors.transparent,
+                          borderRadius: isRtl
+                              ? BorderRadius.only(
+                                  topRight: Radius.circular(32),
+                                  bottomRight: Radius.circular(32),
+                                )
+                              : BorderRadius.only(
+                                  topLeft: Radius.circular(32),
+                                  bottomLeft: Radius.circular(32),
+                                ),
                         ),
                       ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () =>
-                              context.read<ChangeLocationCubit>().setPickup(false),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                            decoration: BoxDecoration(
-                              color: !state.isPickup
-                                  ? AppColors.highlight
-                                  : Colors.transparent,
-                              borderRadius: isRtl
-                                  ? const BorderRadius.only(
-                                topLeft: Radius.circular(32),
-                                bottomLeft: Radius.circular(32),
-                              )
-                                  : const BorderRadius.only(
-                                topRight: Radius.circular(32),
-                                bottomRight: Radius.circular(32),
-                              ),
-                            ),
-                            child: Center(child: Text(localizations.dropoffLabel)),
-                          ),
+                    ),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: _toggleDropoff,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        decoration: BoxDecoration(
+                          color: isDropoffSelected ? AppColors.highlight : Colors.transparent,
+                          borderRadius: isRtl
+                              ? BorderRadius.only(
+                                  topLeft: Radius.circular(32),
+                                  bottomLeft: Radius.circular(32),
+                                )
+                              : BorderRadius.only(
+                                  topRight: Radius.circular(32),
+                                  bottomRight: Radius.circular(32),
+                                ),
                         ),
                       ),
                     ],
@@ -117,7 +144,7 @@ class _ChangeRequestView extends StatelessWidget {
               },
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 12),
 
             // Saved Addresses header
             Row(
@@ -129,42 +156,34 @@ class _ChangeRequestView extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => BlocProvider.value(
-                          // ✅ Pass the SAME cubit instance so addAddress updates this page
-                          value: context.read<ChangeLocationCubit>(),
-                          child: AddLocationPage(),
-                        ),
-                      ),
-                    );
+                    Navigator.of(
+                      context,
+                    ).push(MaterialPageRoute(builder: (context) => AddLocationPage()));
                   },
-                  child: Text(
-                    localizations.addNewAddress,
-                    style: TextStyle(color: AppColors.cta),
-                  ),
+                  child: Text(localizations.addNewAddress, style: TextStyle(color: AppColors.cta)),
                 ),
               ],
             ),
-
-            // Address list
-            BlocBuilder<ChangeLocationCubit, ChangeLocationState>(
-              buildWhen: (prev, curr) =>
-              prev.addresses != curr.addresses ||
-                  prev.selectedAddress != curr.selectedAddress,
-              builder: (context, state) {
+            ValueListenableBuilder<List<SavedLocation>>(
+              valueListenable: SavedLocationsStore.instance.addedLocations,
+              builder: (context, addedLocations, _) {
+                final allLocations = [
+                  ...nonPrimaryDefaultLocations,
+                  ...addedLocations.where((location) => !location.isPrimary),
+                ];
                 return Column(
-                  children: state.addresses.map((addr) {
-                    final isSelected = state.selectedAddress?.id == addr.id;
-                    return ListTile(
-                      leading: Icon(addr.icon),
-                      title: Text(addr.name),
-                      subtitle: Text(addr.address),
-                      trailing: isSelected ? const Icon(Icons.check) : null,
-                      onTap: () =>
-                          context.read<ChangeLocationCubit>().selectAddress(addr),
-                    );
-                  }).toList(),
+                  children: allLocations
+                      .map(
+                        (location) => Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: SavedLocationTile(
+                            location: location,
+                            selected: selectedAddress == location.id,
+                            onTap: () => setState(() => selectedAddress = location.id),
+                          ),
+                        ),
+                      )
+                      .toList(),
                 );
               },
             ),
@@ -173,11 +192,10 @@ class _ChangeRequestView extends StatelessWidget {
 
             // Date options
             DateRadioGroup(
-              onDateSelected: (DateTime selected) {
-                context.read<ChangeLocationCubit>().selectDate(selected);
+              onDateSelected: (DateTime selectedDate) {
+                setState(() => dateTime = selectedDate);
               },
             ),
-
             const SizedBox(height: 24),
 
             SizedBox(
@@ -185,17 +203,35 @@ class _ChangeRequestView extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<ChangeLocationCubit>(),
-                        child: const ChangeRequestSummaryPage(),
-                      ),
-                    ),
-                  );
-                },
+                onPressed: dateTime == null
+                    ? null
+                    : () {
+                        final nonPrimaryLocations = [
+                          ...nonPrimaryDefaultLocations,
+                          ...SavedLocationsStore.instance.addedLocations.value.where(
+                            (location) => !location.isPrimary,
+                          ),
+                        ];
+
+                        final requestedLocation = nonPrimaryLocations.firstWhere(
+                          (location) => location.id == selectedAddress,
+                          orElse: () => nonPrimaryLocations.first,
+                        );
+
+                        final payload = ChangeRequestPayload(
+                          isPickupSelected: isPickupSelected,
+                          isDropoffSelected: isDropoffSelected,
+                          primaryLocation: primaryLocation,
+                          requestedLocation: requestedLocation,
+                          selectedDate: dateTime!,
+                        );
+
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => ChangeRequestSummaryPage(payload: payload),
+                          ),
+                        );
+                      },
                 child: Text(
                   localizations.nextButton,
                   style: const TextStyle(fontSize: 18, color: Colors.white),

@@ -14,8 +14,42 @@ class DateRadioGroup extends StatefulWidget {
 }
 
 class _DateRadioGroupState extends State<DateRadioGroup> {
-  AbsenceDateOption selectedOption = AbsenceDateOption.today;
+  AbsenceDateOption? selectedOption;
   DateTime? specificDate;
+
+  void _selectToday(DateTime today) {
+    setState(() {
+      selectedOption = AbsenceDateOption.today;
+      specificDate = null;
+    });
+    widget.onDateSelected(today);
+  }
+
+  void _selectTomorrow(DateTime tomorrow) {
+    setState(() {
+      selectedOption = AbsenceDateOption.tomorrow;
+      specificDate = null;
+    });
+    widget.onDateSelected(tomorrow);
+  }
+
+  Future<void> _selectSpecificDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: specificDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      specificDate = picked;
+      selectedOption = AbsenceDateOption.specific;
+    });
+
+    widget.onDateSelected(picked);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,16 +65,11 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedOption = AbsenceDateOption.today;
-              specificDate = null;
-            });
-            widget.onDateSelected(today);
-          },
+          onTap: () => _selectToday(today),
           child: _buildItem(
             title: "${localizations.today} ($todayDay)",
             value: AbsenceDateOption.today,
+            onChanged: (_) => _selectToday(today),
           ),
         ),
 
@@ -48,16 +77,11 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
 
         /// 🔹 Tomorrow
         GestureDetector(
-          onTap: () {
-            setState(() {
-              selectedOption = AbsenceDateOption.tomorrow;
-              specificDate = null;
-            });
-            widget.onDateSelected(tomorrow);
-          },
+          onTap: () => _selectTomorrow(tomorrow),
           child: _buildItem(
             title: "${localizations.tomorrow} ($tomorrowDay)",
             value: AbsenceDateOption.tomorrow,
+            onChanged: (_) => _selectTomorrow(tomorrow),
           ),
         ),
 
@@ -65,35 +89,24 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
 
         /// 🔹 Specific Date
         GestureDetector(
-          onTap: () async {
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: specificDate ?? DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-            );
-
-            if (picked != null) {
-              setState(() {
-                specificDate = picked;
-                selectedOption = AbsenceDateOption.specific;
-              });
-
-              widget.onDateSelected(picked);
-            }
-          },
+          onTap: _selectSpecificDate,
           child: _buildItem(
             title: specificDate != null
                 ? DateFormat('EEEE, d MMMM', locale).format(specificDate!)
                 : "${localizations.specificDate}",
             value: AbsenceDateOption.specific,
+            onChanged: (_) => _selectSpecificDate(),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildItem({required String title, required AbsenceDateOption value}) {
+  Widget _buildItem({
+    required String title,
+    required AbsenceDateOption value,
+    required ValueChanged<AbsenceDateOption?> onChanged,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
@@ -110,7 +123,7 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
             value: value,
             groupValue: selectedOption,
             activeColor: Colors.black,
-            onChanged: (_) {},
+            onChanged: onChanged,
           ),
         ],
       ),

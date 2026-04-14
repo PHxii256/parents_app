@@ -7,6 +7,9 @@
   "profileTab": "Profile",
   "returnAndEdit": "Return and edit",
   "requestSummaryFor": "Request summary for",
+  "requestConfirmedTitle": "Request Confirmed",
+  "lastRequestTitle": "Last Request",
+  "undoLastRequest": "Undo Last Request",
 
   "settingsTitle": "Settings",
   "logout": "Logout",
@@ -136,6 +139,16 @@
   "dropoffLabel": "Dropoff",
   "savedAddressesTitle": "Saved Addresses",
   "addNewAddress": "Add New Address",
+  "primaryLocationLabel": "Primary",
+  "editLocations": "Edit Locations",
+  "deleteLocation": "Delete location",
+  "undoAction": "Undo",
+  "locationDeletedMessage": "Deleted {locationName}",
+  "@locationDeletedMessage": {
+    "placeholders": {
+      "locationName": {}
+    }
+  },
   "nextButton": "Next",
 
   "addLocationTitle": "Add Location",

@@ -15,10 +15,8 @@ class AuthGate extends StatelessWidget {
       builder: (context, state) {
         return switch (state) {
           AuthenticatedState() => HomePage(nav: HomeNav.forRole(state.user.role)),
-          UnauthenticatedState() ||
-          AuthLoadingState() ||
-          OtpSentState() ||
-          PasswordResetSuccessState() => LoginPage(),
+          AuthLoadingState() => const Scaffold(body: Center(child: CircularProgressIndicator())),
+          UnauthenticatedState() || OtpSentState() || PasswordResetSuccessState() => LoginPage(),
         };
       },
     );

@@ -54,9 +54,7 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (ctx) {
-              final cubit = NotificationsCubit(repository: ctx.read<NotificationsRepository>());
-              cubit.init();
-              return cubit;
+              return NotificationsCubit(repository: ctx.read<NotificationsRepository>());
             },
           ),
         ],

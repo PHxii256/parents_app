@@ -7,6 +7,9 @@
   "profileTab": "الملف الشخصي",
    "returnAndEdit": "العودة والتعديل",
     "requestSummaryFor": "ملخص الطلب لـ",
+    "requestConfirmedTitle": "تم تأكيد الطلب",
+    "lastRequestTitle": "آخر طلب",
+    "undoLastRequest": "التراجع عن آخر طلب",
   "settingsTitle": "الإعدادات",
   "logout": "تسجيل الخروج",
   "switchLanguage": "تبديل اللغة",
@@ -133,6 +136,16 @@
   "dropoffLabel": "النزول",
   "savedAddressesTitle": "العناوين المحفوظة",
   "addNewAddress": "إضافة عنوان جديد",
+  "primaryLocationLabel": "أساسي",
+  "editLocations": "تعديل العناوين",
+  "deleteLocation": "حذف العنوان",
+  "undoAction": "تراجع",
+  "locationDeletedMessage": "تم حذف {locationName}",
+  "@locationDeletedMessage": {
+    "placeholders": {
+      "locationName": {}
+    }
+  },
   "nextButton": "التالي",
 
   "addLocationTitle": "إضافة موقع",
