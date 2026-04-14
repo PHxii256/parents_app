@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
-import 'package:parent_app/features/auth/cubit/auth_state.dart';
-import 'package:parent_app/features/auth/presentation/otp_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -63,8 +59,8 @@ class ProfilePage extends StatelessWidget {
               child: const Text("Reset Password", style: TextStyle(fontSize: 18)),
             ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 

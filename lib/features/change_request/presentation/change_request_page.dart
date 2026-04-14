@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_summary.dart';
 import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
@@ -9,19 +8,12 @@ import 'package:parent_app/features/locations/data/services/saved_locations_stor
 import 'package:parent_app/features/locations/presentation/components/saved_location_tile.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
-import '../cubit/change_location_cubit.dart';
-import '../cubit/change_location_state.dart';
 
 class ChangeRequestPage extends StatefulWidget {
   const ChangeRequestPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => ChangeLocationCubit(),
-      child: const _ChangeRequestView(),
-    );
-  }
+  State<ChangeRequestPage> createState() => _ChangeRequestPage();
 }
 
 class _ChangeRequestPage extends State<ChangeRequestPage> {
@@ -117,6 +109,12 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                                   bottomLeft: Radius.circular(32),
                                 ),
                         ),
+                        child: Center(
+                          child: Text(
+                            localizations.pickupLabel,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -137,11 +135,17 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                                   bottomRight: Radius.circular(32),
                                 ),
                         ),
+                        child: Center(
+                          child: Text(
+                            localizations.dropoffLabel,
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                );
-              },
+                ],
+              ),
             ),
 
             const SizedBox(height: 12),
@@ -158,7 +162,7 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                   onPressed: () {
                     Navigator.of(
                       context,
-                    ).push(MaterialPageRoute(builder: (context) => AddLocationPage()));
+                    ).push(MaterialPageRoute(builder: (_) => const AddLocationPage()));
                   },
                   child: Text(localizations.addNewAddress, style: TextStyle(color: AppColors.cta)),
                 ),
