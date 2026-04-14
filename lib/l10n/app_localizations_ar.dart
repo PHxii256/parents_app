@@ -162,6 +162,21 @@ class AppLocalizationsAr extends AppLocalizations {
   String get messageIHaveLeft => 'لقد غادرت';
 
   @override
+  String get messagePleaseWaitForUsWeAreComing => 'من فضلك انتظرونا، نحن قادمون';
+
+  @override
+  String get messageWeAreWaitingAtBusStop => 'نحن ننتظر عند موقف الأتوبيس';
+
+  @override
+  String get quickMessagesTitle => 'رسائل سريعة';
+
+  @override
+  String get customMessageLabel => 'رسالة مخصصة';
+
+  @override
+  String get customMessageHint => 'اكتب رسالة محددة';
+
+  @override
   String get messageOkay => 'حسنًا';
 
   @override
@@ -221,7 +236,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get absenceTitle => 'الغياب';
 
   @override
-  String get changePickupDropoff => 'تغيير نقطة الركوب/النزول';
+  String get changePickupDropoff => 'تغيير نقطة الوقوف';
 
   @override
   String get tripStatusTitle => 'حالة الرحلة';
@@ -302,6 +317,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get markAsAbsentButton => 'تحديد كغياب';
 
   @override
+  String get absenceSuccessfullyMarked => 'تم تسجيل الغياب بنجاح';
+
+  @override
+  String get absenceStudentStatusAbsent => 'الحالة: غائب';
+
+  @override
+  String get absenceStudentStatusPresent => 'الحالة: حاضر';
+
+  @override
+  String get absenceUndoAction => 'تراجع عن الغياب';
+
+  @override
   String get shareChildPinCodeTitle => 'شارك رمز PIN لطفلك';
 
   @override
@@ -324,9 +351,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get requestTitle => 'طلب';
-
-  @override
-  String get changePickupDropoffFor => 'تغيير نقطة الركوب أو النزول لـ';
 
   @override
   String get changeRequestDateSubtitle => 'غداً (الأربعاء 16/3)';

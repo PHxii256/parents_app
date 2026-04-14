@@ -162,6 +162,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get messageIHaveLeft => 'I Have Left';
 
   @override
+  String get messagePleaseWaitForUsWeAreComing => 'Please wait for us, we are coming';
+
+  @override
+  String get messageWeAreWaitingAtBusStop => 'We are waiting at the bus stop';
+
+  @override
+  String get quickMessagesTitle => 'Quick messages';
+
+  @override
+  String get customMessageLabel => 'Custom message';
+
+  @override
+  String get customMessageHint => 'Write a specific message';
+
+  @override
   String get messageOkay => 'Okay';
 
   @override
@@ -221,7 +236,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get absenceTitle => 'Absence';
 
   @override
-  String get changePickupDropoff => 'Change Pickup/Drop-off';
+  String get changePickupDropoff => 'Change Stop Location';
 
   @override
   String get tripStatusTitle => 'Trip Status';
@@ -302,6 +317,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markAsAbsentButton => 'Mark as absent';
 
   @override
+  String get absenceSuccessfullyMarked => 'Absence successfully marked';
+
+  @override
+  String get absenceStudentStatusAbsent => 'Status: Absent';
+
+  @override
+  String get absenceStudentStatusPresent => 'Status: Present';
+
+  @override
+  String get absenceUndoAction => 'Undo Absence';
+
+  @override
   String get shareChildPinCodeTitle => 'Share your child\'s pin code';
 
   @override
@@ -324,9 +351,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestTitle => 'Request';
-
-  @override
-  String get changePickupDropoffFor => 'Change pickup or drop-off for';
 
   @override
   String get changeRequestDateSubtitle => 'Tomorrow (Wednesday 16/3)';

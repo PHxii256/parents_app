@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:parent_app/features/change_request/data/services/change_request_store.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_confirmed_page.dart';
 import 'package:parent_app/features/change_request/presentation/models/change_request_payload.dart';
 import 'package:parent_app/features/locations/presentation/components/saved_location_tile.dart';
@@ -37,7 +38,7 @@ class ChangeRequestSummaryPage extends StatelessWidget {
         child: ListView(
           children: [
             Text(
-              localizations.changePickupDropoffFor,
+              localizations.changePickupDropoff,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
             ),
             Text(
@@ -130,6 +131,7 @@ class ChangeRequestSummaryPage extends StatelessWidget {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                 onPressed: () {
+                  ChangeRequestStore.instance.setActiveRequest(payload);
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(builder: (_) => ChangeRequestConfirmedPage(payload: payload)),
                   );

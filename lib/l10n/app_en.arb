@@ -69,6 +69,11 @@
   "messagePleaseHurryUp": "Please Hurry Up",
   "messagePleaseBeReadyAtPickupPoint": "Please be ready at pickup point",
   "messageIHaveLeft": "I Have Left",
+  "messagePleaseWaitForUsWeAreComing": "Please wait for us, we are coming",
+  "messageWeAreWaitingAtBusStop": "We are waiting at the bus stop",
+  "quickMessagesTitle": "Quick messages",
+  "customMessageLabel": "Custom message",
+  "customMessageHint": "Write a specific message",
   "messageOkay": "Okay",
   "staffOpenInGoogleMaps": "View In Google Maps",
   "staffEndTrip": "End Trip",
@@ -122,6 +127,10 @@
   "specificDate": "Specific date",
   "duration": "Duration",
   "markAsAbsentButton": "Mark as absent",
+  "absenceSuccessfullyMarked": "Absence successfully marked",
+  "absenceStudentStatusAbsent": "Status: Absent",
+  "absenceStudentStatusPresent": "Status: Present",
+  "absenceUndoAction": "Undo Absence",
 
   "shareChildPinCodeTitle": "Share your child's pin code",
   "pinCodeDescription": "This pin code allows you or other people you trust to safely pick up your children by saying this code to the bus driver or assistant.",
@@ -132,8 +141,7 @@
   "temporaryPinCopied": "Temporary PIN copied!",
 
   "requestTitle": "Request",
-   "changePickupDropoff": "Change pickup
-  "changePickupDropoff": "Change pickup or drop-off",
+  "changePickupDropoff": "Change Stop Location",
   "changeRequestDateSubtitle": "Tomorrow (Wednesday 16/3)",
   "pickupLabel": "Pickup",
   "dropoffLabel": "Dropoff",

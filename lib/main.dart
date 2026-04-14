@@ -61,7 +61,7 @@ class MyApp extends StatelessWidget {
         child: BlocBuilder<SettingsCubit, SettingsState>(
           builder: (context, state) {
             return MaterialApp(
-              title: 'Parent App',
+              title: 'SafeRoute',
               locale: state.locale,
               localizationsDelegates: const [
                 AppLocalizations.delegate,

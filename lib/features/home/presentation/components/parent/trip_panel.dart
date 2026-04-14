@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/home/data/models/staff_data.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
+import 'package:parent_app/features/home/presentation/components/staff/show_messages_dialouge.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,15 +26,6 @@ class _TripPanelState extends State<TripPanel> {
     }
 
     await launchUrl(Uri(scheme: 'tel', path: normalizedPhone));
-  }
-
-  Future<void> _launchWhatsApp(StaffData staff) async {
-    final rawLink = staff.whatsappLink?.trim();
-    final whatsappUri = rawLink != null && rawLink.isNotEmpty
-        ? Uri.parse(rawLink)
-        : Uri.parse('https://wa.me/${staff.phoneNum.replaceAll(RegExp(r'[^0-9+]'), '')}');
-
-    await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -79,7 +71,7 @@ class _TripPanelState extends State<TripPanel> {
                   ),
                   CircularActionButton(
                     icon: Icons.message,
-                    onTap: () => _launchWhatsApp(selectedStaff),
+                    onTap: () => showMessagesDialouge(context),
                   ),
                   CircularActionButton(
                     icon: Icons.call,

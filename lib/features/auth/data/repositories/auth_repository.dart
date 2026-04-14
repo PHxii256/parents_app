@@ -17,11 +17,15 @@ class AuthRepository {
   static const _parentTestPassword = 'password';
   static const _staffTestEmail = 's@test.com';
   static const _staffTestPassword = 'password';
+  static const _assistantTestEmail = 'a@test.com';
+  static const _assistantTestPassword = 'password';
 
   static const _mockParentAccessToken = 'mock_parent_access_token';
   static const _mockParentRefreshToken = 'mock_parent_refresh_token';
   static const _mockStaffAccessToken = 'mock_staff_access_token';
   static const _mockStaffRefreshToken = 'mock_staff_refresh_token';
+  static const _mockAssistantAccessToken = 'mock_assistant_access_token';
+  static const _mockAssistantRefreshToken = 'mock_assistant_refresh_token';
 
   Future<LoginResult> passwordLogin({required String email, required String password}) async {
     await Future.delayed(const Duration(milliseconds: 300));
@@ -49,6 +53,18 @@ class AuthRepository {
       );
     }
 
+    if (email == _assistantTestEmail && password == _assistantTestPassword) {
+      await _jwtStorage.save(
+        accessToken: _mockAssistantAccessToken,
+        refreshToken: _mockAssistantRefreshToken,
+      );
+      return LoginSuccess(
+        user: User(id: '3', email: email, username: 'TestAssistant', role: 'assistant'),
+        accessToken: _mockAssistantAccessToken,
+        refreshToken: _mockAssistantRefreshToken,
+      );
+    }
+
     return LoginFailure('Invalid email or password');
   }
 
@@ -65,6 +81,19 @@ class AuthRepository {
     if (accessToken == _mockStaffAccessToken && refreshToken == _mockStaffRefreshToken) {
       return LoginSuccess(
         user: User(id: '2', email: _staffTestEmail, username: 'TestStaff', role: 'driver'),
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      );
+    }
+
+    if (accessToken == _mockAssistantAccessToken && refreshToken == _mockAssistantRefreshToken) {
+      return LoginSuccess(
+        user: User(
+          id: '3',
+          email: _assistantTestEmail,
+          username: 'TestAssistant',
+          role: 'assistant',
+        ),
         accessToken: accessToken,
         refreshToken: refreshToken,
       );

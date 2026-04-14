@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/change_request/data/services/change_request_store.dart';
+import 'package:parent_app/features/change_request/presentation/change_request_confirmed_page.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_summary.dart';
 import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
@@ -42,6 +44,15 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
+    final activeRequest = ChangeRequestStore.instance.activeRequest.value;
+    if (activeRequest != null) {
+      return ChangeRequestConfirmedPage(
+        payload: activeRequest,
+        onUndo: () => setState(() => ChangeRequestStore.instance.clear()),
+      );
+    }
+
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final primaryLocation = SavedLocation(
       id: 'home',

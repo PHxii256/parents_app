@@ -20,7 +20,7 @@ void showMessagesDialouge(BuildContext context) {
             children: [
               Text(
                 localizations.selectAMessage,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 12),
               const MessageChoices(),
@@ -41,24 +41,31 @@ class MessageChoices extends StatefulWidget {
 
 class _MessageChoicesState extends State<MessageChoices> {
   String? _selectedChoice;
+  final TextEditingController _customMessageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _customMessageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final choices = [
-      localizations.messageIHaveArrived,
-      localizations.messagePleaseHurryUp,
-      localizations.messagePleaseBeReadyAtPickupPoint,
-      localizations.messageIHaveLeft,
-      localizations.messageOkay,
+      localizations.messagePleaseWaitForUsWeAreComing,
+      localizations.messageWeAreWaitingAtBusStop,
     ];
-    final isSelected = _selectedChoice != null;
+    final hasCustomMessage = _customMessageController.text.trim().isNotEmpty;
+    final isSelected = _selectedChoice != null || hasCustomMessage;
     final sendColor = isSelected ? AppColors.textHighlight : AppColors.onSurfaceDark.withAlpha(100);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(localizations.quickMessagesTitle, style: const TextStyle(fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 4,
           runSpacing: 1,
@@ -86,6 +93,21 @@ class _MessageChoicesState extends State<MessageChoices> {
             );
           }).toList(),
         ),
+        const SizedBox(height: 16),
+        Text(localizations.customMessageLabel, style: const TextStyle(fontWeight: FontWeight.w600)),
+        TextField(
+          controller: _customMessageController,
+          minLines: 1,
+          maxLines: 2,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            hintText: localizations.customMessageHint,
+            enabledBorder: const UnderlineInputBorder(),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppColors.textHighlight, width: 2),
+            ),
+          ),
+        ),
         const SizedBox(height: 12),
         Align(
           alignment: Alignment.bottomRight,
@@ -97,7 +119,19 @@ class _MessageChoicesState extends State<MessageChoices> {
                 style: TextStyle(color: sendColor, fontWeight: FontWeight.w600),
               ),
               IconButton(
-                onPressed: isSelected ? () => Navigator.of(context).pop() : null,
+                onPressed: isSelected
+                    ? () {
+                        final selectedMessage = _customMessageController.text.trim().isNotEmpty
+                            ? _customMessageController.text.trim()
+                            : _selectedChoice!;
+                        if (selectedMessage.isNotEmpty) {
+                          Navigator.of(context).pop();
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text("Message Sent")));
+                        }
+                      }
+                    : null,
                 icon: Icon(Icons.send, color: sendColor),
               ),
             ],

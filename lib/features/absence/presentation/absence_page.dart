@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
@@ -25,8 +24,8 @@ class _AbsencePageState extends State<AbsencePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final students = StudentData.mockStudentData;
-    final locale = Localizations.localeOf(context).languageCode;
 
     return BlocProvider(
       create: (_) => sl<AbsenceCubit>(),
@@ -34,7 +33,10 @@ class _AbsencePageState extends State<AbsencePage> {
         appBar: AppBar(
           foregroundColor: Colors.black,
           elevation: 0,
-          title: const Text("Absence", style: TextStyle(fontWeight: FontWeight.bold)),
+          title: Text(
+            localizations.absenceTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           centerTitle: true,
         ),
         body: BlocConsumer<AbsenceCubit, AbsenceState>(
@@ -47,9 +49,9 @@ class _AbsencePageState extends State<AbsencePage> {
             if (!state.isLoading &&
                 state.selectedChildrenIds.isEmpty &&
                 state.absentChildrenIds.isNotEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Absence successfully marked")),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(localizations.absenceSuccessfullyMarked)));
             }
           },
           builder: (context, state) {
@@ -58,8 +60,8 @@ class _AbsencePageState extends State<AbsencePage> {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                const Text(
-                  "Select Students",
+                Text(
+                  localizations.selectChildrenTitle,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 12),
@@ -67,12 +69,8 @@ class _AbsencePageState extends State<AbsencePage> {
                 // Students list
                 Column(
                   children: students.map((student) {
-                    final isSelected = state.selectedChildrenIds.contains(
-                      student.id,
-                    );
-                    final isAbsent = state.absentChildrenIds.contains(
-                      student.id,
-                    );
+                    final isSelected = state.selectedChildrenIds.contains(student.id);
+                    final isAbsent = state.absentChildrenIds.contains(student.id);
 
                     return ListTile(
                       leading: CircleAvatar(
@@ -84,30 +82,32 @@ class _AbsencePageState extends State<AbsencePage> {
                         student.name,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(isAbsent ? 'Status: Absent' : 'Status: Present'),
+                      subtitle: Text(
+                        isAbsent
+                            ? localizations.absenceStudentStatusAbsent
+                            : localizations.absenceStudentStatusPresent,
+                      ),
                       trailing: isAbsent
                           ? TextButton(
                               onPressed: state.isLoading || selectedAbsenceDate == null
                                   ? null
                                   : () => cubit.undoAbsence(student.id, selectedAbsenceDate!),
-                              child: const Text(
-                                'Undo Absence',
+                              child: Text(
+                                localizations.absenceUndoAction,
                                 style: TextStyle(fontWeight: FontWeight.w600),
                               ),
                             )
                           : isSelected
                           ? const Icon(Icons.check, color: Colors.green)
                           : null,
-                      onTap: isAbsent
-                          ? null
-                          : () => cubit.toggleSelectChild(student.id),
+                      onTap: isAbsent ? null : () => cubit.toggleSelectChild(student.id),
                     );
                   }).toList(),
                 ),
 
                 const SizedBox(height: 20),
-                const Text(
-                  "Absence Date",
+                Text(
+                  localizations.absenceDateTitle,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 const SizedBox(height: 8),
@@ -252,17 +252,15 @@ class _AbsencePageState extends State<AbsencePage> {
                       backgroundColor: Colors.amber,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12,
-                        ), // optional rounded corners
+                        borderRadius: BorderRadius.circular(12), // optional rounded corners
                       ),
                     ),
                     child: state.isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                      "Mark as Absent",
-                      style: TextStyle(fontSize: 18),
-                    ),
+                        : Text(
+                            localizations.markAsAbsentButton,
+                            style: const TextStyle(fontSize: 18),
+                          ),
                   ),
                 ),
               ],

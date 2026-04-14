@@ -389,6 +389,36 @@ abstract class AppLocalizations {
   /// **'I Have Left'**
   String get messageIHaveLeft;
 
+  /// No description provided for @messagePleaseWaitForUsWeAreComing.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait for us, we are coming'**
+  String get messagePleaseWaitForUsWeAreComing;
+
+  /// No description provided for @messageWeAreWaitingAtBusStop.
+  ///
+  /// In en, this message translates to:
+  /// **'We are waiting at the bus stop'**
+  String get messageWeAreWaitingAtBusStop;
+
+  /// No description provided for @quickMessagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick messages'**
+  String get quickMessagesTitle;
+
+  /// No description provided for @customMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom message'**
+  String get customMessageLabel;
+
+  /// No description provided for @customMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a specific message'**
+  String get customMessageHint;
+
   /// No description provided for @messageOkay.
   ///
   /// In en, this message translates to:
@@ -506,7 +536,7 @@ abstract class AppLocalizations {
   /// No description provided for @changePickupDropoff.
   ///
   /// In en, this message translates to:
-  /// **'Change Pickup/Drop-off'**
+  /// **'Change Stop Location'**
   String get changePickupDropoff;
 
   /// No description provided for @tripStatusTitle.
@@ -665,6 +695,30 @@ abstract class AppLocalizations {
   /// **'Mark as absent'**
   String get markAsAbsentButton;
 
+  /// No description provided for @absenceSuccessfullyMarked.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence successfully marked'**
+  String get absenceSuccessfullyMarked;
+
+  /// No description provided for @absenceStudentStatusAbsent.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: Absent'**
+  String get absenceStudentStatusAbsent;
+
+  /// No description provided for @absenceStudentStatusPresent.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: Present'**
+  String get absenceStudentStatusPresent;
+
+  /// No description provided for @absenceUndoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo Absence'**
+  String get absenceUndoAction;
+
   /// No description provided for @shareChildPinCodeTitle.
   ///
   /// In en, this message translates to:
@@ -712,12 +766,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Request'**
   String get requestTitle;
-
-  /// No description provided for @changePickupDropoffFor.
-  ///
-  /// In en, this message translates to:
-  /// **'Change pickup or drop-off for'**
-  String get changePickupDropoffFor;
 
   /// No description provided for @changeRequestDateSubtitle.
   ///

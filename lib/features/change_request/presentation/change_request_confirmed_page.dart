@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
+import 'package:parent_app/features/change_request/data/services/change_request_store.dart';
 import 'package:parent_app/features/change_request/presentation/models/change_request_payload.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ChangeRequestConfirmedPage extends StatelessWidget {
   final ChangeRequestPayload payload;
+  final VoidCallback? onUndo;
 
-  const ChangeRequestConfirmedPage({super.key, required this.payload});
+  const ChangeRequestConfirmedPage({super.key, required this.payload, this.onUndo});
+
+  void _handleUndo(BuildContext context) {
+    ChangeRequestStore.instance.clear();
+    if (onUndo != null) {
+      onUndo!();
+      return;
+    }
+    Navigator.of(context).popUntil((route) => route.isFirst);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,12 +85,7 @@ class ChangeRequestConfirmedPage extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const ChangeRequestPage()),
-                    (route) => false,
-                  );
-                },
+                onPressed: () => _handleUndo(context),
                 child: Text(
                   localizations.undoLastRequest,
                   style: const TextStyle(fontSize: 18, color: Colors.white),
