@@ -24,7 +24,7 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
     final today = DateUtils.dateOnly(DateTime.now());
     final tomorrow = today.add(const Duration(days: 1));
 
-    final todayDay = DateFormat('EEEE,ar', locale).format(today);
+    final todayDay = DateFormat('EEEE', locale).format(today);
     final tomorrowDay = DateFormat('EEEE', locale).format(tomorrow);
     final localizations = AppLocalizations.of(context)!;
 

@@ -129,7 +129,8 @@
   "temporaryPinCopied": "Temporary PIN copied!",
 
   "requestTitle": "Request",
-  "changePickupDropoffFor": "Change pickup or drop-off for",
+   "changePickupDropoff": "Change pickup
+  "changePickupDropoff": "Change pickup or drop-off",
   "changeRequestDateSubtitle": "Tomorrow (Wednesday 16/3)",
   "pickupLabel": "Pickup",
   "dropoffLabel": "Dropoff",
