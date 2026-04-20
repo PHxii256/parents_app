@@ -1,5 +1,4 @@
 import '../data/api_service.dart';
-import '../data/student_data.dart';
 
 class AbsenceRepository {
   final FakeApiService api;

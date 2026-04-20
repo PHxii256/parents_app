@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:parent_app/features/home/data/models/staff_data.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/presentation/components/staff/show_messages_dialouge.dart';
@@ -31,14 +30,18 @@ class _TripPanelState extends State<TripPanel> {
   @override
   Widget build(BuildContext context) {
     final activeTrip = context.select<TripCubit, ActiveTripState?>(
-      (cubit) => cubit.state is ActiveTripState ? cubit.state as ActiveTripState : null,
+      (cubit) => cubit.state is ActiveTripState
+          ? cubit.state as ActiveTripState
+          : null,
     );
 
     if (activeTrip == null) {
       return const SizedBox.shrink();
     }
 
-    final selectedStaff = _showDriverInfo ? activeTrip.driverInfo : activeTrip.assistantInfo;
+    final selectedStaff = _showDriverInfo
+        ? activeTrip.driverInfo
+        : activeTrip.assistantInfo;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -106,7 +109,10 @@ class Eta extends StatelessWidget {
           children: [
             Positioned(
               top: 6,
-              child: Text("$eta", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              child: Text(
+                "$eta",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
             ),
             Positioned(bottom: 2, child: Text(localizations.tripEtaUnitMin)),
           ],
@@ -121,7 +127,12 @@ class CircularActionButton extends StatelessWidget {
   final double? size;
   final VoidCallback? onTap;
 
-  const CircularActionButton({super.key, required this.icon, this.onTap, this.size});
+  const CircularActionButton({
+    super.key,
+    required this.icon,
+    this.onTap,
+    this.size,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +179,10 @@ class LicensePlate extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Center(
-                  child: Text(licensePlateLetters, style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    licensePlateLetters,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),
@@ -185,7 +199,10 @@ class LicensePlate extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 child: Center(
-                  child: Text(licensePlateNumbers, style: TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    licensePlateNumbers,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ),
@@ -211,8 +228,12 @@ class AvatarBubbles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final IconData primaryIcon = showDriverInfo ? Icons.directions_bus_rounded : Icons.person;
-    final IconData secondaryIcon = showDriverInfo ? Icons.person : Icons.directions_bus_rounded;
+    final IconData primaryIcon = showDriverInfo
+        ? Icons.directions_bus_rounded
+        : Icons.person;
+    final IconData secondaryIcon = showDriverInfo
+        ? Icons.person
+        : Icons.directions_bus_rounded;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
 
     return GestureDetector(
@@ -229,7 +250,10 @@ class AvatarBubbles extends StatelessWidget {
               child: CircleAvatar(
                 radius: 21,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                child: Icon(secondaryIcon, color: AppColors.highlightText.withAlpha(90)),
+                child: Icon(
+                  secondaryIcon,
+                  color: AppColors.highlightText.withAlpha(90),
+                ),
               ),
             ),
           ),
@@ -241,7 +265,12 @@ class AvatarBubbles extends StatelessWidget {
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               child: Stack(
                 clipBehavior: Clip.none,
-                children: [Icon(primaryIcon, color: AppColors.highlightText.withAlpha(60))],
+                children: [
+                  Icon(
+                    primaryIcon,
+                    color: AppColors.highlightText.withAlpha(60),
+                  ),
+                ],
               ),
             ),
           ),
@@ -254,9 +283,14 @@ class AvatarBubbles extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(displayedName, style: TextStyle(fontWeight: FontWeight.bold)),
                 Text(
-                  showDriverInfo ? localizations.driverRoleLabel : localizations.assistantRoleLabel,
+                  displayedName,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  showDriverInfo
+                      ? localizations.driverRoleLabel
+                      : localizations.assistantRoleLabel,
                   style: TextStyle(fontStyle: FontStyle.italic),
                 ),
               ],
@@ -274,7 +308,11 @@ class AvatarBubbles extends StatelessWidget {
           Positioned(
             bottom: -8,
             left: 13,
-            child: Icon(Icons.swap_horiz_sharp, size: 30, color: AppColors.onSurfaceDark),
+            child: Icon(
+              Icons.swap_horiz_sharp,
+              size: 30,
+              color: AppColors.onSurfaceDark,
+            ),
           ),
         ],
       ),

@@ -24,7 +24,6 @@
 //     );
 //   }
 // }
-import 'package:parent_app/features/absence/data/student_data.dart';
 
 class FakeApiService {
   Future<void> markAbsent(List<int> ids, DateTime date) async {

@@ -1,0 +1,373 @@
+SafeRoute — backend endpoint reference
+================================================
+Base URL placeholder: {{base_url}}
+Version prefix (from Postman): /api/v1
+
+Unless noted, JSON responses follow:
+{
+  "success": bool,
+  "message": string,
+  "data": object | null,
+  "errors": object   // optional, field -> list of messages
+}
+
+
+================================================================================
+A. AUTH — from SafeRoute_auth.postman_collection.json
+================================================================================
+Status summary (request + method match the intended endpoint in Postman):
+
+  Endpoint                         Driver          Guardian        Notes
+  -------------------------------  --------------  --------------  ---------------------------------
+  A1  POST .../auth/login           DONE            DONE            —
+  A2  POST .../auth/verify          DONE            DONE            —
+  A3  POST .../set-initial-password DONE            DONE            —
+  A4  POST .../resend-otp           DONE            DONE            —
+  A5  POST .../change-password      DONE            NEEDS WORK      Guardian folder "Reset Password" request is wrong (GET + URL = resend-otp). Fix Postman to POST .../guardian/auth/change-password + Bearer + body like driver.
+  —   Logout / token refresh        NOT IN FILE     NOT IN FILE     Add to collection when backend exposes them.
+
+=====================================================================================================
+[IMPORTANT] Assistant: NOT IN FILE — no /assistant/auth/... requests in this collection (NEEDS WORK).
+=====================================================================================================
+
+Use role-specific paths: /driver/auth/... or /guardian/auth/... or /assistant/auth/...  [missing]
+
+Common token fields on success: data.access, data.refresh (JWT strings).
+First-time / OTP-needed login returns OTP flow instead of tokens (see below).
+
+--------------------------------------------------------------------------------
+A1. POST  /api/v1/{driver|guardian}/auth/login
+--------------------------------------------------------------------------------
+Status: DONE (Postman — driver + guardian)
+
+Description: Login. Either sends OTP (first-time / forced flow) or returns tokens.
+
+Req body:
+{
+  "email": string,
+  "password": string
+}
+
+Expected 200 data (first-time / OTP path):
+{
+  "detail": "OTP has been sent to your email.",
+  "remaining_time": int   // seconds, e.g. 300
+}
+
+Expected 200 data (normal login):
+{
+  "detail": "Login successful.",
+  "refresh": string,
+  "access": string
+}
+
+--------------------------------------------------------------------------------
+A2. POST  /api/v1/{driver|guardian}/auth/verify
+--------------------------------------------------------------------------------
+Status: DONE (Postman — driver + guardian)
+
+Description: Verify email OTP (e.g. after first login).
+
+Req body:
+{
+  "email": string,
+  "otp": string
+}
+
+Expected 200 data:
+{
+  "detail": "OTP verified. Please set your password.",
+  "requires_password_reset": bool,
+  "reset_token": string,
+  "email": string
+}
+
+--------------------------------------------------------------------------------
+A3. POST  /api/v1/{driver|guardian}/auth/set-initial-password
+--------------------------------------------------------------------------------
+Status: DONE (Postman — driver + guardian)
+
+Description: Set password after OTP (uses reset_token from verify).
+
+Req body:
+{
+  "email": string,
+  "reset_token": string,
+  "new_password": string,
+  "confirm_password": string
+}
+
+Expected 200 data:
+{
+  "detail": "Password set successfully. Login successful.",
+  "refresh": string,
+  "access": string
+}
+
+--------------------------------------------------------------------------------
+A4. POST  /api/v1/{driver|guardian}/auth/resend-otp
+--------------------------------------------------------------------------------
+Status: DONE (Postman — driver + guardian)
+
+Description: Resend OTP; uses same credentials as login attempt.
+
+Req body:
+{
+  "email": string,
+  "password": string
+}
+
+--------------------------------------------------------------------------------
+A5. POST  /api/v1/{driver|guardian}/auth/change-password
+--------------------------------------------------------------------------------
+Status: Driver DONE (Postman). Guardian NEEDS WORK — collection has no valid request (folder "Reset Password" uses GET {{base_url}}/api/v1/guardian/auth/resend-otp; example responses still point at driver change-password).
+
+Description: Change password while logged in.
+Auth: Bearer {access}
+
+Req body:
+{
+  "old_password": string,
+  "new_password": string,
+  "confirm_password": string
+}
+
+Expected: same error/success envelope as driver examples once Guardian request is fixed in Postman.
+
+
+================================================================================
+B. BUS / TRIP / ROUTE — proposed (full paths TBD)
+================================================================================
+These are not in the Postman file. Names are suggestions for the backend spec.
+
+--------------------------------------------------------------------------------
+B1. GET   .../trips/current   (or /trip/current)
+--------------------------------------------------------------------------------
+Description: Current trip snapshot for parent (and optionally driver poll). Parent app today expects a JSON body shape compatible with TripRepository parsing.
+
+TripDetails {
+  bool tripActive
+  string licencePlateLetters;
+  string licencePlateNumbers;
+  string driverName;
+  string assistantName;
+  string assistantPhoneNum;
+  TripUpdate tripUpdate;
+}
+
+TripUpdate {
+  int eta;
+  List<double> busCoords;  // [lat, lng]
+}
+
+--------------------------------------------------------------------------------
+B2. POST  .../trips/start
+--------------------------------------------------------------------------------
+Description: Driver starts trip (auth identifies driver/route).
+
+--------------------------------------------------------------------------------
+B3. POST  .../trips/location
+--------------------------------------------------------------------------------
+Description: Driver pushes GPS while trip active.
+
+Req body:
+TripStatusUpdate {
+  List<double> currentCoords;  // [lat, lng]
+}
+
+--------------------------------------------------------------------------------
+B4. GET   .../trips/active
+--------------------------------------------------------------------------------
+Description: Whether a trip is active for this driver (in case app restart for example).
+
+Res body:
+{ "tripActive": bool }
+
+--------------------------------------------------------------------------------
+B5. POST  .../trips/end
+--------------------------------------------------------------------------------
+Description: Driver ends trip (manual).
+
+--------------------------------------------------------------------------------
+B6. GET   .../routes/students?direction=am|pm
+--------------------------------------------------------------------------------
+Description: Assigned students for today’s route (driver + assistant views).
+
+Res body:
+{ "students": List<StudentData> }
+
+StudentData {
+  string id;
+  string name;
+  string grade;
+  List<GuardianContact> contacts;
+  int primaryPin;
+  int tempPin;
+  StudentLocation activePickup;
+  StudentLocation activeDropoff;
+}
+
+GuardianContact {
+  string title;
+  string phoneNum;
+}
+
+StudentLocation {
+  string id;
+  string description;
+  string gMapsUrl;
+  List<double> coords;
+  string type;   // pickup | dropoff
+  bool active;
+}
+
+StudentStatus {
+  string statusDesc;
+  bool boardedBus;
+  bool droppedOff;
+}
+
+--------------------------------------------------------------------------------
+B7. GET   .../school/location
+--------------------------------------------------------------------------------
+Description: School destination for navigation after last pickup.
+
+SchoolData {
+  string name;
+  string gMapsUrl;
+}
+
+--------------------------------------------------------------------------------
+B8. POST  .../students/{studentId}/boarded
+B9. POST  .../students/{studentId}/dropped-off
+
+note: this would forward notifications to parents using FCM and should emit a socket event to driver so that a check mark appears on the students, 
+the assistant confirmed their pickup or drop-off.
+--------------------------------------------------------------------------------
+Description: Assistant marks events (body minimal if id in path).
+
+--------------------------------------------------------------------------------
+B10. WebSocket  .../ws/student-bus-status  (or namespace event)
+--------------------------------------------------------------------------------
+Description: Push droped-off or picked-up events to driver for the subscribed route.
+
+StudentBusStatus {
+  string studentId;
+  string direction; (AM|PM)
+  bool studentHandeled;
+}
+
+--------------------------------------------------------------------------------
+B11. WebSocket  .../ws/assistant-messages  (or namespace event)
+--------------------------------------------------------------------------------
+Description: Push GuardianMessageData to assistants for subscribed route.
+
+GuardianMessageData {
+  string timestamp;
+  string content;
+  string GuardianTitle;
+  string studentId;
+}
+
+--------------------------------------------------------------------------------
+B12. Realtime bus position (choose one or combine)
+--------------------------------------------------------------------------------
+Option 1 — Socket event e.g. trip:location with payload { "busCoords": [lat,lng], "eta": int }
+Option 2 — Parent polls GET .../trips/current every 30–60s and reads busCoords from TripDetails/TripUpdate
+
+================================================================================
+C. GUARDIAN — pins, locations, messages (proposed; paths TBD)
+================================================================================
+
+C1. GET   .../guardian/pins
+Res: PinData { int masterPin; int tempPin; }
+
+C2. GET   .../guardian/locations
+Res: List<StudentLocation>
+
+C3. POST  .../guardian/locations
+Req: StudentLocation (new)
+
+C4. POST  .../guardian/messages
+Req: { "content": string, "studentId": string } 
+
+
+================================================================================
+D. LOCATION CHANGE REQUESTS (guardian) — proposed contract
+================================================================================
+Goal: One guardian account, many students. Before starting a new change, client checks
+server for an existing request that blocks submission (pending review OR accepted but
+not yet fulfilled for the requested date). Backend may take time → show pending UI.
+
+LocationChangeStatus enum (string):
+  pending_review | accepted | rejected | fulfilled | cancelled
+
+--------------------------------------------------------------------------------
+D1. GET   .../guardian/location-change-requests/active
+--------------------------------------------------------------------------------
+Description: Returns the single blocking request for this guardian, if any (null if none).
+
+Query (optional): ?asOfDate=YYYY-MM-DD
+
+Res body:
+{
+  "request": LocationChangeRequest | null
+}
+
+LocationChangeRequest {
+  string id;
+  string guardianId;
+  List<string> studentIds;      // all students assigned to guardian
+  string targetDate;            // ISO date the change applies to
+  string changeType;            // pickup | dropoff | both
+  string newLocationId;         // locationId referencing from saved locations
+  LocationChangeStatus status;
+  string createdAt;
+  string effectiveUntil;        // backend-defined: when lock clears
+}
+
+Blocking rule (product): while status is pending_review OR (accepted and not fulfilled for targetDate),
+guardian cannot POST a new request for the same scope/date rules — until fulfilled or cancelled/undo.
+
+--------------------------------------------------------------------------------
+D2. POST  .../guardian/location-change-requests
+--------------------------------------------------------------------------------
+Description: Submit a new request (async processing).
+
+Req body:
+{
+  "guardianId": string,
+  "studentIds": List<string>,   // empty or omit if appliesToAllStudents
+  "appliesToAllStudents": bool,
+  "targetDate": string,         // ISO date
+  "changeType": string,         // pickup | dropoff
+  "newLocation": StudentLocation
+}
+
+Res 202 or 200:
+{
+  "requestId": string,
+  "status": "pending_review"
+}
+
+--------------------------------------------------------------------------------
+D3. DELETE .../guardian/location-change-requests/{requestId}
+   or POST .../cancel
+--------------------------------------------------------------------------------
+Description: Guardian cancels a pending or accepted-but-not-applied request (if it's before a deadline say 3-am of the request day).
+
+--------------------------------------------------------------------------------
+D4. GET   .../guardian/location-change-requests/{requestId}
+--------------------------------------------------------------------------------
+Description: Poll status while showing pending page.
+
+================================================================================
+E. OTHER — proposed
+================================================================================
+E1. POST .../devices/fcm-token  — register FCM token (auth)
+E2. POST .../absence  /  DELETE .../absence  — mark / undo absence (student ids + date)
+E3. GET  .../guardian/profile  — account + children list
+
+================================================================================
+END
+================================================================================

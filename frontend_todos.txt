@@ -1,0 +1,248 @@
+SafeRoute — frontend work items (by feature and layer)
+=======================================================
+Legend: P = presentation, C = cubit/domain logic, D = data (provider, repository, secure storage).
+"Done" / "Partial" / "Missing" reflects status_report_2.md + current codebase.
+
+Backend cross-reference: latest backend_endpoints.txt
+  — A  Auth (Postman-backed + status rows)
+  — B  Bus / trip / route / students / school / realtime (proposed paths TBD)
+  — C  Guardian pins, locations, messages (proposed)
+  — D  Location change requests (proposed)
+  — E  FCM token, absence, profile (proposed)
+
+
+================================================================================
+1. Authentication & session
+================================================================================
+P  Partial — Login/OTP/reset flows exist; must branch on real API outcomes (OTP vs tokens).
+C  Done    — AuthCubit orchestrates flows.
+D  Partial — AuthDataProvider uses guessed paths (/login, /logout, /otp, /reset-password) on
+             http://localhost:5000 without /api/v1/{role}/auth/... ; AuthRepository password
+             login is MOCK for test emails.
+
+Align with **backend_endpoints.txt §A** (same names as Postman):
+  A1–A4 — driver + guardian **DONE** in Postman; implement both role base paths.
+  A5    — **change-password**: driver **DONE** in Postman; guardian request in collection is
+          **NEEDS WORK** (wrong method/URL until Postman fixed) — app can reuse driver URL shape
+          for guardian once URL is `/api/v1/guardian/auth/change-password`.
+  Logout / refresh — **NOT IN FILE** in Postman; keep mock or stub until backend + collection updated.
+  Assistant login — **NOT IN FILE** (no `/assistant/auth/...`); decide: separate APK/flavor or add collection.
+
+See section "AUTH: mobile app vs Postman (integration)" at bottom — required changes.
+
+Questions for dev (essentials):
+  Q1. After real login, where does User.role come from?
+      (a) JWT claims only  (b) separate GET /me  (c) embedded in login data object
+  Q2. Token storage: keep access+refresh in JwtStorage; add token refresh interceptor before
+      401 on all role-scoped APIs?  (a) yes interceptor  (b) manual per call
+
+Answers: A, A
+
+================================================================================
+2. Role-based access & navigation
+================================================================================
+P  Partial — HomeNav.forRole(parent|driver|assistant) switches tabs; string role must match
+             backend (e.g. guardian vs parent naming).
+C  Missing — Central guard: if API returns 403 or role mismatch, force logout or error screen.
+D  Missing — None (role from login/JWT).
+
+Todos:
+  P — Align role strings with backend (e.g. map API "guardian" -> parent nav).
+  C — Optional RoleGuard cubit or middleware: validate role before pushing staff-only routes.
+  D — Decode role from JWT if backend does not return User in body.
+
+Questions:
+  Q3. Canonical role slugs from API?  (a) guardian, driver, assistant  (b) other — list them
+Answer: A
+
+================================================================================
+3. Parent home — map, trip strip, ETA, BUS MARKER
+================================================================================
+P  Partial — MapView shows OSM + device location; no moving bus marker.
+C  Partial — TripCubit: example state + cycleState dev; syncTripState not on init/timer.
+D  Partial — TripDataProvider uses GET `/trip/current`; target **backend_endpoints.txt §B1**
+      (`.../trips/current` or agreed alias). Map `data` envelope if API wraps responses.
+
+Todos:
+  P — Pass busCoords from TripState into MapView; add MarkerLayer for bus (distinct icon from
+      device blue dot); follow bus toggle button.
+  C — On load: syncTripState(); while ActiveTripState: poll every 30–60s OR subscribe to socket;
+      merge socket/poll into same state.
+  D — Parse **B1** `TripDetails` + nested `TripUpdate` (`tripActive`, `eta`, `busCoords`, plate,
+      staff names/phones). See **§B12** (poll vs socket for bus position).
+
+Questions:
+  Q4. Bus updates  (a) poll GET only  (b) WebSocket only when trip active  (c) both
+  Q5. Map library already flutter_map — bus marker updates = setState/cubit emit on each tick.
+
+Answer: (?)
+
+================================================================================
+4. Driver home — trip lifecycle & GPS upload
+================================================================================
+P  Partial — StaffHomeBody + StaffQuickActions; End trip not wired. school should have a card similar to students in student viwer so the driver can easily navigate to school after last student pickup or dropoff.
+C  Missing — Trip session cubit (start / streaming location / end).
+D  Missing — **B2** POST .../trips/start, **B3** POST .../trips/location, **B4** GET .../trips/active,
+             **B5** POST .../trips/end (prefix/proposed in backend_endpoints.txt §B). **B7** GET
+             .../school/location for school card / Maps deep link.
+
+Questions:
+  Q6. GPS send throttle  (a) 5s fixed  (b) distance-based  (c) both
+
+Answer: C
+
+================================================================================
+5. Assistant — students list & status
+================================================================================
+P  Partial — StudentsPage + StudentViewer use StudentData.mockStudentData. school location should be at the start and the end of the list insead of just start.
+C  Missing — StudentsCubit (load by direction am/pm, refresh).
+D  Missing — **B6** GET .../routes/students?direction=am|pm; map JSON to StudentData / related models
+              in §B6. **B7** school at start+end of list — use **GET .../school/location** (§B7).
+
+Questions:
+  Q7. Direction picker default  (a) time-of-day  (b) user toggles am/pm
+
+Answer: A
+
+================================================================================
+6. Assistant — boarded / dropped off
+================================================================================
+P  Partial — Static StudentStatus text.
+C  Missing — Actions call repository.
+D  Missing — **B8** POST .../students/{studentId}/boarded, **B9** POST .../students/{studentId}/dropped-off
+             (paths per §B8–B9). **B10** WebSocket `.../ws/student-bus-status` (or equivalent) so
+             driver UI can show checkmarks when assistant confirms — subscribe on driver session.
+
+================================================================================
+7. Messaging (guardian -> assistant)
+================================================================================
+P  Partial — Dialogues / CommunicationBar UI.
+C  Missing — MessageCubit; subscribe socket stream on assistant.
+D  Missing — **C4** POST .../guardian/messages; **B11** WebSocket .../ws/assistant-messages (or
+             equivalent) for assistant inbox — see §C4 + §B11.
+
+Questions:
+  Q8. Socket URL & auth  (a) query token  (b) first HTTP upgrade with Bearer
+
+
+================================================================================
+8. Absence
+================================================================================
+P  Done
+C  Done
+D  Mock — Replace FakeApiService with **E2** POST/DELETE absence (student ids + date) per
+          backend_endpoints.txt §E2; wire GetIt to new provider.
+
+
+================================================================================
+9. Saved locations
+================================================================================
+P  Done
+C  Missing — Optional LocationsCubit to sync server + local cache.
+D  Missing — **C2** GET .../guardian/locations, **C3** POST .../guardian/locations; merge with
+             SavedLocationsStore.
+
+
+================================================================================
+10. Change pickup / dropoff — pending request gate + pending page
+================================================================================
+Product rules (from spec):
+  — On open change-request flow: GET active/pending location-change request first.
+  — If status is pending_review OR accepted (and not yet fulfilled for that target date), block
+    new submission until the request is fulfilled OR user cancels/undos (per backend rules).
+  — Submit: target date, new location, guardian id, student ids OR all students under guardian.
+  — Processing may be slow → show dedicated pending request page until terminal state.
+
+P  Partial — Change request wizard exists; add: entry gate screen, pending/blocked state UI,
+            cancel/undo actions, loading pending page.
+C  Missing — ChangeLocationCubit (or split): loadActiveRequest(), submitRequest(), cancelRequest();
+            state machine: idle | blocked | submitting | pendingReview | error.
+D  Missing — **§D**: **D1** GET .../location-change-requests/active; **D2** POST create; **D3**
+             DELETE or cancel; **D4** GET by id for polling. Models: `LocationChangeRequest` uses
+             `newLocationId` + `changeType` (pickup | dropoff | both) + `effectiveUntil` in latest spec;
+             POST body in §D2 still carries `newLocation` (StudentLocation) — confirm with backend which
+             field wins (id vs full object). Replace mock submit in ChangeLocationCubit.
+
+Questions:
+  Q9. "Accepted but not fulfilled" — does backend expose fulfilledAt / appliedToRoute flag?
+      (a) yes in LocationChangeRequest  (b) infer from status only
+  Q10. Cancel allowed for  (a) pending_review only  (b) also accepted before route day 
+
+Answers: B, B (Both)
+
+================================================================================
+11. Pin codes
+================================================================================
+P  Done (static examples)
+C  Missing
+D  Missing — **C1** GET .../guardian/pins (`PinData`); bind PinCodePage to repository.
+
+
+================================================================================
+12. Profile
+================================================================================
+P  Partial — Hardcoded fields.
+C  Missing — ProfileCubit.
+D  Missing — **E3** GET .../guardian/profile (account + children).
+
+
+================================================================================
+13. Settings
+================================================================================
+P  Done
+C  Done — locale only
+D  Local only
+
+
+================================================================================
+14. Notifications
+================================================================================
+P  Done
+C  Done — local history + FCM stream
+D  Partial — **E1** POST .../devices/fcm-token (register token); optional server inbox GET not in §E
+             (only listed items — add when backend defines).
+
+
+================================================================================
+AUTH: mobile app vs Postman (integration suggestions)
+================================================================================
+Source of truth for implemented auth contracts: backend_endpoints.txt §A
+(lines up with SafeRoute_auth.postman_collection.json; §A status table marks guardian A5 NEEDS WORK).
+
+Current mobile (AuthDataProvider):
+  — baseUrl: http://localhost:5000  (no /api/v1)
+  — POST /login  →  should be POST /api/v1/{driver|guardian}/auth/login (pick path by app build
+     or login screen selector if one binary serves all roles)
+  — POST /login with { accessToken, refreshToken }  →  NOT in Postman; confirm refresh endpoint
+     with backend or use silent refresh pattern they provide.
+  — POST /logout with body tokens  →  Postman does not show logout; confirm path + method.
+  — GET /otp with body  →  Postman uses POST login for OTP trigger and POST verify; align app
+     OTP screens with: login → OTP sent OR verify → set-initial-password.
+  — POST /reset-password with otp  →  Backend uses verify + set-initial-password + change-password;
+     map "forgot password" UX to the real flow.
+
+What to change (high level):
+  D — Introduce baseUrl including /api/v1; add AuthRole or flavor enum to build full path:
+        /api/v1/driver/auth/login  vs  /api/v1/guardian/auth/login
+  D — Parse envelope { success, message, data } and map data.access / data.refresh to JwtStorage
+      (not accessToken/refreshToken at top level unless API changes).
+  D — Handle dual login response: if data has remaining_time → navigate to OTP; if access+refresh
+      → save tokens and fetch user (or decode JWT for user_id + role).
+  C — AuthCubit: states for OtpRequired, SetInitialPassword(reset_token), Authenticated.
+  P — Wire screens: first-time user vs returning user (match Postman examples).
+
+Keep MOCK logins:
+  — Leave AuthRepository mock branches (e.g. e@test.com) returning fake JWTs + User.
+  — Flow: try real API first OR use flag useMockAuth=true; on network/5xx fallback optional
+    (product decision).
+
+Highlight — files to touch:
+  — lib/features/auth/data/provider/auth_data_provider.dart  (paths, envelope, role prefix)
+  — lib/features/auth/data/repositories/auth_repository.dart  (parse access/refresh, OTP flow)
+  — lib/features/auth/cubit/auth_cubit.dart + auth_state.dart  (new states)
+  — lib/core/models/user_data.dart  (may need fields from API /me)
+
+
+================================================================================
+END
+================================================================================
