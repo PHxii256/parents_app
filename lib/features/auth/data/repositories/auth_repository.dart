@@ -40,11 +40,21 @@ class AuthRepository {
   static const _mockAssistantAccessToken = 'mock_assistant_access_token';
   static const _mockAssistantRefreshToken = 'mock_assistant_refresh_token';
 
+  /// Segment for `POST /api/v1/{role}/auth/...`. Mock test emails map to staff roles;
+  /// other addresses default to `guardian` until the server returns tokens (JWT carries role).
+  static String authPathRoleForEmail(String email) {
+    final e = email.trim().toLowerCase();
+    if (e == _parentTestEmail) return 'guardian';
+    if (e == _staffTestEmail) return 'driver';
+    if (e == _assistantTestEmail) return 'assistant';
+    return 'guardian';
+  }
+
   Future<LoginResult> passwordLogin({
     required String email,
     required String password,
-    String role = 'guardian',
   }) async {
+    final pathRole = authPathRoleForEmail(email);
     await Future.delayed(const Duration(milliseconds: 300));
     if (email == _parentTestEmail && password == _parentTestPassword) {
       await _authRoleStore.saveRole('guardian');
@@ -90,23 +100,23 @@ class AuthRepository {
     }
 
     try {
-      final response = await authData.passwordLogin(role: role, email: email, password: password);
+      final response = await authData.passwordLogin(role: pathRole, email: email, password: password);
       final data = _extractResponseData(response);
       final accessToken = data['access'] as String?;
       final refreshToken = data['refresh'] as String?;
       if (accessToken != null && refreshToken != null) {
         await _jwtStorage.save(accessToken: accessToken, refreshToken: refreshToken);
-        final user = _userFromAccessToken(accessToken, fallbackRole: role, fallbackEmail: email);
+        final user = _userFromAccessToken(accessToken, fallbackRole: pathRole, fallbackEmail: email);
         await _authRoleStore.saveRole(user.role);
         return LoginSuccess(user: user, accessToken: accessToken, refreshToken: refreshToken);
       }
 
       final remainingSeconds = (data['remaining_time'] as num?)?.toInt();
       if (remainingSeconds != null) {
-        await _authRoleStore.saveRole(ApiConfig.roleAuthPathSegment(role));
+        await _authRoleStore.saveRole(pathRole);
         return LoginOtpRequired(
           email: email,
-          role: ApiConfig.roleAuthPathSegment(role),
+          role: pathRole,
           remainingSeconds: remainingSeconds,
           password: password,
         );

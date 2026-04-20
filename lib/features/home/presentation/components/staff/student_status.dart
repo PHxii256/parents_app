@@ -13,11 +13,13 @@ class StudentStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final canEdit = studentId != null && statusOverride == null;
 
     return BlocBuilder<StudentsCubit, StudentsState>(
       builder: (context, state) {
-        final status = statusOverride ?? state.statuses[studentId] ?? localizations.comingToday;
+        final status =
+            statusOverride ??
+            state.statuses[studentId] ??
+            localizations.comingToday;
 
         return SizedBox(
           height: 28,
@@ -27,19 +29,14 @@ class StudentStatus extends StatelessWidget {
               IconBox(icon: Icons.info_outline, height: 40, width: 48),
               Text(
                 '${localizations.status}:',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-              Expanded(child: Text('($status)', style: const TextStyle(fontSize: 14))),
-              if (canEdit)
-                InkWell(
-                  onTap: () => context.read<StudentsCubit>().markBoarded(studentId!),
-                  child: const Icon(Icons.login, size: 16),
-                ),
-              if (canEdit)
-                InkWell(
-                  onTap: () => context.read<StudentsCubit>().markDroppedOff(studentId!),
-                  child: const Icon(Icons.logout, size: 16),
-                ),
+              Expanded(
+                child: Text('($status)', style: const TextStyle(fontSize: 14)),
+              ),
             ],
           ),
         );

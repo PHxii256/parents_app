@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
@@ -7,12 +9,17 @@ import 'package:parent_app/features/home/presentation/components/staff/staff_qui
 import 'package:parent_app/features/home/presentation/components/staff/student_info_tile.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_progress.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_status.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class StudentViewer extends StatefulWidget {
   final ValueChanged<LatLng> onLocateStudent;
   final bool isDriver;
 
-  const StudentViewer({super.key, required this.onLocateStudent, this.isDriver = false});
+  const StudentViewer({
+    super.key,
+    required this.onLocateStudent,
+    this.isDriver = false,
+  });
 
   @override
   State<StudentViewer> createState() => _StudentViewerState();
@@ -59,9 +66,17 @@ class _StudentViewerState extends State<StudentViewer> {
   @override
   Widget build(BuildContext context) {
     if (_items.isEmpty) {
-      return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator()));
+      return const SizedBox(
+        height: 160,
+        child: Center(child: CircularProgressIndicator()),
+      );
     }
+
+    final localizations = AppLocalizations.of(context)!;
     final maxIndex = _items.length - 1;
+    int _getCurrentIndex(int i) {
+      return min(i - 1, maxIndex - 2);
+    }
 
     VoidCallback? goNext(int maxIndex) {
       if (_currentIndex < maxIndex) {
@@ -90,8 +105,8 @@ class _StudentViewerState extends State<StudentViewer> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         StudentProgress(
-          currentIndex: _currentIndex,
-          totalStudents: _items.length,
+          currentIndex: _getCurrentIndex(_currentIndex),
+          totalStudents: _items.length - 2,
           onPrevious: goBack(),
           onNext: goNext(maxIndex),
         ),
@@ -107,21 +122,25 @@ class _StudentViewerState extends State<StudentViewer> {
             itemBuilder: (context, index) {
               final item = _items[index];
               if (item.isSchool) {
+                final isCampusSchool = index == 0;
+                final schoolPlaceLabel =
+                    isCampusSchool ? localizations.schoolCampusLabel : localizations.schoolStopLabel;
                 return Column(
                   children: [
                     StudentInfoTile(
+                      iconOverride: Icons.school,
                       studentData: StudentData(
                         id: -1,
                         name: item.name,
                         grade: '',
                         pinCodes: const [],
-                        address: item.address,
+                        address: schoolPlaceLabel,
                         gMapsLink: item.gMapsUrl,
                         coords: const [],
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const StudentStatus(statusOverride: 'School stop'),
+                    StudentStatus(statusOverride: schoolPlaceLabel),
                   ],
                 );
               }

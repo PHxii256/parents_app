@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer' show log;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_dragmarker/flutter_map_dragmarker.dart';
@@ -33,12 +36,14 @@ enum _MapViewError {
   locationServicesDisabled,
   locationPermissionDenied,
   locationPermissionRequired,
-  unknown,
 }
+
+enum _LocationFetchSource { initial, backgroundRetry, userTap }
 
 class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   static const LatLng _fallbackCenter = LatLng(30.0444, 31.2357);
   static const Duration _locationLookupTimeout = Duration(seconds: 5);
+  static const int _maxBackgroundRetries = 5;
   final MapController _mapController = MapController();
   LatLng? _deviceLocation;
   LatLng? _focusedLocation;
@@ -47,16 +52,20 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   bool _isMapReady = false;
   bool _loading = true;
   _MapViewError? _errorKey;
-  String? _errorDetails;
+  Timer? _backgroundRetryTimer;
+  int _backgroundRetryCount = 0;
+  bool _isFetchingLocation = false;
+  int _locationRequestGeneration = 0;
 
   @override
   void initState() {
     super.initState();
-    _initLocation();
+    _fetchDeviceLocation(_LocationFetchSource.initial);
   }
 
   @override
   void dispose() {
+    _backgroundRetryTimer?.cancel();
     _focusAnimationController?.dispose();
     _mapController.dispose();
     super.dispose();
@@ -141,22 +150,106 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     _animateFocusTo(target);
   }
 
-  void _completeWithoutDeviceLocation(_MapViewError fallbackError, {String? details}) {
+  void _completeWithoutDeviceLocation(_MapViewError fallbackError) {
     if (!mounted) return;
     setState(() {
       _errorKey = widget.initLocation == null ? fallbackError : null;
-      _errorDetails = details;
     });
   }
 
-  Future<void> _initLocation() async {
+  void _showLocationDegradedSnackBar(String message) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(content: Text(message)),
+      );
+    });
+  }
+
+  void _showLocatingSnackBar(String message) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(message),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    });
+  }
+
+  bool _looksLikeTimeout(Object error) {
+    if (error is TimeoutException) return true;
+    final text = error.toString();
+    return text.contains('Future not completed') || text.contains('TimeoutException');
+  }
+
+  void _cancelBackgroundRetry() {
+    _backgroundRetryTimer?.cancel();
+    _backgroundRetryTimer = null;
+  }
+
+  void _scheduleBackgroundRetry() {
+    if (_backgroundRetryCount >= _maxBackgroundRetries) {
+      log(
+        'MapView: background location retries exhausted ($_maxBackgroundRetries)',
+        name: 'MapView',
+      );
+      return;
+    }
+    _cancelBackgroundRetry();
+    final delaySeconds = 8 + (_backgroundRetryCount * 6);
+    _backgroundRetryTimer = Timer(Duration(seconds: delaySeconds), () {
+      if (!mounted) return;
+      _fetchDeviceLocation(_LocationFetchSource.backgroundRetry);
+    });
+    log(
+      'MapView: scheduled background location retry #${_backgroundRetryCount + 1} in ${delaySeconds}s',
+      name: 'MapView',
+    );
+  }
+
+  Future<void> _retryLocationFromUser() {
+    if (_isFetchingLocation) {
+      final loc = AppLocalizations.of(context);
+      if (loc != null) {
+        _showLocatingSnackBar(loc.mapLocationAlreadyLocating);
+      }
+      return Future.value();
+    }
+    return _fetchDeviceLocation(_LocationFetchSource.userTap);
+  }
+
+  Future<void> _fetchDeviceLocation(_LocationFetchSource source) async {
     if (mounted && _loading) {
       setState(() => _loading = false);
+    }
+
+    if (_isFetchingLocation && source == _LocationFetchSource.backgroundRetry) {
+      return;
+    }
+
+    if (source == _LocationFetchSource.userTap) {
+      _cancelBackgroundRetry();
+    }
+
+    final requestGen = ++_locationRequestGeneration;
+
+    setState(() => _isFetchingLocation = true);
+
+    if (source == _LocationFetchSource.userTap) {
+      final loc = AppLocalizations.of(context);
+      if (loc != null) {
+        _showLocatingSnackBar(loc.mapLocatingInProgress);
+      }
     }
 
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
+        _cancelBackgroundRetry();
+        if (!mounted || requestGen != _locationRequestGeneration) return;
+        setState(() => _isFetchingLocation = false);
         _completeWithoutDeviceLocation(_MapViewError.locationServicesDisabled);
         return;
       }
@@ -164,11 +257,17 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
+          _cancelBackgroundRetry();
+          if (!mounted || requestGen != _locationRequestGeneration) return;
+          setState(() => _isFetchingLocation = false);
           _completeWithoutDeviceLocation(_MapViewError.locationPermissionDenied);
           return;
         }
       }
       if (permission == LocationPermission.deniedForever) {
+        _cancelBackgroundRetry();
+        if (!mounted || requestGen != _locationRequestGeneration) return;
+        setState(() => _isFetchingLocation = false);
         _completeWithoutDeviceLocation(_MapViewError.locationPermissionRequired);
         return;
       }
@@ -179,14 +278,63 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
           timeLimit: _locationLookupTimeout,
         ),
       );
-      if (!mounted) return;
+      if (!mounted || requestGen != _locationRequestGeneration) return;
+      _cancelBackgroundRetry();
+      _backgroundRetryCount = 0;
       setState(() {
         _deviceLocation = LatLng(pos.latitude, pos.longitude);
         _errorKey = null;
-        _errorDetails = null;
+        _isFetchingLocation = false;
       });
-    } catch (e) {
-      _completeWithoutDeviceLocation(_MapViewError.unknown, details: e.toString());
+    } catch (e, stackTrace) {
+      log(
+        'MapView: getCurrentPosition failed (${source.name})',
+        name: 'MapView',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      if (!mounted || requestGen != _locationRequestGeneration) return;
+
+      final localizations = AppLocalizations.of(context)!;
+      setState(() {
+        _errorKey = null;
+        _isFetchingLocation = false;
+      });
+
+      final isTimeout = _looksLikeTimeout(e);
+
+      switch (source) {
+        case _LocationFetchSource.initial:
+          if (isTimeout) {
+            _showLocationDegradedSnackBar(localizations.mapLocationTimeout);
+          } else {
+            _showLocationDegradedSnackBar(localizations.mapLocationUnavailable);
+          }
+          _backgroundRetryCount = 0;
+          _scheduleBackgroundRetry();
+          break;
+        case _LocationFetchSource.backgroundRetry:
+          _backgroundRetryCount++;
+          if (isTimeout) {
+            log(
+              'MapView: background retry #$_backgroundRetryCount timed out',
+              name: 'MapView',
+            );
+          }
+          if (_backgroundRetryCount < _maxBackgroundRetries) {
+            _scheduleBackgroundRetry();
+          }
+          break;
+        case _LocationFetchSource.userTap:
+          if (isTimeout) {
+            _showLocationDegradedSnackBar(localizations.mapLocationTimeout);
+          } else {
+            _showLocationDegradedSnackBar(localizations.mapLocationUnavailable);
+          }
+          _backgroundRetryCount = 0;
+          _scheduleBackgroundRetry();
+          break;
+      }
     }
   }
 
@@ -198,7 +346,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       _MapViewError.locationServicesDisabled => localizations.locationServicesDisabled,
       _MapViewError.locationPermissionDenied => localizations.locationPermissionDenied,
       _MapViewError.locationPermissionRequired => localizations.locationPermissionRequired,
-      _MapViewError.unknown => _errorDetails,
       null => null,
     };
 
@@ -220,6 +367,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
             mapController: _mapController,
             deviceLocation: _deviceLocation,
             onCenterToDeviceLocation: _animateFocusTo,
+            onRetryLocation: _retryLocationFromUser,
           ),
           ...(widget.stackWidgets ?? [SizedBox.shrink()]),
         ],

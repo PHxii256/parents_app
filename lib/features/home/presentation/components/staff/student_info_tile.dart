@@ -5,7 +5,12 @@ import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class StudentInfoTile extends StatelessWidget {
   final StudentData studentData;
-  const StudentInfoTile({super.key, required this.studentData});
+  final IconData? iconOverride;
+  const StudentInfoTile({
+    super.key,
+    required this.studentData,
+    this.iconOverride,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +20,12 @@ class StudentInfoTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            IconBox(icon: Icons.person, width: 48, height: double.infinity, iconSize: 24),
+            IconBox(
+              icon: iconOverride ?? Icons.person,
+              width: 48,
+              height: double.infinity,
+              iconSize: 24,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Padding(
@@ -29,13 +39,20 @@ class StudentInfoTile extends StatelessWidget {
                       studentData.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, height: 0.95),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        height: 0.95,
+                      ),
                     ),
                     Text(
                       studentData.address,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.highlightText, fontSize: 15),
+                      style: TextStyle(
+                        color: AppColors.highlightText,
+                        fontSize: 15,
+                      ),
                     ),
                   ],
                 ),

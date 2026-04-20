@@ -124,6 +124,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get students => 'Students';
 
   @override
+  String get studentSearchHint => 'Search students by name';
+
+  @override
   String get pinCodes => 'PIN codes';
 
   @override
@@ -183,10 +186,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffOpenInGoogleMaps => 'View In Google Maps';
 
   @override
+  String get staffStartTrip => 'Start Trip';
+
+  @override
   String get staffEndTrip => 'End Trip';
 
   @override
-  String get locateStudent => 'Locate Student';
+  String get schoolCampusLabel => 'School Campus';
+
+  @override
+  String get schoolStopLabel => 'School Stop';
+
+  @override
+  String get locateStudent => 'Find location';
 
   @override
   String get studentBoardedBusLabel => 'Boarded Bus';
@@ -452,6 +464,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationPermissionRequired => 'Please turn on the location permission to view the map.';
+
+  @override
+  String get mapLocationTimeout => 'Couldn’t get your current location currently. please try again later.';
+
+  @override
+  String get mapLocationUnavailable => 'Couldn’t determine your current location. The map is centered on a default area.';
+
+  @override
+  String get mapLocatingInProgress => 'Getting your location…';
+
+  @override
+  String get mapLocationAlreadyLocating => 'Already getting your location. Please wait a moment.';
 
   @override
   String get openStreetMapContributors => 'OpenStreetMap contributors';

@@ -26,6 +26,7 @@ class StaffQuickActions extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     const labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 14);
     final openMapsLabel = localizations.staffOpenInGoogleMaps;
+    final startTripLabel = localizations.staffStartTrip;
     final endTripLabel = localizations.staffEndTrip;
     final locateStudentLabel = localizations.locateStudent;
 
@@ -49,7 +50,7 @@ class StaffQuickActions extends StatelessWidget {
               BlocBuilder<DriverTripSessionCubit, DriverTripSessionState>(
                 builder: (context, state) {
                   final tripActive = state is DriverTripActiveState || state is DriverTripUpdatingState;
-                  final buttonLabel = tripActive ? endTripLabel : 'Start Trip';
+                  final buttonLabel = tripActive ? endTripLabel : startTripLabel;
                   return RoundedCtaButton(
                     text: buttonLabel,
                     onTap: () {

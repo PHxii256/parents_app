@@ -50,6 +50,7 @@
 
   "quickActionsTitle": "إجراءات سريعة",
   "students": "الطلاب",
+  "studentSearchHint": "ابحث عن الطلاب بالاسم",
   "pinCodes": "رموز PIN",
   "status": "الحالة",
   "comingToday": "سيحضر اليوم",
@@ -74,8 +75,11 @@
   "customMessageHint": "اكتب رسالة محددة",
   "messageOkay": "حسنًا",
   "staffOpenInGoogleMaps": "عرض في خرائط جوجل",
+  "staffStartTrip": "بدء الرحلة",
   "staffEndTrip": "إنهاء الرحلة",
-  "locateStudent": "تحديد المكان",
+  "schoolCampusLabel": "الحرم المدرسي",
+  "schoolStopLabel": "موقف المدرسة",
+  "locateStudent": "العثور على الموقع",
   "studentBoardedBusLabel": "ركب الأتوبيس",
   "studentDroppedOffLabel": "تم توصيله",
   "statusConfirmTitle": "تأكيد الإجراء",
@@ -195,6 +199,10 @@
   "locationServicesDisabled": "خدمات الموقع غير مفعلة.",
   "locationPermissionDenied": "تم رفض إذن الموقع.",
   "locationPermissionRequired": "يرجى تفعيل إذن الموقع لعرض الخريطة.",
+  "mapLocationTimeout": "تعذر تحديد موقعك الحالي .رجئا أعد المحاولة لاحقًا.",
+  "mapLocationUnavailable": "تعذر تحديد موقعك الحالي. تم تمركز الخريطة على منطقة افتراضية.",
+  "mapLocatingInProgress": "جارٍ تحديد موقعك…",
+  "mapLocationAlreadyLocating": "يتم تحديد موقعك بالفعل. يُرجى الانتظار قليلًا.",
   "openStreetMapContributors": "مساهمو OpenStreetMap",
   "schoolSuffix": "المدرسة"
 }

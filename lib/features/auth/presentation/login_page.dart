@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 import 'package:parent_app/features/auth/cubit/auth_state.dart';
+import 'package:parent_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:parent_app/features/auth/presentation/otp_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
@@ -14,7 +15,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool isHidden = true;
-  String _selectedRole = 'guardian';
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -33,7 +33,6 @@ class _LoginPageState extends State<LoginPage> {
     context.read<AuthCubit>().passwordLogin(
       email: emailController.text,
       password: passwordController.text,
-      role: _selectedRole,
     );
   }
 
@@ -46,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
         MaterialPageRoute(
           builder: (_) => OtpPage(
             email: emailController.text,
-            role: _selectedRole,
+            role: AuthRepository.authPathRoleForEmail(emailController.text),
             password: passwordController.text,
           ),
         ),
@@ -142,24 +141,6 @@ class _LoginPageState extends State<LoginPage> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: _selectedRole,
-                        decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        items: const [
-                          DropdownMenuItem(value: 'guardian', child: Text('Guardian')),
-                          DropdownMenuItem(value: 'driver', child: Text('Driver')),
-                          DropdownMenuItem(value: 'assistant', child: Text('Assistant')),
-                        ],
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() => _selectedRole = value);
-                        },
                       ),
                       const SizedBox(height: 16),
                       Text(

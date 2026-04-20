@@ -124,6 +124,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get students => 'الطلاب';
 
   @override
+  String get studentSearchHint => 'ابحث عن الطلاب بالاسم';
+
+  @override
   String get pinCodes => 'رموز PIN';
 
   @override
@@ -183,10 +186,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffOpenInGoogleMaps => 'عرض في خرائط جوجل';
 
   @override
+  String get staffStartTrip => 'بدء الرحلة';
+
+  @override
   String get staffEndTrip => 'إنهاء الرحلة';
 
   @override
-  String get locateStudent => 'تحديد المكان';
+  String get schoolCampusLabel => 'الحرم المدرسي';
+
+  @override
+  String get schoolStopLabel => 'موقف المدرسة';
+
+  @override
+  String get locateStudent => 'العثور على الموقع';
 
   @override
   String get studentBoardedBusLabel => 'ركب الأتوبيس';
@@ -452,6 +464,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get locationPermissionRequired => 'يرجى تفعيل إذن الموقع لعرض الخريطة.';
+
+  @override
+  String get mapLocationTimeout => 'تعذر تحديد موقعك الحالي .رجئا أعد المحاولة لاحقًا.';
+
+  @override
+  String get mapLocationUnavailable => 'تعذر تحديد موقعك الحالي. تم تمركز الخريطة على منطقة افتراضية.';
+
+  @override
+  String get mapLocatingInProgress => 'جارٍ تحديد موقعك…';
+
+  @override
+  String get mapLocationAlreadyLocating => 'يتم تحديد موقعك بالفعل. يُرجى الانتظار قليلًا.';
 
   @override
   String get openStreetMapContributors => 'مساهمو OpenStreetMap';

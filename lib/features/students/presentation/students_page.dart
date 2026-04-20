@@ -45,48 +45,69 @@ class _StudentsPageState extends State<StudentsPage> {
               children: [
                 AppBar(
                   centerTitle: true,
+                  elevation: 0,
+                  scrolledUnderElevation: 0,
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  surfaceTintColor: Colors.transparent,
                   title: Text(
                     localizations.students,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const StudentPageSearch(),
-                const SizedBox(height: 18),
                 if (state.loading)
-                  const Expanded(child: Center(child: CircularProgressIndicator()))
+                  const Expanded(
+                    child: Center(child: CircularProgressIndicator()),
+                  )
                 else if (routeItems.isEmpty)
-                  const Expanded(child: Center(child: Text('No students assigned yet.')))
+                  const Expanded(
+                    child: Center(child: Text('No students assigned yet.')),
+                  )
                 else
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: routeItems.length,
-                      itemBuilder: (context, index) {
-                        final item = routeItems[index];
-                        final isLast = index == routeItems.length - 1;
-                        final isFirst = index == 0;
-                        if (item.isSchool) {
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 22.0),
+                      child: ListView.builder(
+                        primary: false,
+                        padding: EdgeInsets.zero,
+                        itemCount: routeItems.length,
+                        itemBuilder: (context, index) {
+                          final item = routeItems[index];
+                          final isLast = index == routeItems.length - 1;
+                          final isFirst = index == 0;
+                          if (item.isSchool) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (isLast)
+                                  const TrackSegment(
+                                    height: 16,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 22,
+                                      vertical: 4,
+                                    ),
+                                  ),
+                                LocationTile(
+                                  name: item.name,
+                                  icon: Icons.school,
+                                ),
+                              ],
+                            );
+                          }
+                          final student = item.studentData;
+                          if (student == null) {
+                            return const SizedBox.shrink();
+                          }
                           return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              LocationTile(
-                                name: item.name,
-                                icon: Icons.school,
-                              ),
-                              if (!isLast)
-                                const TrackSegment(height: 32, padding: EdgeInsets.fromLTRB(22, 0, 22, 0)),
+                              if (!isFirst) const TrackSegment(),
+                              StudentPageTile(student: student),
                             ],
                           );
-                        }
-                        final student = item.studentData;
-                        if (student == null) {
-                          return const SizedBox.shrink();
-                        }
-                        return Column(
-                          children: [
-                            if (!isFirst) const TrackSegment(),
-                            StudentPageTile(student: student),
-                          ],
-                        );
-                      },
+                        },
+                      ),
                     ),
                   ),
               ],

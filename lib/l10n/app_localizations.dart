@@ -317,6 +317,12 @@ abstract class AppLocalizations {
   /// **'Students'**
   String get students;
 
+  /// No description provided for @studentSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search students by name'**
+  String get studentSearchHint;
+
   /// No description provided for @pinCodes.
   ///
   /// In en, this message translates to:
@@ -431,16 +437,34 @@ abstract class AppLocalizations {
   /// **'View In Google Maps'**
   String get staffOpenInGoogleMaps;
 
+  /// No description provided for @staffStartTrip.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Trip'**
+  String get staffStartTrip;
+
   /// No description provided for @staffEndTrip.
   ///
   /// In en, this message translates to:
   /// **'End Trip'**
   String get staffEndTrip;
 
+  /// No description provided for @schoolCampusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'School Campus'**
+  String get schoolCampusLabel;
+
+  /// No description provided for @schoolStopLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'School Stop'**
+  String get schoolStopLabel;
+
   /// No description provided for @locateStudent.
   ///
   /// In en, this message translates to:
-  /// **'Locate Student'**
+  /// **'Find location'**
   String get locateStudent;
 
   /// No description provided for @studentBoardedBusLabel.
@@ -952,6 +976,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please turn on the location permission to view the map.'**
   String get locationPermissionRequired;
+
+  /// No description provided for @mapLocationTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t get your current location currently. please try again later.'**
+  String get mapLocationTimeout;
+
+  /// No description provided for @mapLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t determine your current location. The map is centered on a default area.'**
+  String get mapLocationUnavailable;
+
+  /// No description provided for @mapLocatingInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location…'**
+  String get mapLocatingInProgress;
+
+  /// No description provided for @mapLocationAlreadyLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Already getting your location. Please wait a moment.'**
+  String get mapLocationAlreadyLocating;
 
   /// No description provided for @openStreetMapContributors.
   ///

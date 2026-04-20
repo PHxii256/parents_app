@@ -11,14 +11,10 @@ class AuthCubit extends Cubit<AuthState> {
     : _authRepository = authRepository,
       super(UnauthenticatedState());
 
-  void passwordLogin({
-    required String email,
-    required String password,
-    required String role,
-  }) async {
+  void passwordLogin({required String email, required String password}) async {
     emit(AuthLoadingState());
     try {
-      final res = await _authRepository.passwordLogin(email: email, password: password, role: role);
+      final res = await _authRepository.passwordLogin(email: email, password: password);
       if (res is LoginSuccess) {
         emit(
           AuthenticatedState(

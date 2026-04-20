@@ -52,6 +52,7 @@
 
   "quickActionsTitle": "Quick Actions",
   "students": "Students",
+  "studentSearchHint": "Search students by name",
   "pinCodes": "PIN codes",
   "status": "Status",
   "comingToday": "Coming Today",
@@ -76,8 +77,11 @@
   "customMessageHint": "Write a specific message",
   "messageOkay": "Okay",
   "staffOpenInGoogleMaps": "View In Google Maps",
+  "staffStartTrip": "Start Trip",
   "staffEndTrip": "End Trip",
-  "locateStudent": "Locate Student",
+  "schoolCampusLabel": "School Campus",
+  "schoolStopLabel": "School Stop",
+  "locateStudent": "Find location",
   "studentBoardedBusLabel": "Boarded Bus",
   "studentDroppedOffLabel": "Dropped off",
   "statusConfirmTitle": "Confirm Action",
@@ -197,6 +201,10 @@
   "locationServicesDisabled": "Location services are disabled.",
   "locationPermissionDenied": "Location permission denied.",
   "locationPermissionRequired": "Please turn on the location permission to view the map.",
+  "mapLocationTimeout": "Couldn’t get your current location currently. please try again later.",
+  "mapLocationUnavailable": "Couldn’t determine your current location. The map is centered on a default area.",
+  "mapLocatingInProgress": "Getting your location…",
+  "mapLocationAlreadyLocating": "Already getting your location. Please wait a moment.",
   "openStreetMapContributors": "OpenStreetMap contributors",
   "schoolSuffix": "School"
 }
