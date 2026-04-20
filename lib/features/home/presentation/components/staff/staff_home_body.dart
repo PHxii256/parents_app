@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/auth/cubit/auth_context_extensions.dart';
+import 'package:parent_app/features/home/cubit/driver_trip_session_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_viewer.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
+import 'package:parent_app/features/students/cubit/students_cubit.dart';
 
 class StaffHomeBody extends StatefulWidget {
   const StaffHomeBody({super.key});
@@ -16,6 +18,8 @@ class StaffHomeBody extends StatefulWidget {
 
 class _StaffHomeBodyState extends State<StaffHomeBody> {
   late final TripCubit _tripCubit;
+  late final DriverTripSessionCubit _driverTripSessionCubit;
+  late final StudentsCubit _studentsCubit;
   LatLng? _focusedStudentLocation;
   int _focusRequestKey = 0;
 
@@ -23,11 +27,15 @@ class _StaffHomeBodyState extends State<StaffHomeBody> {
   void initState() {
     super.initState();
     _tripCubit = TripCubit();
+    _driverTripSessionCubit = DriverTripSessionCubit();
+    _studentsCubit = StudentsCubit()..loadStudents();
   }
 
   @override
   void dispose() {
     _tripCubit.close();
+    _driverTripSessionCubit.close();
+    _studentsCubit.close();
     super.dispose();
   }
 
@@ -41,8 +49,12 @@ class _StaffHomeBodyState extends State<StaffHomeBody> {
   @override
   Widget build(BuildContext context) {
     context.authRole;
-    return BlocProvider.value(
-      value: _tripCubit,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _tripCubit),
+        BlocProvider.value(value: _driverTripSessionCubit),
+        BlocProvider.value(value: _studentsCubit),
+      ],
       child: BlocBuilder<TripCubit, TripState>(
         builder: (context, state) {
           const double activeTripPanelHeight = 0;
@@ -86,7 +98,10 @@ class _StaffHomeBodyState extends State<StaffHomeBody> {
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          StudentViewer(onLocateStudent: _onLocateStudent),
+                          StudentViewer(
+                            onLocateStudent: _onLocateStudent,
+                            isDriver: context.authRoleOr('assistant') == 'driver',
+                          ),
                           SizedBox(height: 48),
                         ],
                       ),

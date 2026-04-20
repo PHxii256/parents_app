@@ -8,7 +8,7 @@ class SavedLocationsStore {
 
   final ValueNotifier<List<SavedLocation>> addedLocations = ValueNotifier<List<SavedLocation>>([]);
 
-  void addLocation({required String name, String? addressLine}) {
+  SavedLocation addLocation({required String name, String? addressLine}) {
     final newLocation = SavedLocation(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       name: name.trim(),
@@ -17,6 +17,18 @@ class SavedLocationsStore {
     );
 
     addedLocations.value = [...addedLocations.value, newLocation];
+    return newLocation;
+  }
+
+  void mergeServerLocations(List<SavedLocation> serverLocations) {
+    final existingIds = addedLocations.value.map((location) => location.id).toSet();
+    final merged = [...addedLocations.value];
+    for (final location in serverLocations) {
+      if (!existingIds.contains(location.id)) {
+        merged.add(location);
+      }
+    }
+    addedLocations.value = merged;
   }
 
   SavedLocation? removeLocationById(String id) {

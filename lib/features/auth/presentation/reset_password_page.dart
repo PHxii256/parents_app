@@ -1,9 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
+import 'package:parent_app/features/auth/cubit/auth_state.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class ResetPasswordPage extends StatefulWidget {
-  const ResetPasswordPage({super.key});
+  final String email;
+  final String role;
+  final String resetToken;
+  const ResetPasswordPage({
+    super.key,
+    required this.email,
+    required this.role,
+    required this.resetToken,
+  });
 
   @override
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
@@ -50,30 +61,44 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       return;
     }
 
-    // TODO: send reset password request to backend
-    ScaffoldMessenger.of(context).clearSnackBars();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: Duration(milliseconds: 1500),
-        backgroundColor: Colors.green,
-        content: Text(
-          localizations.passwordResetSuccess,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      ),
+    context.read<AuthCubit>().resetPassword(
+      newPassword: _newPasswordController.text.trim(),
+      otp: widget.resetToken,
+      email: widget.email,
+      role: widget.role,
     );
-
-    // Pop back to LoginPage — AuthGate handles routing from there.
-    if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      body: Column(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is PasswordResetSuccessState) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              duration: Duration(milliseconds: 1500),
+              backgroundColor: Colors.green,
+              content: Text(
+                localizations.passwordResetSuccess,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ),
+          );
+          if (mounted) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        } else if (state is UnauthenticatedState && state.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error!), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade200,
+        body: Column(
         children: [
           /// Yellow Header
           Container(
@@ -179,6 +204,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

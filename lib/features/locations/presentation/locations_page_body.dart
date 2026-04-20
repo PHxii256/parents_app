@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
 import 'package:parent_app/features/locations/data/models/saved_location.dart';
 import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
 import 'package:parent_app/features/locations/presentation/components/saved_location_tile.dart';
@@ -16,6 +17,19 @@ class LocationsPage extends StatefulWidget {
 class _LocationsPageState extends State<LocationsPage> {
   bool _isEditMode = false;
   final Set<String> _removedDefaultLocationIds = <String>{};
+  final GuardianRepository _guardianRepository = GuardianRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadServerLocations();
+  }
+
+  Future<void> _loadServerLocations() async {
+    final serverLocations = await _guardianRepository.getLocations();
+    if (!mounted) return;
+    SavedLocationsStore.instance.mergeServerLocations(serverLocations);
+  }
 
   void _showUndoSnackbar({
     required String message,

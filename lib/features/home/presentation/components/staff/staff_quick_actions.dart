@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
+import 'package:parent_app/features/home/cubit/driver_trip_session_cubit.dart';
+import 'package:parent_app/features/home/cubit/driver_trip_session_state.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
@@ -9,8 +12,14 @@ import 'package:url_launcher/url_launcher.dart';
 class StaffQuickActions extends StatelessWidget {
   final StudentData? currentStudent;
   final ValueChanged<LatLng> onLocateStudent;
+  final bool isDriver;
 
-  const StaffQuickActions({super.key, required this.currentStudent, required this.onLocateStudent});
+  const StaffQuickActions({
+    super.key,
+    required this.currentStudent,
+    required this.onLocateStudent,
+    this.isDriver = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +45,23 @@ class StaffQuickActions extends StatelessWidget {
               ),
             ),
 
-            RoundedCtaButton(text: endTripLabel),
+            if (isDriver)
+              BlocBuilder<DriverTripSessionCubit, DriverTripSessionState>(
+                builder: (context, state) {
+                  final tripActive = state is DriverTripActiveState || state is DriverTripUpdatingState;
+                  final buttonLabel = tripActive ? endTripLabel : 'Start Trip';
+                  return RoundedCtaButton(
+                    text: buttonLabel,
+                    onTap: () {
+                      if (tripActive) {
+                        context.read<DriverTripSessionCubit>().endSession();
+                      } else {
+                        context.read<DriverTripSessionCubit>().startSession();
+                      }
+                    },
+                  );
+                },
+              ),
           ],
         ),
 

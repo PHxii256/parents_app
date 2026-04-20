@@ -1,21 +1,51 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
+import 'package:parent_app/features/auth/cubit/auth_state.dart';
 import 'package:parent_app/features/auth/presentation/reset_password_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
 class OtpPage extends StatelessWidget {
   final String email;
-  const OtpPage({super.key, required this.email});
+  final String role;
+  final String password;
+  final int initialSeconds;
+  const OtpPage({
+    super.key,
+    required this.email,
+    required this.role,
+    this.password = '',
+    this.initialSeconds = 90,
+  });
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      body: Column(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is OtpVerifiedState) {
+          Navigator.of(context, rootNavigator: true).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => ResetPasswordPage(
+                email: state.email,
+                role: state.role,
+                resetToken: state.resetToken,
+              ),
+            ),
+          );
+        } else if (state is UnauthenticatedState && state.error != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.error!), backgroundColor: Colors.red),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.grey.shade200,
+        body: Column(
         children: [
           /// Yellow Header
           Stack(
@@ -59,34 +89,45 @@ class OtpPage extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(localizations.sentToEmail(email), style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 24),
-                  OtpGroup(),
+                  OtpGroup(email: email, role: role),
                   const SizedBox(height: 24),
-                  Resend(),
+                  Resend(email: email, role: role, password: password, initialSeconds: initialSeconds),
                 ],
               ),
             ),
           ),
         ],
       ),
+      ),
     );
   }
 }
 
 class Resend extends StatefulWidget {
-  const Resend({super.key});
+  final String email;
+  final String role;
+  final String password;
+  final int initialSeconds;
+  const Resend({
+    super.key,
+    required this.email,
+    required this.role,
+    required this.password,
+    this.initialSeconds = 90,
+  });
 
   @override
   State<Resend> createState() => _ResendState();
 }
 
 class _ResendState extends State<Resend> {
-  static const int _initialSeconds = 90;
-  int _secondsLeft = _initialSeconds;
+  int _secondsLeft = 90;
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
+    _secondsLeft = widget.initialSeconds;
     _startTimer();
   }
 
@@ -98,7 +139,7 @@ class _ResendState extends State<Resend> {
 
   void _startTimer() {
     _timer?.cancel();
-    setState(() => _secondsLeft = _initialSeconds);
+    setState(() => _secondsLeft = widget.initialSeconds);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_secondsLeft == 0) {
         timer.cancel();
@@ -109,8 +150,13 @@ class _ResendState extends State<Resend> {
   }
 
   void _resend() {
-    final localizations = AppLocalizations.of(context)!;
+    context.read<AuthCubit>().resendOtp(
+      email: widget.email,
+      password: widget.password,
+      role: widget.role,
+    );
     _startTimer();
+    final localizations = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -162,17 +208,15 @@ class _ResendState extends State<Resend> {
 }
 
 class OtpGroup extends StatefulWidget {
-  const OtpGroup({super.key});
+  final String email;
+  final String role;
+  const OtpGroup({super.key, required this.email, required this.role});
 
   @override
   State<OtpGroup> createState() => _OtpGroupState();
 }
 
 class _OtpGroupState extends State<OtpGroup> {
-  bool checkOtp(String otpText) {
-    return true;
-  }
-
   final List<TextEditingController> textControllers = [
     TextEditingController(),
     TextEditingController(),
@@ -221,23 +265,7 @@ class _OtpGroupState extends State<OtpGroup> {
     for (var controller in textControllers) {
       text += controller.text;
     }
-    if (checkOtp(text)) {
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const ResetPasswordPage()));
-    } else {
-      final localizations = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            localizations.otpWrongCodeTryAgain,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
+    context.read<AuthCubit>().verifyOtp(role: widget.role, email: widget.email, otp: text);
   }
 
   void nextFocus(FocusNode current) {

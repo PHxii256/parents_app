@@ -14,6 +14,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool isHidden = true;
+  String _selectedRole = 'guardian';
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -32,6 +33,7 @@ class _LoginPageState extends State<LoginPage> {
     context.read<AuthCubit>().passwordLogin(
       email: emailController.text,
       password: passwordController.text,
+      role: _selectedRole,
     );
   }
 
@@ -40,7 +42,15 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.of(
         context,
         rootNavigator: true,
-      ).push(MaterialPageRoute(builder: (_) => OtpPage(email: emailController.text)));
+      ).push(
+        MaterialPageRoute(
+          builder: (_) => OtpPage(
+            email: emailController.text,
+            role: _selectedRole,
+            password: passwordController.text,
+          ),
+        ),
+      );
     }
   }
 
@@ -55,6 +65,22 @@ class _LoginPageState extends State<LoginPage> {
 
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
+        if (state is OtpSentState) {
+          Navigator.of(
+            context,
+            rootNavigator: true,
+          ).push(
+            MaterialPageRoute(
+              builder: (_) => OtpPage(
+                email: state.email,
+                role: state.role,
+                initialSeconds: state.duration,
+                password: state.password,
+              ),
+            ),
+          );
+          return;
+        }
         if (state is UnauthenticatedState && state.error != null) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -116,6 +142,24 @@ class _LoginPageState extends State<LoginPage> {
                           fillColor: Colors.white,
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: _selectedRole,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        items: const [
+                          DropdownMenuItem(value: 'guardian', child: Text('Guardian')),
+                          DropdownMenuItem(value: 'driver', child: Text('Driver')),
+                          DropdownMenuItem(value: 'assistant', child: Text('Assistant')),
+                        ],
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setState(() => _selectedRole = value);
+                        },
                       ),
                       const SizedBox(height: 16),
                       Text(

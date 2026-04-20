@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
@@ -40,6 +41,7 @@ class MessageChoices extends StatefulWidget {
 }
 
 class _MessageChoicesState extends State<MessageChoices> {
+  final GuardianRepository _guardianRepository = GuardianRepository();
   String? _selectedChoice;
   final TextEditingController _customMessageController = TextEditingController();
 
@@ -125,6 +127,10 @@ class _MessageChoicesState extends State<MessageChoices> {
                             ? _customMessageController.text.trim()
                             : _selectedChoice!;
                         if (selectedMessage.isNotEmpty) {
+                          _guardianRepository.sendMessage(
+                            content: selectedMessage,
+                            studentId: '1',
+                          );
                           Navigator.of(context).pop();
                           ScaffoldMessenger.of(
                             context,

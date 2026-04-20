@@ -11,3 +11,8 @@ class OtpFailure extends OtpResult {
   final String message;
   OtpFailure(this.message);
 }
+
+class OtpVerifySuccess extends OtpResult {
+  final OtpVerificationData data;
+  OtpVerifySuccess(this.data);
+}

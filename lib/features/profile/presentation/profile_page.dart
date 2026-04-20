@@ -1,21 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
-  final String userName = "Ahmed Mohamed Ahmed";
-  final String primaryPhone = "01020002650";
-  final String secondaryPhone = "01030002400";
-  final String email = "test@gmail.com";
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
 
-  final List<Map<String, String>> children = const [
-    {"name": "Ahmed Mohsen", "grade": "Grade 2"},
-    {"name": "Fatma Mohsen", "grade": "Grade 5"},
-  ];
+class _ProfilePageState extends State<ProfilePage> {
+  final GuardianRepository _guardianRepository = GuardianRepository();
+  late final Future<GuardianProfileData> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = _guardianRepository.getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FutureBuilder<GuardianProfileData>(
+      future: _profileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+        }
+        final profile = snapshot.data;
+        if (profile == null) {
+          return const Scaffold(body: Center(child: Text('Unable to load profile.')));
+        }
+        return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
         elevation: 0,
@@ -31,18 +46,18 @@ class ProfilePage extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 12),
-          _buildInfoRow("Name", userName),
+          _buildInfoRow("Name", profile.name),
           const SizedBox(height: 8),
-          _buildInfoRow("Primary Phone no.", primaryPhone),
+          _buildInfoRow("Primary Phone no.", profile.primaryPhone),
           const SizedBox(height: 8),
-          _buildInfoRow("Secondary Phone no.", secondaryPhone),
+          _buildInfoRow("Secondary Phone no.", profile.secondaryPhone),
           const SizedBox(height: 24),
           const Text(
             "Your enrolled children",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 12),
-          ...children.map((child) => _buildChildTile(child)).toList(),
+          ...profile.children.map((child) => _buildChildTile(child)).toList(),
           const SizedBox(height: 40),
           SizedBox(
             width: double.infinity,
@@ -61,6 +76,8 @@ class ProfilePage extends StatelessWidget {
           ),
         ],
       ),
+        );
+      },
     );
   }
 

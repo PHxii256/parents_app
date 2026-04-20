@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
+import 'package:parent_app/features/students/data/models/route_student_item.dart';
+import 'package:parent_app/features/students/data/repositories/students_repository.dart';
 import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_info_tile.dart';
 import 'package:parent_app/features/home/presentation/components/staff/student_progress.dart';
@@ -8,8 +10,9 @@ import 'package:parent_app/features/home/presentation/components/staff/student_s
 
 class StudentViewer extends StatefulWidget {
   final ValueChanged<LatLng> onLocateStudent;
+  final bool isDriver;
 
-  const StudentViewer({super.key, required this.onLocateStudent});
+  const StudentViewer({super.key, required this.onLocateStudent, this.isDriver = false});
 
   @override
   State<StudentViewer> createState() => _StudentViewerState();
@@ -17,7 +20,23 @@ class StudentViewer extends StatefulWidget {
 
 class _StudentViewerState extends State<StudentViewer> {
   final PageController _pageController = PageController();
+  final StudentsRepository _studentsRepository = StudentsRepository();
   int _currentIndex = 0;
+  List<RouteStudentItem> _items = const [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStudents();
+  }
+
+  Future<void> _loadStudents() async {
+    final data = await _studentsRepository.fetchRouteStudents(direction: 'am');
+    if (!mounted) return;
+    setState(() {
+      _items = data;
+    });
+  }
 
   @override
   void dispose() {
@@ -39,7 +58,10 @@ class _StudentViewerState extends State<StudentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    final maxIndex = StudentData.mockStudentData.length - 1;
+    if (_items.isEmpty) {
+      return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator()));
+    }
+    final maxIndex = _items.length - 1;
 
     VoidCallback? goNext(int maxIndex) {
       if (_currentIndex < maxIndex) {
@@ -69,7 +91,7 @@ class _StudentViewerState extends State<StudentViewer> {
       children: [
         StudentProgress(
           currentIndex: _currentIndex,
-          totalStudents: StudentData.mockStudentData.length,
+          totalStudents: _items.length,
           onPrevious: goBack(),
           onNext: goNext(maxIndex),
         ),
@@ -78,23 +100,48 @@ class _StudentViewerState extends State<StudentViewer> {
           height: 112,
           child: PageView.builder(
             controller: _pageController,
-            itemCount: StudentData.mockStudentData.length,
+            itemCount: _items.length,
             onPageChanged: (index) {
               setState(() => _currentIndex = index);
             },
-            itemBuilder: (context, index) => Column(
-              children: [
-                StudentInfoTile(studentData: StudentData.mockStudentData[index]),
-                const SizedBox(height: 6),
-                const StudentStatus(),
-              ],
-            ),
+            itemBuilder: (context, index) {
+              final item = _items[index];
+              if (item.isSchool) {
+                return Column(
+                  children: [
+                    StudentInfoTile(
+                      studentData: StudentData(
+                        id: -1,
+                        name: item.name,
+                        grade: '',
+                        pinCodes: const [],
+                        address: item.address,
+                        gMapsLink: item.gMapsUrl,
+                        coords: const [],
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const StudentStatus(statusOverride: 'School stop'),
+                  ],
+                );
+              }
+              final student = item.studentData;
+              if (student == null) return const SizedBox.shrink();
+              return Column(
+                children: [
+                  StudentInfoTile(studentData: student),
+                  const SizedBox(height: 6),
+                  StudentStatus(studentId: item.id),
+                ],
+              );
+            },
           ),
         ),
         const SizedBox(height: 12),
         StaffQuickActions(
-          currentStudent: StudentData.mockStudentData[_currentIndex],
+          currentStudent: _items[_currentIndex].studentData,
           onLocateStudent: widget.onLocateStudent,
+          isDriver: widget.isDriver,
         ),
       ],
     );

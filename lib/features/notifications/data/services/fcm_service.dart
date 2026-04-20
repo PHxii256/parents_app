@@ -36,6 +36,8 @@ class FcmService {
 
   Stream<NotificationHistoryItem> get incomingMessages => _incomingController.stream;
 
+  Future<String?> getCurrentToken() => FirebaseMessaging.instance.getToken();
+
   static Future<void> storeRemoteMessage({
     required RemoteMessage message,
     required String source,
@@ -64,8 +66,7 @@ class FcmService {
     );
 
     await _initializeLocalNotifications();
-    // To:do remove before publishing
-    final token = await FirebaseMessaging.instance.getToken();
+    final token = await getCurrentToken();
     debugPrint('FCM token: $token');
 
     final initialMessage = await FirebaseMessaging.instance.getInitialMessage();

@@ -18,13 +18,11 @@ class ParentHomeBody extends StatefulWidget {
 
 class _ParentHomeBodyState extends State<ParentHomeBody> {
   late final TripCubit _tripCubit;
-  late final Widget _mapView;
 
   @override
   void initState() {
     super.initState();
     _tripCubit = TripCubit();
-    _mapView = const MapView();
   }
 
   @override
@@ -44,6 +42,7 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
           const double activeTripPanelHeight = 74;
           const double activeTripPanelBottomPadding = 6;
           final bool hasActiveTrip = state is ActiveTripState;
+          final activeTrip = state is ActiveTripState ? state : null;
           final double currentTripHeight = hasActiveTrip
               ? activeTripPanelHeight + activeTripPanelBottomPadding
               : 0;
@@ -55,7 +54,7 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
                 child: SizedBox(
                   height: 488 - currentTripHeight,
                   width: double.infinity,
-                  child: _mapView,
+                  child: MapView(busLocation: activeTrip?.busCoords),
                 ),
               ),
               Column(

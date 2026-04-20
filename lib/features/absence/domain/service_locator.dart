@@ -7,8 +7,7 @@ import 'absence_repo.dart';
 final sl = GetIt.instance;
 
 void setupServiceLocator() {
-  //pass real api service
-  sl.registerLazySingleton<FakeApiService>(() => FakeApiService());
+  sl.registerLazySingleton<AbsenceApiService>(() => buildAbsenceApiService());
 
   sl.registerLazySingleton<AbsenceRepository>(() => AbsenceRepository(sl()));
 

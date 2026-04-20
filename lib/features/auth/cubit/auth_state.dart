@@ -19,11 +19,26 @@ class AuthenticatedState extends AuthState {
 /// Emitted after a successful OTP request — carries the email it was sent to.
 class OtpSentState extends AuthState {
   final String email;
-  OtpSentState({required this.email});
+  final String role;
+  final int duration;
+  final String password;
+  OtpSentState({
+    required this.email,
+    required this.role,
+    required this.duration,
+    required this.password,
+  });
 }
 
 /// Emitted after a successful password reset — app should return to login.
 class PasswordResetSuccessState extends AuthState {}
+
+class OtpVerifiedState extends AuthState {
+  final String email;
+  final String role;
+  final String resetToken;
+  OtpVerifiedState({required this.email, required this.role, required this.resetToken});
+}
 
 extension AuthStateX on AuthState {
   User? get userOrNull {

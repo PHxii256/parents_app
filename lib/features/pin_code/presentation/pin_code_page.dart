@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
 class PinCodePage extends StatefulWidget {
@@ -10,9 +11,24 @@ class PinCodePage extends StatefulWidget {
 }
 
 class _PinScreenState extends State<PinCodePage> {
+  final GuardianRepository _guardianRepository = GuardianRepository();
+  late Future<GuardianPinsData> _pinsFuture;
   bool masterPinVisible = false;
-  TextEditingController masterPinController = TextEditingController(text: '1234'); // example
-  TextEditingController tempPinController = TextEditingController(text: '5678'); // example
+  TextEditingController masterPinController = TextEditingController(text: '');
+  TextEditingController tempPinController = TextEditingController(text: '');
+
+  @override
+  void initState() {
+    super.initState();
+    _pinsFuture = _guardianRepository.getPins();
+  }
+
+  @override
+  void dispose() {
+    masterPinController.dispose();
+    tempPinController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +48,20 @@ class _PinScreenState extends State<PinCodePage> {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
+      body: FutureBuilder<GuardianPinsData>(
+        future: _pinsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final pins = snapshot.data;
+          if (pins != null) {
+            masterPinController.text = pins.masterPin;
+            tempPinController.text = pins.tempPin;
+          }
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
           children: [
             const SizedBox(height: 16),
             Text(
@@ -95,6 +122,8 @@ class _PinScreenState extends State<PinCodePage> {
             ),
           ],
         ),
+          );
+        },
       ),
     );
   }

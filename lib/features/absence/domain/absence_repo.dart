@@ -1,7 +1,7 @@
 import '../data/api_service.dart';
 
 class AbsenceRepository {
-  final FakeApiService api;
+  final AbsenceApiService api;
 
   AbsenceRepository(this.api);
 

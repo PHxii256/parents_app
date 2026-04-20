@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
+import 'package:parent_app/features/locations/data/models/saved_location.dart';
 import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
@@ -13,7 +15,13 @@ class ConfirmLocationButton extends StatelessWidget {
       context: context,
       builder: (c) => _LocationDialog(
         onSubmit: (String locationName, String addressLine) {
-          SavedLocationsStore.instance.addLocation(name: locationName, addressLine: addressLine);
+          final location = SavedLocationsStore.instance.addLocation(
+            name: locationName,
+            addressLine: addressLine,
+          );
+          GuardianRepository().createLocation(
+            SavedLocation(id: location.id, name: location.name, addressLine: location.addressLine),
+          );
 
           // Add to cubit for existing listeners
           context.read<ChangeLocationCubit>().addAddress(locationName, addressLine);

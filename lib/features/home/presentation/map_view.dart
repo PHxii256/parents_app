@@ -13,6 +13,7 @@ class MapView extends StatefulWidget {
   final LatLng? initLocation;
   final DragMarkers? dragMarkers;
   final LatLng? focusTarget;
+  final LatLng? busLocation;
   final int focusRequestKey;
   const MapView({
     super.key,
@@ -20,6 +21,7 @@ class MapView extends StatefulWidget {
     this.initLocation,
     this.dragMarkers,
     this.focusTarget,
+    this.busLocation,
     this.focusRequestKey = 0,
   });
 
@@ -211,6 +213,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
             dragMarkers: widget.dragMarkers,
             focusedLocation: _focusedLocation,
             deviceLocation: _deviceLocation,
+            busLocation: widget.busLocation,
             onMapReady: _handleMapReady,
           ),
           MapControls(
@@ -231,6 +234,7 @@ class MapCanvas extends StatelessWidget {
   final DragMarkers? dragMarkers;
   final LatLng? focusedLocation;
   final LatLng? deviceLocation;
+  final LatLng? busLocation;
   final VoidCallback? onMapReady;
 
   const MapCanvas({
@@ -240,6 +244,7 @@ class MapCanvas extends StatelessWidget {
     this.dragMarkers,
     this.focusedLocation,
     this.deviceLocation,
+    this.busLocation,
     this.onMapReady,
   });
 
@@ -273,6 +278,24 @@ class MapCanvas extends StatelessWidget {
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 3),
                   ),
+                ),
+              ),
+            ],
+          ),
+        if (busLocation != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: busLocation!,
+                width: 36,
+                height: 36,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.amber.shade700,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Icon(Icons.directions_bus, color: Colors.white, size: 20),
                 ),
               ),
             ],

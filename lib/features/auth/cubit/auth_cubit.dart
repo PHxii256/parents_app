@@ -11,16 +11,29 @@ class AuthCubit extends Cubit<AuthState> {
     : _authRepository = authRepository,
       super(UnauthenticatedState());
 
-  void passwordLogin({required String email, required String password}) async {
+  void passwordLogin({
+    required String email,
+    required String password,
+    required String role,
+  }) async {
     emit(AuthLoadingState());
     try {
-      final res = await _authRepository.passwordLogin(email: email, password: password);
+      final res = await _authRepository.passwordLogin(email: email, password: password, role: role);
       if (res is LoginSuccess) {
         emit(
           AuthenticatedState(
             user: res.user,
             accessToken: res.accessToken,
             refreshToken: res.refreshToken,
+          ),
+        );
+      } else if (res is LoginOtpRequired) {
+        emit(
+          OtpSentState(
+            email: res.email,
+            role: res.role,
+            duration: res.remainingSeconds,
+            password: res.password,
           ),
         );
       } else if (res is LoginFailure) {
@@ -99,11 +112,33 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void requestOTP({required String email}) async {
+    emit(UnauthenticatedState(error: 'Use resendOtp with role and password.'));
+  }
+
+  void resendOtp({
+    required String email,
+    required String password,
+    required String role,
+  }) async {
     emit(AuthLoadingState());
     try {
-      final res = await _authRepository.requestOTP(email: email);
+      final res = await _authRepository.requestOTP(role: role, email: email, password: password);
       if (res is OtpSuccess) {
-        emit(OtpSentState(email: email));
+        emit(OtpSentState(email: email, role: role, duration: res.otp.duration, password: password));
+      } else if (res is OtpFailure) {
+        emit(UnauthenticatedState(error: res.message));
+      }
+    } catch (e) {
+      emit(UnauthenticatedState(error: e.toString()));
+    }
+  }
+
+  void verifyOtp({required String role, required String email, required String otp}) async {
+    emit(AuthLoadingState());
+    try {
+      final res = await _authRepository.verifyOtp(role: role, email: email, otp: otp);
+      if (res is OtpVerifySuccess) {
+        emit(OtpVerifiedState(email: res.data.email, role: role, resetToken: res.data.resetToken));
       } else if (res is OtpFailure) {
         emit(UnauthenticatedState(error: res.message));
       }
@@ -116,6 +151,7 @@ class AuthCubit extends Cubit<AuthState> {
     required String newPassword,
     required String otp,
     required String email,
+    required String role,
   }) async {
     emit(AuthLoadingState());
     try {
@@ -123,6 +159,7 @@ class AuthCubit extends Cubit<AuthState> {
         newPassword: newPassword,
         otp: otp,
         email: email,
+        role: role,
       );
       if (success) {
         emit(PasswordResetSuccessState());

@@ -46,7 +46,9 @@ class HomeBody extends StatelessWidget {
           builder: (context) {
             const double activeTripPanelHeight = 74;
             const double activeTripPanelBottomPadding = 16;
-            final bool hasActiveTrip = context.watch<TripCubit>().state is ActiveTripState;
+            final tripState = context.watch<TripCubit>().state;
+            final bool hasActiveTrip = tripState is ActiveTripState;
+            final activeTrip = tripState is ActiveTripState ? tripState : null;
             final double currentTripHeight = hasActiveTrip
                 ? activeTripPanelHeight + activeTripPanelBottomPadding
                 : 0;
@@ -58,7 +60,7 @@ class HomeBody extends StatelessWidget {
                   child: SizedBox(
                     height: 488 - currentTripHeight,
                     width: double.infinity,
-                    child: MapView(),
+                    child: MapView(busLocation: activeTrip?.busCoords),
                   ),
                 ),
                 Column(

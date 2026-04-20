@@ -5,8 +5,15 @@ class RoundedCtaButton extends StatelessWidget {
   final String text;
   final IconData? icon;
   final double height;
+  final VoidCallback? onTap;
 
-  const RoundedCtaButton({super.key, required this.text, this.icon, this.height = 30});
+  const RoundedCtaButton({
+    super.key,
+    required this.text,
+    this.icon,
+    this.height = 30,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +24,7 @@ class RoundedCtaButton extends StatelessWidget {
           backgroundColor: AppColors.mutedBgDark,
           padding: EdgeInsets.fromLTRB(12, 4, 12, 4),
         ),
-        onPressed: () {},
+        onPressed: onTap ?? () {},
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
