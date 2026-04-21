@@ -13,11 +13,15 @@
 
   "settingsTitle": "Settings",
   "logout": "Logout",
-  "switchLanguage": "Switch Language",
+  "switchLanguage": "Language",
   "languagePair": "English / Arabic",
 
   "emailLabel": "Email",
   "passwordLabel": "Password",
+  "accountTypeLabel": "Account type",
+  "accountTypeParentGuardian": "Parent / Guardian",
+  "accountTypeDriver": "Driver",
+  "accountTypeAssistant": "Assistant",
   "loginButton": "Login",
   "forgotPasswordPrompt": "Forgot Password? ",
   "resetAction": "Reset",

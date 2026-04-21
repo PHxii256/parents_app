@@ -170,7 +170,7 @@ abstract class AppLocalizations {
   /// No description provided for @switchLanguage.
   ///
   /// In en, this message translates to:
-  /// **'Switch Language'**
+  /// **'Language'**
   String get switchLanguage;
 
   /// No description provided for @languagePair.
@@ -190,6 +190,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password'**
   String get passwordLabel;
+
+  /// No description provided for @accountTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Account type'**
+  String get accountTypeLabel;
+
+  /// No description provided for @accountTypeParentGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent / Guardian'**
+  String get accountTypeParentGuardian;
+
+  /// No description provided for @accountTypeDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get accountTypeDriver;
+
+  /// No description provided for @accountTypeAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get accountTypeAssistant;
 
   /// No description provided for @loginButton.
   ///

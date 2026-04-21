@@ -57,6 +57,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get passwordLabel => 'كلمة المرور';
 
   @override
+  String get accountTypeLabel => 'نوع الحساب';
+
+  @override
+  String get accountTypeParentGuardian => 'ولي الأمر';
+
+  @override
+  String get accountTypeDriver => 'السائق';
+
+  @override
+  String get accountTypeAssistant => 'المشرف';
+
+  @override
   String get loginButton => 'تسجيل الدخول';
 
   @override

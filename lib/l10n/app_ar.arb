@@ -17,6 +17,10 @@
 
   "emailLabel": "البريد الإلكتروني",
   "passwordLabel": "كلمة المرور",
+  "accountTypeLabel": "نوع الحساب",
+  "accountTypeParentGuardian": "ولي الأمر",
+  "accountTypeDriver": "السائق",
+  "accountTypeAssistant": "المشرف",
   "loginButton": "تسجيل الدخول",
   "forgotPasswordPrompt": "هل نسيت كلمة المرور؟ ",
   "resetAction": "نغير",

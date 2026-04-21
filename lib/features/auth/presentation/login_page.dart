@@ -155,9 +155,9 @@ class _LoginPageState extends State<LoginPage> {
                     physics: const BouncingScrollPhysics(),
                     children: [
                       if (ApiConfig.useRealApi) ...[
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 8),
                         Text(
-                          'Account type',
+                          localizations.accountTypeLabel,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
@@ -169,6 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                               fillColor: Colors.white,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12,
+                                vertical: 12,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -178,18 +179,24 @@ class _LoginPageState extends State<LoginPage> {
                               child: DropdownButton<String>(
                                 isExpanded: true,
                                 value: _accountTypeForApi,
-                                items: const [
+                                items: [
                                   DropdownMenuItem(
                                     value: 'parent',
-                                    child: Text('Parent / Guardian'),
+                                    child: Text(
+                                      localizations.accountTypeParentGuardian,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'driver',
-                                    child: Text('Driver'),
+                                    child: Text(
+                                      localizations.accountTypeDriver,
+                                    ),
                                   ),
                                   DropdownMenuItem(
                                     value: 'assistant',
-                                    child: Text('Assistant'),
+                                    child: Text(
+                                      localizations.accountTypeAssistant,
+                                    ),
                                   ),
                                 ],
                                 onChanged: isLoading
@@ -206,6 +213,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ],
+                      const SizedBox(height: 16),
+
                       Text(
                         localizations.emailLabel,
                         style: const TextStyle(fontWeight: FontWeight.bold),

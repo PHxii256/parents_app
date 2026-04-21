@@ -45,7 +45,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Logout';
 
   @override
-  String get switchLanguage => 'Switch Language';
+  String get switchLanguage => 'Language';
 
   @override
   String get languagePair => 'English / Arabic';
@@ -55,6 +55,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get passwordLabel => 'Password';
+
+  @override
+  String get accountTypeLabel => 'Account type';
+
+  @override
+  String get accountTypeParentGuardian => 'Parent / Guardian';
+
+  @override
+  String get accountTypeDriver => 'Driver';
+
+  @override
+  String get accountTypeAssistant => 'Assistant';
 
   @override
   String get loginButton => 'Login';

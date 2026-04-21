@@ -248,7 +248,10 @@ class _OtpGroupState extends State<OtpGroup> {
     (_) => TextEditingController(),
   );
 
-  final List<FocusNode> focusNodes = List.generate(_otpLength, (_) => FocusNode());
+  final List<FocusNode> focusNodes = List.generate(
+    _otpLength,
+    (_) => FocusNode(),
+  );
 
   bool valid = false;
 
@@ -449,7 +452,7 @@ class OtpBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 50,
+      width: 42,
       height: 60,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
