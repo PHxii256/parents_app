@@ -57,16 +57,18 @@ class _TripPanelState extends State<TripPanel> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AvatarBubbles(
-                  displayedName: _showDriverInfo
-                      ? activeTrip.driverInfo.name
-                      : activeTrip.assistantInfo.name,
-                  showDriverInfo: _showDriverInfo,
-                  onTap: () {
-                    setState(() {
-                      _showDriverInfo = !_showDriverInfo;
-                    });
-                  },
+                SizedBox(
+                  child: AvatarBubbles(
+                    displayedName: _showDriverInfo
+                        ? activeTrip.driverInfo.name
+                        : activeTrip.assistantInfo.name,
+                    showDriverInfo: _showDriverInfo,
+                    onTap: () {
+                      setState(() {
+                        _showDriverInfo = !_showDriverInfo;
+                      });
+                    },
+                  ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(
@@ -81,7 +83,7 @@ class _TripPanelState extends State<TripPanel> {
                     spacing: 8,
                     children: [
                       SizedBox(
-                        width: 80,
+                        width: 74,
                         child: LicensePlate(
                           licensePlateLetters: activeTrip.licensePlateLetters,
                           licensePlateNumbers: activeTrip.licensePlateNumbers,
@@ -261,12 +263,12 @@ class AvatarBubbles extends StatelessWidget {
           Positioned(
             left: isRtl ? null : 22,
             right: isRtl ? 22 : null,
-            top: 22,
+            top: 28,
             child: CircleAvatar(
-              radius: 27,
+              radius: 23,
               backgroundColor: AppColors.highlightText.withAlpha(60),
               child: CircleAvatar(
-                radius: 21,
+                radius: 17,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 child: Icon(
                   secondaryIcon,
@@ -276,10 +278,10 @@ class AvatarBubbles extends StatelessWidget {
             ),
           ),
           CircleAvatar(
-            radius: 27,
+            radius: 23,
             backgroundColor: AppColors.mutedBgDark,
             child: CircleAvatar(
-              radius: 21,
+              radius: 17,
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               child: Stack(
                 clipBehavior: Clip.none,

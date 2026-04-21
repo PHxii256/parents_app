@@ -46,9 +46,9 @@ enum _MapViewError {
   locationPermissionRequired,
 }
 
-enum _LocationFetchSource { initial, backgroundRetry, userTap }
+enum _LocationFetchSource { initial, backgroundRetry, userTap, resume }
 
-class _MapViewState extends State<MapView> with TickerProviderStateMixin {
+class _MapViewState extends State<MapView> with TickerProviderStateMixin, WidgetsBindingObserver {
   static const LatLng _fallbackCenter = LatLng(29.996341, 30.965452);
   static const Duration _locationLookupTimeout = Duration(seconds: 5);
   static const int _maxBackgroundRetries = 5;
@@ -70,15 +70,24 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _fetchDeviceLocation(_LocationFetchSource.initial);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _backgroundRetryTimer?.cancel();
     _focusAnimationController?.dispose();
     _mapController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _fetchDeviceLocation(_LocationFetchSource.resume);
+    }
   }
 
   void _animateFocusTo(LatLng target) {
@@ -287,7 +296,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       setState(() => _loading = false);
     }
 
-    if (_isFetchingLocation && source == _LocationFetchSource.backgroundRetry) {
+    if (_isFetchingLocation &&
+        (source == _LocationFetchSource.backgroundRetry ||
+            source == _LocationFetchSource.resume)) {
       return;
     }
 
@@ -402,6 +413,10 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
           } else {
             _showLocationDegradedSnackBar(localizations.mapLocationUnavailable);
           }
+          _backgroundRetryCount = 0;
+          _scheduleBackgroundRetry();
+          break;
+        case _LocationFetchSource.resume:
           _backgroundRetryCount = 0;
           _scheduleBackgroundRetry();
           break;
