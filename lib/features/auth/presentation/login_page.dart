@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 import 'package:parent_app/features/auth/cubit/auth_state.dart';
-import 'package:parent_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:parent_app/features/auth/presentation/otp_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
@@ -18,6 +18,9 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  /// Maps to `/api/v1/{guardian|driver|assistant}/auth/...`.
+  String _accountTypeForApi = 'parent';
+
   @override
   void dispose() {
     emailController.dispose();
@@ -25,27 +28,58 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  void _showLocalError(String message) {
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    messenger?.clearSnackBars();
+    messenger?.showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red,
+        content: Text(
+          message,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _toggleApiMode() {
+    final isRealApi = ApiConfig.toggleUseRealApi();
+    ScaffoldMessenger.maybeOf(context)?.clearSnackBars();
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      SnackBar(
+        content: Text(isRealApi ? 'Real API enabled' : 'Mock API enabled'),
+      ),
+    );
+    setState(() {});
+  }
+
   void login() {
-    // first we should send a request with the jwt token(s) for auth
-    // if response is successful refresh the token and move the user to home
-    // otherwise make the user login with email and password
-    // there should be an auto login attempt with jwts on init state's first frame
+    final localizations = AppLocalizations.of(context)!;
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
+    if (email.isEmpty || password.isEmpty) {
+      _showLocalError(localizations.validationFillAllFields);
+      return;
+    }
     context.read<AuthCubit>().passwordLogin(
-      email: emailController.text,
-      password: passwordController.text,
+      email: email,
+      password: password,
+      accountTypeForApi: _accountTypeForApi,
     );
   }
 
   void resetPass() {
     if (mounted) {
-      Navigator.of(
-        context,
-        rootNavigator: true,
-      ).push(
+      final segment = ApiConfig.roleAuthPathSegment(_accountTypeForApi);
+      Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(
           builder: (_) => OtpPage(
             email: emailController.text,
-            role: AuthRepository.authPathRoleForEmail(emailController.text),
+            role: segment,
             password: passwordController.text,
           ),
         ),
@@ -63,12 +97,10 @@ class _LoginPageState extends State<LoginPage> {
     final localizations = AppLocalizations.of(context)!;
 
     return BlocConsumer<AuthCubit, AuthState>(
+      listenWhen: (previous, current) => current is OtpSentState,
       listener: (context, state) {
         if (state is OtpSentState) {
-          Navigator.of(
-            context,
-            rootNavigator: true,
-          ).push(
+          Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
               builder: (_) => OtpPage(
                 email: state.email,
@@ -79,22 +111,6 @@ class _LoginPageState extends State<LoginPage> {
             ),
           );
           return;
-        }
-        if (state is UnauthenticatedState && state.error != null) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.red,
-              content: Text(
-                state.error!,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          );
         }
       },
       builder: (context, state) {
@@ -111,11 +127,21 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      "Safe Route",
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                    GestureDetector(
+                      onTap: _toggleApiMode,
+                      behavior: HitTestBehavior.opaque,
+                      child: Text(
+                        "Safe Route",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
-                    Text(localizations.appTagline, style: const TextStyle(fontSize: 16)),
+                    Text(
+                      localizations.appTagline,
+                      style: const TextStyle(fontSize: 16),
+                    ),
                   ],
                 ),
               ),
@@ -128,6 +154,58 @@ class _LoginPageState extends State<LoginPage> {
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     physics: const BouncingScrollPhysics(),
                     children: [
+                      if (ApiConfig.useRealApi) ...[
+                        const SizedBox(height: 16),
+                        Text(
+                          'Account type',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          height: 56,
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                isExpanded: true,
+                                value: _accountTypeForApi,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'parent',
+                                    child: Text('Parent / Guardian'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'driver',
+                                    child: Text('Driver'),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'assistant',
+                                    child: Text('Assistant'),
+                                  ),
+                                ],
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) {
+                                        if (v != null) {
+                                          setState(
+                                            () => _accountTypeForApi = v,
+                                          );
+                                        }
+                                      },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                       Text(
                         localizations.emailLabel,
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -139,7 +217,9 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -154,9 +234,15 @@ class _LoginPageState extends State<LoginPage> {
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.white,
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                           suffixIcon: IconButton(
-                            icon: Icon(isHidden ? Icons.visibility_off : Icons.visibility),
+                            icon: Icon(
+                              isHidden
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
                             onPressed: () {
                               setState(() {
                                 isHidden = !isHidden;
@@ -165,6 +251,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
+
                       const SizedBox(height: 25),
 
                       /// Login Button
@@ -187,7 +274,10 @@ class _LoginPageState extends State<LoginPage> {
                                 )
                               : Text(
                                   localizations.loginButton,
-                                  style: TextStyle(fontSize: 16, color: Colors.white),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.white,
+                                  ),
                                 ),
                         ),
                       ),

@@ -241,21 +241,14 @@ class OtpGroup extends StatefulWidget {
 }
 
 class _OtpGroupState extends State<OtpGroup> {
-  final List<TextEditingController> textControllers = [
-    TextEditingController(),
-    TextEditingController(),
-    TextEditingController(),
-    TextEditingController(),
-    TextEditingController(),
-  ];
+  static const int _otpLength = 6;
 
-  final List<FocusNode> focusNodes = [
-    FocusNode(),
-    FocusNode(),
-    FocusNode(),
-    FocusNode(),
-    FocusNode(),
-  ];
+  final List<TextEditingController> textControllers = List.generate(
+    _otpLength,
+    (_) => TextEditingController(),
+  );
+
+  final List<FocusNode> focusNodes = List.generate(_otpLength, (_) => FocusNode());
 
   bool valid = false;
 

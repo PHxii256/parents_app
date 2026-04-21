@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_state.dart';
 import 'package:parent_app/features/auth/data/models/login_result.dart';
 import 'package:parent_app/features/auth/data/models/otp_result.dart';
+import 'package:parent_app/features/auth/data/models/reset_password_flow_result.dart';
 import 'package:parent_app/features/auth/data/repositories/auth_repository.dart';
 
 class AuthCubit extends Cubit<AuthState> {
@@ -11,10 +12,19 @@ class AuthCubit extends Cubit<AuthState> {
     : _authRepository = authRepository,
       super(UnauthenticatedState());
 
-  void passwordLogin({required String email, required String password}) async {
+  /// [accountTypeForApi]: `parent`, `driver`, or `assistant` (URL segment mapping).
+  void passwordLogin({
+    required String email,
+    required String password,
+    String accountTypeForApi = 'parent',
+  }) async {
     emit(AuthLoadingState());
     try {
-      final res = await _authRepository.passwordLogin(email: email, password: password);
+      final res = await _authRepository.passwordLogin(
+        email: email,
+        password: password,
+        accountTypeForApi: accountTypeForApi,
+      );
       if (res is LoginSuccess) {
         emit(
           AuthenticatedState(
@@ -151,16 +161,25 @@ class AuthCubit extends Cubit<AuthState> {
   }) async {
     emit(AuthLoadingState());
     try {
-      final success = await _authRepository.resetPassword(
+      final result = await _authRepository.resetPassword(
         newPassword: newPassword,
         otp: otp,
         email: email,
         role: role,
       );
-      if (success) {
+      if (result is ResetPasswordLoggedIn) {
+        final session = result.session;
+        emit(
+          AuthenticatedState(
+            user: session.user,
+            accessToken: session.accessToken,
+            refreshToken: session.refreshToken,
+          ),
+        );
+      } else if (result is ResetPasswordComplete) {
         emit(PasswordResetSuccessState());
-      } else {
-        emit(UnauthenticatedState(error: 'Failed to reset password. Please try again.'));
+      } else if (result is ResetPasswordFailed) {
+        emit(UnauthenticatedState(error: result.message));
       }
     } catch (e) {
       emit(UnauthenticatedState(error: e.toString()));

@@ -13,7 +13,35 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
+    return BlocConsumer<AuthCubit, AuthState>(
+      listenWhen: (prev, next) {
+        if (next is AuthenticatedState && prev is! AuthenticatedState) {
+          return true;
+        }
+        return next is UnauthenticatedState && next.error != null;
+      },
+      listener: (context, state) {
+        if (state is AuthenticatedState) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+          });
+          return;
+        }
+        if (state is UnauthenticatedState && state.error != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (!context.mounted) return;
+            final messenger = ScaffoldMessenger.maybeOf(context);
+            messenger?.clearSnackBars();
+            messenger?.showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.red,
+                content: Text(state.error!),
+              ),
+            );
+          });
+        }
+      },
       builder: (context, state) {
         if (state is AuthenticatedState &&
             !_allowedRoles.contains(state.user.role.toLowerCase().trim())) {
@@ -23,13 +51,14 @@ class AuthGate extends StatelessWidget {
           });
           return const Scaffold(body: Center(child: CircularProgressIndicator()));
         }
+        // Keep [LoginPage] mounted during auth loading so email/password fields are not cleared.
         return switch (state) {
           AuthenticatedState() => HomePage(nav: HomeNav.forRole(state.user.role)),
-          AuthLoadingState() => const Scaffold(body: Center(child: CircularProgressIndicator())),
+          AuthLoadingState() ||
           UnauthenticatedState() ||
           OtpSentState() ||
           OtpVerifiedState() ||
-          PasswordResetSuccessState() => LoginPage(),
+          PasswordResetSuccessState() => const LoginPage(),
         };
       },
     );

@@ -75,6 +75,12 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
+        if (state is AuthenticatedState) {
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
+          }
+          return;
+        }
         if (state is PasswordResetSuccessState) {
           ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
@@ -88,7 +94,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             ),
           );
           if (mounted) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context, rootNavigator: true).popUntil((route) => route.isFirst);
           }
         } else if (state is UnauthenticatedState && state.error != null) {
           ScaffoldMessenger.of(context).showSnackBar(

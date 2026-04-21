@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/core/dio/res_util.dart';
 import 'package:parent_app/core/models/server_exception.dart';
@@ -8,6 +9,7 @@ import 'package:parent_app/core/models/user_data.dart';
 import 'package:parent_app/features/auth/data/models/login_result.dart';
 import 'package:parent_app/features/auth/data/models/otp_data.dart';
 import 'package:parent_app/features/auth/data/models/otp_result.dart';
+import 'package:parent_app/features/auth/data/models/reset_password_flow_result.dart';
 import 'package:parent_app/features/auth/data/provider/auth_data_provider.dart';
 import 'package:parent_app/features/auth/data/services/auth_role_store.dart';
 import 'package:parent_app/features/auth/data/services/jwt_storage.dart';
@@ -50,46 +52,52 @@ class AuthRepository {
     return 'guardian';
   }
 
+  /// [accountTypeForApi] is the app account kind: `parent`, `driver`, or `assistant`
+  /// (maps to guardian / driver / assistant URL segments). Ignored for mock test emails.
   Future<LoginResult> passwordLogin({
     required String email,
     required String password,
+    String accountTypeForApi = 'parent',
   }) async {
-    final pathRole = authPathRoleForEmail(email);
+    final trimmed = email.trim();
+    final pathRole = _isMockTestEmail(trimmed)
+        ? authPathRoleForEmail(trimmed)
+        : ApiConfig.roleAuthPathSegment(accountTypeForApi);
     await Future.delayed(const Duration(milliseconds: 300));
-    if (email == _parentTestEmail && password == _parentTestPassword) {
+    if (trimmed == _parentTestEmail && password == _parentTestPassword) {
       await _authRoleStore.saveRole('guardian');
       await _jwtStorage.save(
         accessToken: _mockParentAccessToken,
         refreshToken: _mockParentRefreshToken,
       );
       return LoginSuccess(
-        user: User(id: '1', email: email, username: 'TestUser', role: 'parent'),
+        user: User(id: '1', email: trimmed, username: 'TestUser', role: 'parent'),
         accessToken: _mockParentAccessToken,
         refreshToken: _mockParentRefreshToken,
       );
     }
 
-    if (email == _staffTestEmail && password == _staffTestPassword) {
+    if (trimmed == _staffTestEmail && password == _staffTestPassword) {
       await _authRoleStore.saveRole('driver');
       await _jwtStorage.save(
         accessToken: _mockStaffAccessToken,
         refreshToken: _mockStaffRefreshToken,
       );
       return LoginSuccess(
-        user: User(id: '2', email: email, username: 'TestStaff', role: 'driver'),
+        user: User(id: '2', email: trimmed, username: 'TestStaff', role: 'driver'),
         accessToken: _mockStaffAccessToken,
         refreshToken: _mockStaffRefreshToken,
       );
     }
 
-    if (email == _assistantTestEmail && password == _assistantTestPassword) {
+    if (trimmed == _assistantTestEmail && password == _assistantTestPassword) {
       await _authRoleStore.saveRole('assistant');
       await _jwtStorage.save(
         accessToken: _mockAssistantAccessToken,
         refreshToken: _mockAssistantRefreshToken,
       );
       return LoginSuccess(
-        user: User(id: '3', email: email, username: 'TestAssistant', role: 'assistant'),
+        user: User(id: '3', email: trimmed, username: 'TestAssistant', role: 'assistant'),
         accessToken: _mockAssistantAccessToken,
         refreshToken: _mockAssistantRefreshToken,
       );
@@ -100,13 +108,18 @@ class AuthRepository {
     }
 
     try {
-      final response = await authData.passwordLogin(role: pathRole, email: email, password: password);
+      final response = await authData.passwordLogin(
+        role: pathRole,
+        email: trimmed,
+        password: password,
+      );
+      _debugLogAuthResponse('login OK', response.statusCode, response.data);
       final data = _extractResponseData(response);
       final accessToken = data['access'] as String?;
       final refreshToken = data['refresh'] as String?;
       if (accessToken != null && refreshToken != null) {
         await _jwtStorage.save(accessToken: accessToken, refreshToken: refreshToken);
-        final user = _userFromAccessToken(accessToken, fallbackRole: pathRole, fallbackEmail: email);
+        final user = _userFromAccessToken(accessToken, fallbackRole: pathRole, fallbackEmail: trimmed);
         await _authRoleStore.saveRole(user.role);
         return LoginSuccess(user: user, accessToken: accessToken, refreshToken: refreshToken);
       }
@@ -115,19 +128,32 @@ class AuthRepository {
       if (remainingSeconds != null) {
         await _authRoleStore.saveRole(pathRole);
         return LoginOtpRequired(
-          email: email,
+          email: trimmed,
           role: pathRole,
           remainingSeconds: remainingSeconds,
           password: password,
         );
       }
       return LoginFailure('Unexpected login response.');
+    } on ServerException catch (e) {
+      if (kDebugMode) {
+        debugPrint('[Auth] login rejected: ${e.message}');
+      }
+      return LoginFailure(e.message);
     } on DioException catch (e) {
-      final message = e.response?.data?['message']?.toString() ?? 'Login failed.';
-      return LoginFailure(message);
+      _debugLogAuthResponse('login error', e.response?.statusCode, e.response?.data);
+      return LoginFailure(_loginFailureMessageFromDio(e));
     } catch (e) {
+      if (kDebugMode) {
+        debugPrint('[Auth] login error: $e');
+      }
       return LoginFailure(e.toString());
     }
+  }
+
+  static bool _isMockTestEmail(String email) {
+    final e = email.trim().toLowerCase();
+    return e == _parentTestEmail || e == _staffTestEmail || e == _assistantTestEmail;
   }
 
   Future<LoginResult> jwtLogin({required String accessToken, required String refreshToken}) async {
@@ -177,7 +203,7 @@ class AuthRepository {
     }
   }
 
-  Future<bool> resetPassword({
+  Future<ResetPasswordFlowResult> resetPassword({
     required String newPassword,
     required String otp,
     required String email,
@@ -185,7 +211,7 @@ class AuthRepository {
   }) async {
     try {
       if (!ApiConfig.useRealApi) {
-        return true;
+        return ResetPasswordComplete();
       }
       final authRole = role ?? await loadLastRole() ?? 'guardian';
       final response = await authData.setInitialPassword(
@@ -194,9 +220,36 @@ class AuthRepository {
         resetToken: otp,
         newPassword: newPassword,
       );
-      return isResOk(response);
+      if (!isResOk(response)) {
+        return ResetPasswordFailed('Failed to reset password. Please try again.');
+      }
+      final data = _extractResponseData(response);
+      final accessToken = data['access'] as String?;
+      final refreshToken = data['refresh'] as String?;
+      if (accessToken != null &&
+          refreshToken != null &&
+          accessToken.isNotEmpty &&
+          refreshToken.isNotEmpty) {
+        await _jwtStorage.save(accessToken: accessToken, refreshToken: refreshToken);
+        final user = _userFromAccessToken(
+          accessToken,
+          fallbackRole: authRole,
+          fallbackEmail: email,
+        );
+        await _authRoleStore.saveRole(user.role);
+        return ResetPasswordLoggedIn(
+          LoginSuccess(
+            user: user,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          ),
+        );
+      }
+      return ResetPasswordComplete();
+    } on ServerException catch (e) {
+      return ResetPasswordFailed(e.message);
     } catch (e) {
-      rethrow;
+      return ResetPasswordFailed(e.toString());
     }
   }
 
@@ -255,8 +308,8 @@ class AuthRepository {
     if (!ApiConfig.useRealApi) {
       return OtpSuccess(Otp(value: 11111, duration: 90));
     }
-    final response = await authData.resendOtp(role: role, email: email, password: password);
     try {
+      final response = await authData.resendOtp(role: role, email: email, password: password);
       final data = _extractResponseData(response);
       return OtpSuccess(
         Otp(
@@ -264,8 +317,10 @@ class AuthRepository {
           duration: (data["remaining_time"] as num?)?.toInt() ?? 90,
         ),
       );
+    } on ServerException catch (e) {
+      return OtpFailure(e.message);
     } catch (e) {
-      return OtpFailure("Otp invalid or expired.");
+      return OtpFailure('Otp invalid or expired.');
     }
   }
 
@@ -293,6 +348,8 @@ class AuthRepository {
           requiresPasswordReset: data['requires_password_reset'] as bool? ?? true,
         ),
       );
+    } on ServerException catch (e) {
+      return OtpFailure(e.message);
     } catch (e) {
       return OtpFailure('Otp invalid or expired.');
     }
@@ -347,5 +404,57 @@ class AuthRepository {
       return payload;
     }
     throw const FormatException('Invalid JWT payload.');
+  }
+}
+
+String _loginFailureMessageFromDio(DioException e) {
+  final d = e.response?.data;
+  if (d is Map) {
+    final msg = d['message'];
+    if (msg != null && msg.toString().trim().isNotEmpty) {
+      return msg.toString();
+    }
+    final errs = d['errors'];
+    if (errs is Map) {
+      for (final v in errs.values) {
+        if (v is List && v.isNotEmpty) {
+          return v.first.toString();
+        }
+      }
+    }
+  }
+  return 'Invalid email or password.';
+}
+
+void _debugLogAuthResponse(String label, int? statusCode, Object? body) {
+  if (!kDebugMode) return;
+  debugPrint('[Auth] $label status=$statusCode body=${_redactTokensForLog(body)}');
+}
+
+String _redactTokensForLog(Object? data) {
+  if (data == null) return 'null';
+  try {
+    dynamic walk(dynamic node) {
+      if (node is Map) {
+        final out = <String, dynamic>{};
+        for (final e in node.entries) {
+          final k = e.key.toString();
+          final v = e.value;
+          if (k == 'access' || k == 'refresh' || k == 'access_token' || k == 'refresh_token') {
+            out[k] = '<redacted>';
+          } else {
+            out[k] = walk(v);
+          }
+        }
+        return out;
+      }
+      if (node is List) {
+        return node.map(walk).toList();
+      }
+      return node;
+    }
+    return jsonEncode(walk(data));
+  } catch (_) {
+    return data.toString();
   }
 }
