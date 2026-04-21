@@ -18,6 +18,10 @@ class MapView extends StatefulWidget {
   final LatLng? focusTarget;
   final LatLng? busLocation;
   final int focusRequestKey;
+  final double controlsBottomOffset;
+  final bool showControls;
+  final bool showAttribution;
+  final ValueChanged<MapViewControlsState>? onControlsStateChanged;
   const MapView({
     super.key,
     this.stackWidgets,
@@ -26,6 +30,10 @@ class MapView extends StatefulWidget {
     this.focusTarget,
     this.busLocation,
     this.focusRequestKey = 0,
+    this.controlsBottomOffset = 36,
+    this.showControls = true,
+    this.showAttribution = true,
+    this.onControlsStateChanged,
   });
 
   @override
@@ -41,7 +49,7 @@ enum _MapViewError {
 enum _LocationFetchSource { initial, backgroundRetry, userTap }
 
 class _MapViewState extends State<MapView> with TickerProviderStateMixin {
-  static const LatLng _fallbackCenter = LatLng(30.0444, 31.2357);
+  static const LatLng _fallbackCenter = LatLng(29.996341, 30.965452);
   static const Duration _locationLookupTimeout = Duration(seconds: 5);
   static const int _maxBackgroundRetries = 5;
   final MapController _mapController = MapController();
@@ -56,6 +64,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   int _backgroundRetryCount = 0;
   bool _isFetchingLocation = false;
   int _locationRequestGeneration = 0;
+  bool _hasReportedControlsState = false;
+  LatLng? _lastReportedDeviceLocation;
 
   @override
   void initState() {
@@ -178,6 +188,27 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     });
   }
 
+  void _reportControlsStateIfNeeded() {
+    final callback = widget.onControlsStateChanged;
+    if (callback == null) return;
+    final shouldReport =
+        !_hasReportedControlsState || _lastReportedDeviceLocation != _deviceLocation;
+    if (!shouldReport) return;
+    _hasReportedControlsState = true;
+    _lastReportedDeviceLocation = _deviceLocation;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      callback(
+        MapViewControlsState(
+          mapController: _mapController,
+          deviceLocation: _deviceLocation,
+          onCenterToDeviceLocation: _animateFocusTo,
+          onRetryLocation: _retryLocationFromUser,
+        ),
+      );
+    });
+  }
+
   bool _looksLikeTimeout(Object error) {
     if (error is TimeoutException) return true;
     final text = error.toString();
@@ -217,7 +248,38 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       }
       return Future.value();
     }
+    if (_deviceLocation == null && _errorKey != null) {
+      _promptOpenSettings(_errorKey!);
+      return Future.value();
+    }
     return _fetchDeviceLocation(_LocationFetchSource.userTap);
+  }
+
+  Future<void> _promptOpenSettings(_MapViewError errorKey) async {
+    final localizations = AppLocalizations.of(context)!;
+    final openSettings = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(localizations.mapPermissionPromptTitle),
+        content: Text(localizations.mapPermissionPromptBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(localizations.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(localizations.mapOpenSettingsButton),
+          ),
+        ],
+      ),
+    );
+    if (openSettings != true) return;
+    if (errorKey == _MapViewError.locationServicesDisabled) {
+      await Geolocator.openLocationSettings();
+      return;
+    }
+    await Geolocator.openAppSettings();
   }
 
   Future<void> _fetchDeviceLocation(_LocationFetchSource source) async {
@@ -251,6 +313,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
         if (!mounted || requestGen != _locationRequestGeneration) return;
         setState(() => _isFetchingLocation = false);
         _completeWithoutDeviceLocation(_MapViewError.locationServicesDisabled);
+        if (source == _LocationFetchSource.userTap) {
+          _promptOpenSettings(_MapViewError.locationServicesDisabled);
+        }
         return;
       }
       LocationPermission permission = await Geolocator.checkPermission();
@@ -261,6 +326,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
           if (!mounted || requestGen != _locationRequestGeneration) return;
           setState(() => _isFetchingLocation = false);
           _completeWithoutDeviceLocation(_MapViewError.locationPermissionDenied);
+          if (source == _LocationFetchSource.userTap) {
+            _promptOpenSettings(_MapViewError.locationPermissionDenied);
+          }
           return;
         }
       }
@@ -269,6 +337,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
         if (!mounted || requestGen != _locationRequestGeneration) return;
         setState(() => _isFetchingLocation = false);
         _completeWithoutDeviceLocation(_MapViewError.locationPermissionRequired);
+        if (source == _LocationFetchSource.userTap) {
+          _promptOpenSettings(_MapViewError.locationPermissionRequired);
+        }
         return;
       }
 
@@ -341,6 +412,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    _reportControlsStateIfNeeded();
     final initialCenter = widget.initLocation ?? _deviceLocation ?? _fallbackCenter;
     final errorText = switch (_errorKey) {
       _MapViewError.locationServicesDisabled => localizations.locationServicesDisabled,
@@ -362,18 +434,35 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
             deviceLocation: _deviceLocation,
             busLocation: widget.busLocation,
             onMapReady: _handleMapReady,
+            showAttribution: widget.showAttribution,
           ),
-          MapControls(
-            mapController: _mapController,
-            deviceLocation: _deviceLocation,
-            onCenterToDeviceLocation: _animateFocusTo,
-            onRetryLocation: _retryLocationFromUser,
-          ),
+          if (widget.showControls)
+            MapControls(
+              mapController: _mapController,
+              deviceLocation: _deviceLocation,
+              onCenterToDeviceLocation: _animateFocusTo,
+              onRetryLocation: _retryLocationFromUser,
+              bottomOffset: widget.controlsBottomOffset,
+            ),
           ...(widget.stackWidgets ?? [SizedBox.shrink()]),
         ],
       ),
     );
   }
+}
+
+class MapViewControlsState {
+  final MapController mapController;
+  final LatLng? deviceLocation;
+  final ValueChanged<LatLng> onCenterToDeviceLocation;
+  final VoidCallback onRetryLocation;
+
+  const MapViewControlsState({
+    required this.mapController,
+    required this.deviceLocation,
+    required this.onCenterToDeviceLocation,
+    required this.onRetryLocation,
+  });
 }
 
 class MapCanvas extends StatelessWidget {
@@ -384,6 +473,7 @@ class MapCanvas extends StatelessWidget {
   final LatLng? deviceLocation;
   final LatLng? busLocation;
   final VoidCallback? onMapReady;
+  final bool showAttribution;
 
   const MapCanvas({
     super.key,
@@ -394,6 +484,7 @@ class MapCanvas extends StatelessWidget {
     this.deviceLocation,
     this.busLocation,
     this.onMapReady,
+    this.showAttribution = true,
   });
 
   @override
@@ -412,7 +503,7 @@ class MapCanvas extends StatelessWidget {
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.safe_route.app',
         ),
-        const MapAttributionOverlay(),
+        if (showAttribution) const MapAttributionOverlay(),
         if (deviceLocation != null)
           MarkerLayer(
             markers: [

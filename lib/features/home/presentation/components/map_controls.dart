@@ -9,6 +9,7 @@ class MapControls extends StatelessWidget {
     required LatLng? deviceLocation,
     this.onCenterToDeviceLocation,
     this.onRetryLocation,
+    this.bottomOffset = 36,
   }) : _mapController = mapController,
        _deviceLocation = deviceLocation;
 
@@ -17,12 +18,13 @@ class MapControls extends StatelessWidget {
   final ValueChanged<LatLng>? onCenterToDeviceLocation;
   /// When [deviceLocation] is null (e.g. GPS timeout), tapping the locate button calls this to retry.
   final VoidCallback? onRetryLocation;
+  final double bottomOffset;
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
       right: 12,
-      bottom: 36,
+      bottom: bottomOffset,
       child: Column(
         children: [
           FloatingActionButton.small(

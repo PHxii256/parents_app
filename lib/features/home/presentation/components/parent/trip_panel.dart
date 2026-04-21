@@ -29,6 +29,7 @@ class _TripPanelState extends State<TripPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final isRtl = Directionality.of(context) == TextDirection.rtl;
     final activeTrip = context.select<TripCubit, ActiveTripState?>(
       (cubit) => cubit.state is ActiveTripState
           ? cubit.state as ActiveTripState
@@ -46,45 +47,61 @@ class _TripPanelState extends State<TripPanel> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: SizedBox(
-        height: widget.height,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AvatarBubbles(
-              displayedName: _showDriverInfo
-                  ? activeTrip.driverInfo.name
-                  : activeTrip.assistantInfo.name,
-              showDriverInfo: _showDriverInfo,
-              onTap: () {
-                setState(() {
-                  _showDriverInfo = !_showDriverInfo;
-                });
-              },
+        height: widget.height + 2,
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minWidth: MediaQuery.of(context).size.width - 12,
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(30, 28, 0, 0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                spacing: 8,
-                children: [
-                  LicensePlate(
-                    licensePlateLetters: activeTrip.licensePlateLetters,
-                    licensePlateNumbers: activeTrip.licensePlateNumbers,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AvatarBubbles(
+                  displayedName: _showDriverInfo
+                      ? activeTrip.driverInfo.name
+                      : activeTrip.assistantInfo.name,
+                  showDriverInfo: _showDriverInfo,
+                  onTap: () {
+                    setState(() {
+                      _showDriverInfo = !_showDriverInfo;
+                    });
+                  },
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    isRtl ? 0 : 30,
+                    28,
+                    isRtl ? 30 : 0,
+                    0,
                   ),
-                  CircularActionButton(
-                    icon: Icons.message,
-                    onTap: () => showMessagesDialouge(context),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: 8,
+                    children: [
+                      SizedBox(
+                        width: 80,
+                        child: LicensePlate(
+                          licensePlateLetters: activeTrip.licensePlateLetters,
+                          licensePlateNumbers: activeTrip.licensePlateNumbers,
+                        ),
+                      ),
+                      CircularActionButton(
+                        icon: Icons.message,
+                        onTap: () => showMessagesDialouge(context),
+                      ),
+                      CircularActionButton(
+                        icon: Icons.call,
+                        onTap: () => _launchPhoneCall(selectedStaff.phoneNum),
+                      ),
+                      Eta(eta: activeTrip.eta),
+                    ],
                   ),
-                  CircularActionButton(
-                    icon: Icons.call,
-                    onTap: () => _launchPhoneCall(selectedStaff.phoneNum),
-                  ),
-                  Eta(eta: activeTrip.eta),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -242,7 +259,8 @@ class AvatarBubbles extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: 22,
+            left: isRtl ? null : 22,
+            right: isRtl ? 22 : null,
             top: 22,
             child: CircleAvatar(
               radius: 27,
@@ -298,7 +316,8 @@ class AvatarBubbles extends StatelessWidget {
           ),
           Positioned(
             bottom: -16,
-            left: 4,
+            left: isRtl ? null : 4,
+            right: isRtl ? 4 : null,
             child: Icon(
               Icons.swap_horiz_sharp,
               size: 48,
@@ -307,7 +326,8 @@ class AvatarBubbles extends StatelessWidget {
           ),
           Positioned(
             bottom: -8,
-            left: 13,
+            left: isRtl ? null : 13,
+            right: isRtl ? 13 : null,
             child: Icon(
               Icons.swap_horiz_sharp,
               size: 30,

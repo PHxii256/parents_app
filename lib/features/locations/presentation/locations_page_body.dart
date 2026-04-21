@@ -42,7 +42,10 @@ class _LocationsPageState extends State<LocationsPage> {
       SnackBar(
         duration: const Duration(seconds: 3),
         content: Text(message),
-        action: SnackBarAction(label: localizations.undoAction, onPressed: onUndo),
+        action: SnackBarAction(
+          label: localizations.undoAction,
+          onPressed: onUndo,
+        ),
       ),
     );
   }
@@ -69,14 +72,19 @@ class _LocationsPageState extends State<LocationsPage> {
     }
 
     final removedIndex = addedLocations.indexWhere((l) => l.id == location.id);
-    final removed = SavedLocationsStore.instance.removeLocationById(location.id);
+    final removed = SavedLocationsStore.instance.removeLocationById(
+      location.id,
+    );
     if (removed == null) return;
 
     _showUndoSnackbar(
       message: localizations.locationDeletedMessage(location.name),
       localizations: localizations,
       onUndo: () {
-        SavedLocationsStore.instance.insertLocationAt(index: removedIndex, location: removed);
+        SavedLocationsStore.instance.insertLocationAt(
+          index: removedIndex,
+          location: removed,
+        );
       },
     );
   }
@@ -84,19 +92,24 @@ class _LocationsPageState extends State<LocationsPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final defaultLocations = <SavedLocation>[
-      SavedLocation(
-        id: 'home',
-        name: localizations.homeAddressName,
-        addressLine: localizations.homeAddressDesc,
-        isPrimary: true,
-      ),
-      SavedLocation(
-        id: 'grandma',
-        name: localizations.grandmasHouseName,
-        addressLine: localizations.grandmasHouseAddress,
-      ),
-    ].where((location) => !_removedDefaultLocationIds.contains(location.id)).toList();
+    final defaultLocations =
+        <SavedLocation>[
+              SavedLocation(
+                id: 'home',
+                name: localizations.homeAddressName,
+                addressLine: localizations.homeAddressDesc,
+                isPrimary: true,
+              ),
+              SavedLocation(
+                id: 'grandma',
+                name: localizations.grandmasHouseName,
+                addressLine: localizations.grandmasHouseAddress,
+              ),
+            ]
+            .where(
+              (location) => !_removedDefaultLocationIds.contains(location.id),
+            )
+            .toList();
 
     return SafeArea(
       child: Column(
@@ -105,7 +118,7 @@ class _LocationsPageState extends State<LocationsPage> {
             centerTitle: true,
             title: Text(
               localizations.locationsTab,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             actions: [
               IconButton(
@@ -135,7 +148,10 @@ class _LocationsPageState extends State<LocationsPage> {
                         trailing: showDelete
                             ? IconButton(
                                 tooltip: localizations.deleteLocation,
-                                icon: Icon(Icons.delete_outline, color: AppColors.brownBg),
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.brownBg,
+                                ),
                                 onPressed: () {
                                   _deleteLocation(
                                     location: location,
@@ -161,9 +177,9 @@ class _LocationsPageState extends State<LocationsPage> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
                 onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const AddLocationPage()));
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const AddLocationPage()),
+                  );
                 },
                 child: Text(
                   localizations.addNewAddress,

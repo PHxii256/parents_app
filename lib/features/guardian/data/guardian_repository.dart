@@ -33,7 +33,7 @@ class GuardianRepository {
 
   Future<GuardianPinsData> getPins() async {
     if (!ApiConfig.useRealApi) {
-      return const GuardianPinsData(masterPin: '1234', tempPin: '5678');
+      return const GuardianPinsData(masterPin: '12345', tempPin: '56789');
     }
     final response = await _dio.get('/api/v1/guardian/pins');
     final data = _extractData(response.data);

@@ -40,7 +40,7 @@ class NotificationsPage extends StatelessWidget {
           }
 
           if (state.history.isEmpty) {
-            return const Center(child: Text('No notifications yet.'));
+            return Center(child: Text(localizations.noNotificationsYet));
           }
 
           return ListView.separated(

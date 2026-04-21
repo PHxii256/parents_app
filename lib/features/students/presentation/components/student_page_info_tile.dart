@@ -10,16 +10,30 @@ class StudentPageInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context);
+    final pinCodesLabel = localizations?.pinCodes ?? 'PIN codes';
+    final gradeLabel = localizations == null
+        ? studentData.grade
+        : studentData.localizedGrade(localizations);
+    final pinCodesText = studentData.pinCodes.join(', ');
 
-    var textStyle = TextStyle(fontWeight: FontWeight.w300, fontSize: 15, height: 0.975);
+    var textStyle = TextStyle(
+      fontWeight: FontWeight.w300,
+      fontSize: 15,
+      height: 0.975,
+    );
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 72),
       child: IntrinsicHeight(
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            IconBox(icon: Icons.person, width: 48, height: double.infinity, iconSize: 24),
+            IconBox(
+              icon: Icons.person,
+              width: 48,
+              height: double.infinity,
+              iconSize: 24,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Padding(
@@ -34,24 +48,35 @@ class StudentPageInfoTile extends StatelessWidget {
                       children: [
                         Text(
                           studentData.name,
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, height: 0.95),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 17,
+                            height: 0.95,
+                          ),
                         ),
                       ],
                     ),
                     Row(
                       spacing: 6,
                       children: [
-                        Text(studentData.localizedGrade(localizations), style: textStyle),
+                        Text(
+                          gradeLabel,
+                          style: textStyle,
+                        ),
                         Text('•', style: textStyle),
-                        Text('${localizations.pinCodes}: ', style: textStyle),
-                        ...studentData.pinCodes.map((pin) => Text(pin, style: textStyle)),
+                        Text(
+                          '$pinCodesLabel: $pinCodesText',
+                        ),
                       ],
                     ),
                     Text(
                       studentData.address,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.highlightText, fontSize: 15),
+                      style: TextStyle(
+                        color: AppColors.highlightText,
+                        fontSize: 15,
+                      ),
                     ),
                   ],
                 ),
@@ -69,13 +94,13 @@ class Hypertext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final localizations = AppLocalizations.of(context);
 
     return Row(
       spacing: 4,
       children: [
         Text(
-          localizations.viewInGoogleMaps,
+          localizations?.viewInGoogleMaps ?? 'View in Google Maps',
           style: TextStyle(
             color: AppColors.highlightText,
             fontSize: 15,

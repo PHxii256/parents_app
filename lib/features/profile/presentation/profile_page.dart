@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/auth/data/repositories/auth_repository.dart';
+import 'package:parent_app/features/auth/presentation/otp_page.dart';
 import 'package:parent_app/features/guardian/data/guardian_repository.dart';
+import 'package:parent_app/l10n/app_localizations.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -20,6 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return FutureBuilder<GuardianProfileData>(
       future: _profileFuture,
       builder: (context, snapshot) {
@@ -28,33 +32,33 @@ class _ProfilePageState extends State<ProfilePage> {
         }
         final profile = snapshot.data;
         if (profile == null) {
-          return const Scaffold(body: Center(child: Text('Unable to load profile.')));
+          return Scaffold(body: Center(child: Text(localizations.profileLoadError)));
         }
         return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
         elevation: 0,
-        title: const Text("Profile", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(localizations.profileTab, style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 16),
-          const Text(
-            "Account Information",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Text(
+            localizations.accountInformationTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 12),
-          _buildInfoRow("Name", profile.name),
+          _buildInfoRow(localizations.profileNameLabel, profile.name),
           const SizedBox(height: 8),
-          _buildInfoRow("Primary Phone no.", profile.primaryPhone),
+          _buildInfoRow(localizations.profilePrimaryPhoneLabel, profile.primaryPhone),
           const SizedBox(height: 8),
-          _buildInfoRow("Secondary Phone no.", profile.secondaryPhone),
+          _buildInfoRow(localizations.profileSecondaryPhoneLabel, profile.secondaryPhone),
           const SizedBox(height: 24),
-          const Text(
-            "Your enrolled children",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          Text(
+            localizations.yourEnrolledChildrenTitle,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 12),
           ...profile.children.map((child) => _buildChildTile(child)).toList(),
@@ -64,14 +68,21 @@ class _ProfilePageState extends State<ProfilePage> {
             height: 50,
             child: ElevatedButton(
               onPressed: () {
-                // Reset password logic
+                Navigator.of(context, rootNavigator: true).push(
+                  MaterialPageRoute(
+                    builder: (_) => OtpPage(
+                      email: profile.email,
+                      role: AuthRepository.authPathRoleForEmail(profile.email),
+                    ),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
-              child: const Text("Reset Password", style: TextStyle(fontSize: 18)),
+              child: Text(localizations.resetPasswordButton, style: const TextStyle(fontSize: 18)),
             ),
           ),
         ],

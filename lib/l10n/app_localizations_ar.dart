@@ -127,6 +127,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get studentSearchHint => 'ابحث عن الطلاب بالاسم';
 
   @override
+  String get noStudentsAssignedYet => 'لا يوجد طلاب مخصصون حتى الآن.';
+
+  @override
+  String get noStudentsMatchingFilters => 'لا يوجد طلاب يطابقون عوامل التصفية المحددة.';
+
+  @override
   String get pinCodes => 'رموز PIN';
 
   @override
@@ -192,6 +198,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get staffEndTrip => 'إنهاء الرحلة';
 
   @override
+  String get tripActionConfirmTitle => 'تأكيد إجراء الرحلة';
+
+  @override
+  String tripActionConfirmBody(Object action) {
+    return 'هل أنت متأكد أنك تريد $action؟';
+  }
+
+  @override
   String get schoolCampusLabel => 'الحرم المدرسي';
 
   @override
@@ -205,6 +219,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get studentDroppedOffLabel => 'تم توصيله';
+
+  @override
+  String get studentsFilterTitle => 'تصفية الطلاب';
+
+  @override
+  String get studentsFilterClear => 'مسح';
 
   @override
   String get statusConfirmTitle => 'تأكيد الإجراء';
@@ -230,6 +250,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusActionDroppedOffFalse => 'لم يتم توصيله';
 
   @override
+  String get callContactTitle => 'اتصال بولي الأمر';
+
+  @override
+  String get primaryContactMother => 'جهة الاتصال الأساسية (الأم)';
+
+  @override
+  String get secondaryContactFather => 'جهة الاتصال الثانوية (الأب)';
+
+  @override
   String get commonYes => 'نعم';
 
   @override
@@ -248,7 +277,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get absenceTitle => 'الغياب';
 
   @override
-  String get changePickupDropoff => 'تغيير نقطة الوقوف';
+  String get changePickupDropoff => 'تعديل نقطة التوقف';
 
   @override
   String get tripStatusTitle => 'حالة الرحلة';
@@ -442,6 +471,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get yourEnrolledChildrenTitle => 'الأطفال المسجلون لديك';
 
   @override
+  String get profileLoadError => 'تعذر تحميل الملف الشخصي.';
+
+  @override
+  String get profileNameLabel => 'الاسم';
+
+  @override
+  String get profilePrimaryPhoneLabel => 'رقم الهاتف الأساسي';
+
+  @override
+  String get profileSecondaryPhoneLabel => 'رقم الهاتف الثانوي';
+
+  @override
   String nameLabel(Object name) {
     return 'الاسم: $name';
   }
@@ -476,6 +517,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mapLocationAlreadyLocating => 'يتم تحديد موقعك بالفعل. يُرجى الانتظار قليلًا.';
+
+  @override
+  String get mapPermissionPromptTitle => 'يتطلب الوصول إلى الموقع';
+
+  @override
+  String get mapPermissionPromptBody => 'للتركيز على موقعك الحالي، يُرجى تفعيل خدمات/إذن الموقع من الإعدادات.';
+
+  @override
+  String get mapOpenSettingsButton => 'فتح الإعدادات';
+
+  @override
+  String get invalidGoogleMapsLink => 'تعذر قراءة رابط خرائط جوجل. يُرجى تجربة رابط آخر.';
+
+  @override
+  String get noNotificationsYet => 'لا توجد إشعارات حتى الآن.';
 
   @override
   String get openStreetMapContributors => 'مساهمو OpenStreetMap';

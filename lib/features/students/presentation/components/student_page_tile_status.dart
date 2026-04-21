@@ -5,16 +5,45 @@ import 'package:parent_app/shared/widgets/icon_box.dart';
 
 class StudentPageTileStatus extends StatefulWidget {
   final String studentName;
+  final bool boardedBus;
+  final bool droppedOff;
+  final ValueChanged<bool>? onBoardedChanged;
+  final ValueChanged<bool>? onDroppedOffChanged;
 
-  const StudentPageTileStatus({super.key, required this.studentName});
+  const StudentPageTileStatus({
+    super.key,
+    required this.studentName,
+    this.boardedBus = false,
+    this.droppedOff = false,
+    this.onBoardedChanged,
+    this.onDroppedOffChanged,
+  });
 
   @override
   State<StudentPageTileStatus> createState() => _StudentPageTileStatusState();
 }
 
 class _StudentPageTileStatusState extends State<StudentPageTileStatus> {
-  bool _boardedBus = false;
-  bool _droppedOff = false;
+  late bool _boardedBus;
+  late bool _droppedOff;
+
+  @override
+  void initState() {
+    super.initState();
+    _boardedBus = widget.boardedBus;
+    _droppedOff = widget.droppedOff;
+  }
+
+  @override
+  void didUpdateWidget(covariant StudentPageTileStatus oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.boardedBus != widget.boardedBus) {
+      _boardedBus = widget.boardedBus;
+    }
+    if (oldWidget.droppedOff != widget.droppedOff) {
+      _droppedOff = widget.droppedOff;
+    }
+  }
 
   Future<bool> _confirmStatusChange({required String actionText}) async {
     final localizations = AppLocalizations.of(context)!;
@@ -60,6 +89,10 @@ class _StudentPageTileStatusState extends State<StudentPageTileStatus> {
         _droppedOff = false;
       }
     });
+    widget.onBoardedChanged?.call(nextValue);
+    if (!nextValue) {
+      widget.onDroppedOffChanged?.call(false);
+    }
   }
 
   Future<void> _onDroppedOffChanged(bool nextValue) async {
@@ -75,6 +108,7 @@ class _StudentPageTileStatusState extends State<StudentPageTileStatus> {
     setState(() {
       _droppedOff = nextValue;
     });
+    widget.onDroppedOffChanged?.call(nextValue);
   }
 
   @override

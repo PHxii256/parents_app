@@ -46,58 +46,75 @@ class OtpPage extends StatelessWidget {
       child: Scaffold(
         backgroundColor: Colors.grey.shade200,
         body: Column(
-        children: [
-          /// Yellow Header
-          Stack(
-            children: [
-              Container(
-                height: 260,
-                width: double.infinity,
-                color: Colors.amber,
+          children: [
+            /// Yellow Header
+            Stack(
+              children: [
+                Container(
+                  height: 260,
+                  width: double.infinity,
+                  color: Colors.amber,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Safe Route",
+
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        localizations.appTagline,
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  ),
+                ),
+                SafeArea(
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ],
+            ),
+
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: const BoxDecoration(color: Colors.white),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Safe Route",
-
-                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                      localizations.verificationCodeTitle,
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Text(localizations.appTagline, style: const TextStyle(fontSize: 18)),
+                    const SizedBox(height: 2),
+                    Text(
+                      localizations.sentToEmail(email),
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 24),
+                    OtpGroup(email: email, role: role),
+                    const SizedBox(height: 24),
+                    Resend(
+                      email: email,
+                      role: role,
+                      password: password,
+                      initialSeconds: initialSeconds,
+                    ),
                   ],
                 ),
               ),
-              SafeArea(
-                child: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ),
-            ],
-          ),
-
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(24),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    localizations.verificationCodeTitle,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(localizations.sentToEmail(email), style: const TextStyle(fontSize: 16)),
-                  const SizedBox(height: 24),
-                  OtpGroup(email: email, role: role),
-                  const SizedBox(height: 24),
-                  Resend(email: email, role: role, password: password, initialSeconds: initialSeconds),
-                ],
-              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -163,7 +180,11 @@ class _ResendState extends State<Resend> {
         backgroundColor: Colors.green,
         content: Text(
           localizations.otpCodeSentSuccess,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -183,7 +204,10 @@ class _ResendState extends State<Resend> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(localizations.otpDidNotReceiveCode, style: const TextStyle(fontSize: 16)),
+          Text(
+            localizations.otpDidNotReceiveCode,
+            style: const TextStyle(fontSize: 16),
+          ),
           if (canResend)
             GestureDetector(
               onTap: _resend,
@@ -265,7 +289,11 @@ class _OtpGroupState extends State<OtpGroup> {
     for (var controller in textControllers) {
       text += controller.text;
     }
-    context.read<AuthCubit>().verifyOtp(role: widget.role, email: widget.email, otp: text);
+    context.read<AuthCubit>().verifyOtp(
+      role: widget.role,
+      email: widget.email,
+      otp: text,
+    );
   }
 
   void nextFocus(FocusNode current) {
@@ -286,7 +314,9 @@ class _OtpGroupState extends State<OtpGroup> {
 
   // moves the cursor to the end of the text in the otp box.
   void onTap(TextEditingController controller) {
-    controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
+    controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: controller.text.length),
+    );
   }
 
   List<OtpBox> getOtpBoxes() {
@@ -327,11 +357,14 @@ class _OtpGroupState extends State<OtpGroup> {
             width: 50,
             height: 60,
             decoration: BoxDecoration(
-              color: valid ? AppColors.cta : AppColors.highlight,
+              color: valid ? AppColors.cta : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: AppColors.cta, width: 2),
             ),
-            child: Icon(Icons.check, color: valid ? Colors.white : Colors.amber.shade300),
+            child: Icon(
+              Icons.check,
+              color: valid ? Colors.white : Colors.amber.shade300,
+            ),
           ),
         ),
       ],
@@ -355,7 +388,10 @@ class OtpInputFormatter extends TextInputFormatter {
   });
 
   @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
     final digits = newValue.text.replaceAll(RegExp(r'\D'), '');
 
     if (digits.isEmpty) return const TextEditingValue();
@@ -364,10 +400,17 @@ class OtpInputFormatter extends TextInputFormatter {
     if (newValue.text.length > oldValue.text.length + 1) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         final startIndex = allControllers.indexOf(controller);
-        for (var j = 0; j < digits.length && (startIndex + j) < allControllers.length; j++) {
+        for (
+          var j = 0;
+          j < digits.length && (startIndex + j) < allControllers.length;
+          j++
+        ) {
           allControllers[startIndex + j].text = digits[j];
         }
-        final lastFilled = (startIndex + digits.length - 1).clamp(0, allControllers.length - 1);
+        final lastFilled = (startIndex + digits.length - 1).clamp(
+          0,
+          allControllers.length - 1,
+        );
         final nextIndex = lastFilled + 1;
         if (nextIndex < allFocusNodes.length) {
           allFocusNodes[nextIndex].requestFocus();
@@ -375,7 +418,10 @@ class OtpInputFormatter extends TextInputFormatter {
           allFocusNodes[lastFilled].unfocus();
         }
       });
-      return TextEditingValue(text: digits[0], selection: const TextSelection.collapsed(offset: 1));
+      return TextEditingValue(
+        text: digits[0],
+        selection: const TextSelection.collapsed(offset: 1),
+      );
     }
 
     // Single digit typed — take the last digit (handles replacing an existing one)
@@ -383,7 +429,10 @@ class OtpInputFormatter extends TextInputFormatter {
     if (oldValue.text != result) {
       WidgetsBinding.instance.addPostFrameCallback((_) => nextFocus(focusNode));
     }
-    return TextEditingValue(text: result, selection: const TextSelection.collapsed(offset: 1));
+    return TextEditingValue(
+      text: result,
+      selection: const TextSelection.collapsed(offset: 1),
+    );
   }
 }
 
@@ -430,7 +479,10 @@ class OtpBox extends StatelessWidget {
             ),
           ],
           onTap: () => onTap(controller),
-          decoration: InputDecoration(counterText: "", border: InputBorder.none),
+          decoration: InputDecoration(
+            counterText: "",
+            border: InputBorder.none,
+          ),
         ),
       ),
     );

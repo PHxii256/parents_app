@@ -51,6 +51,8 @@
   "quickActionsTitle": "إجراءات سريعة",
   "students": "الطلاب",
   "studentSearchHint": "ابحث عن الطلاب بالاسم",
+  "noStudentsAssignedYet": "لا يوجد طلاب مخصصون حتى الآن.",
+  "noStudentsMatchingFilters": "لا يوجد طلاب يطابقون عوامل التصفية المحددة.",
   "pinCodes": "رموز PIN",
   "status": "الحالة",
   "comingToday": "سيحضر اليوم",
@@ -77,11 +79,20 @@
   "staffOpenInGoogleMaps": "عرض في خرائط جوجل",
   "staffStartTrip": "بدء الرحلة",
   "staffEndTrip": "إنهاء الرحلة",
+  "tripActionConfirmTitle": "تأكيد إجراء الرحلة",
+  "tripActionConfirmBody": "هل أنت متأكد أنك تريد {action}؟",
+  "@tripActionConfirmBody": {
+    "placeholders": {
+      "action": {}
+    }
+  },
   "schoolCampusLabel": "الحرم المدرسي",
   "schoolStopLabel": "موقف المدرسة",
   "locateStudent": "العثور على الموقع",
   "studentBoardedBusLabel": "ركب الأتوبيس",
   "studentDroppedOffLabel": "تم توصيله",
+  "studentsFilterTitle": "تصفية الطلاب",
+  "studentsFilterClear": "مسح",
   "statusConfirmTitle": "تأكيد الإجراء",
   "statusConfirmQuestion": "هل أنت متأكد أن {studentName} {actionText}؟",
   "@statusConfirmQuestion": {
@@ -95,13 +106,16 @@
   "statusActionBoardedBusFalse": "لم يركب الأتوبيس",
   "statusActionDroppedOffTrue": "تم توصيله",
   "statusActionDroppedOffFalse": "لم يتم توصيله",
+  "callContactTitle": "اتصال بولي الأمر",
+  "primaryContactMother": "جهة الاتصال الأساسية (الأم)",
+  "secondaryContactFather": "جهة الاتصال الثانوية (الأب)",
   "commonYes": "نعم",
   "commonNo": "لا",
   "commonCancel": "إلغاء",
   "commonConfirm": "تأكيد",
   "pinCodeTitle": "رمز PIN",
   "absenceTitle": "الغياب",
-  "changePickupDropoff": "تغيير نقطة الوقوف",
+  "changePickupDropoff": "تعديل نقطة التوقف",
   "tripStatusTitle": "حالة الرحلة",
   "onTheWay": "في الطريق",
   "noTripCurrently": "لا توجد رحلة حالياً",
@@ -177,6 +191,10 @@
 
   "accountInformationTitle": "معلومات الحساب",
   "yourEnrolledChildrenTitle": "الأطفال المسجلون لديك",
+  "profileLoadError": "تعذر تحميل الملف الشخصي.",
+  "profileNameLabel": "الاسم",
+  "profilePrimaryPhoneLabel": "رقم الهاتف الأساسي",
+  "profileSecondaryPhoneLabel": "رقم الهاتف الثانوي",
   "nameLabel": "الاسم: {name}",
   "@nameLabel": {
     "placeholders": {
@@ -203,6 +221,11 @@
   "mapLocationUnavailable": "تعذر تحديد موقعك الحالي. تم تمركز الخريطة على منطقة افتراضية.",
   "mapLocatingInProgress": "جارٍ تحديد موقعك…",
   "mapLocationAlreadyLocating": "يتم تحديد موقعك بالفعل. يُرجى الانتظار قليلًا.",
+  "mapPermissionPromptTitle": "يتطلب الوصول إلى الموقع",
+  "mapPermissionPromptBody": "للتركيز على موقعك الحالي، يُرجى تفعيل خدمات/إذن الموقع من الإعدادات.",
+  "mapOpenSettingsButton": "فتح الإعدادات",
+  "invalidGoogleMapsLink": "تعذر قراءة رابط خرائط جوجل. يُرجى تجربة رابط آخر.",
+  "noNotificationsYet": "لا توجد إشعارات حتى الآن.",
   "openStreetMapContributors": "مساهمو OpenStreetMap",
   "schoolSuffix": "المدرسة"
 }

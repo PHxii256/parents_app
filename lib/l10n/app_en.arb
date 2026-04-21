@@ -53,6 +53,8 @@
   "quickActionsTitle": "Quick Actions",
   "students": "Students",
   "studentSearchHint": "Search students by name",
+  "noStudentsAssignedYet": "No students assigned yet.",
+  "noStudentsMatchingFilters": "No students matching selected filters.",
   "pinCodes": "PIN codes",
   "status": "Status",
   "comingToday": "Coming Today",
@@ -79,11 +81,20 @@
   "staffOpenInGoogleMaps": "View In Google Maps",
   "staffStartTrip": "Start Trip",
   "staffEndTrip": "End Trip",
+  "tripActionConfirmTitle": "Confirm Trip Action",
+  "tripActionConfirmBody": "Are you sure you want to {action}?",
+  "@tripActionConfirmBody": {
+    "placeholders": {
+      "action": {}
+    }
+  },
   "schoolCampusLabel": "School Campus",
   "schoolStopLabel": "School Stop",
   "locateStudent": "Find location",
   "studentBoardedBusLabel": "Boarded Bus",
   "studentDroppedOffLabel": "Dropped off",
+  "studentsFilterTitle": "Filter Students",
+  "studentsFilterClear": "Clear",
   "statusConfirmTitle": "Confirm Action",
   "statusConfirmQuestion": "Are you sure {studentName} {actionText}?",
   "@statusConfirmQuestion": {
@@ -97,13 +108,16 @@
   "statusActionBoardedBusFalse": "has not boarded the bus",
   "statusActionDroppedOffTrue": "has been dropped off",
   "statusActionDroppedOffFalse": "has not been dropped off",
+  "callContactTitle": "Call Guardian",
+  "primaryContactMother": "Primary Contact (Mother)",
+  "secondaryContactFather": "Secondary Contact (Father)",
   "commonYes": "Yes",
   "commonNo": "No",
   "commonCancel": "Cancel",
   "commonConfirm": "Confirm",
   "pinCodeTitle": "Pin Code",
   "absenceTitle": "Absence",
-  "changePickupDropoff": "Change Pickup/Drop-off",
+  "changePickupDropoff": "Edit Stop Location",
   "tripStatusTitle": "Trip Status",
   "onTheWay": "On the way",
   "noTripCurrently": "No trip currently",
@@ -145,7 +159,7 @@
   "temporaryPinCopied": "Temporary PIN copied!",
 
   "requestTitle": "Request",
-  "changePickupDropoff": "Change Stop Location",
+  "changePickupDropoff": "Edit Stop Location",
   "changeRequestDateSubtitle": "Tomorrow (Wednesday 16/3)",
   "pickupLabel": "Pickup",
   "dropoffLabel": "Dropoff",
@@ -179,6 +193,10 @@
 
   "accountInformationTitle": "Account Information",
   "yourEnrolledChildrenTitle": "Your Enrolled Children",
+  "profileLoadError": "Unable to load profile.",
+  "profileNameLabel": "Name",
+  "profilePrimaryPhoneLabel": "Primary Phone no.",
+  "profileSecondaryPhoneLabel": "Secondary Phone no.",
   "nameLabel": "Name: {name}",
   "@nameLabel": {
     "placeholders": {
@@ -205,6 +223,11 @@
   "mapLocationUnavailable": "Couldn’t determine your current location. The map is centered on a default area.",
   "mapLocatingInProgress": "Getting your location…",
   "mapLocationAlreadyLocating": "Already getting your location. Please wait a moment.",
+  "mapPermissionPromptTitle": "Location access required",
+  "mapPermissionPromptBody": "To focus on your live location, please enable location services/permission in settings.",
+  "mapOpenSettingsButton": "Open settings",
+  "invalidGoogleMapsLink": "Couldn’t parse this Google Maps link. Please try another link.",
+  "noNotificationsYet": "No notifications yet.",
   "openStreetMapContributors": "OpenStreetMap contributors",
   "schoolSuffix": "School"
 }

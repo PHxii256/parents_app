@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/home/cubit/driver_trip_session_cubit.dart';
 import 'package:parent_app/features/home/cubit/driver_trip_session_state.dart';
+import 'package:parent_app/features/locations/service/gmap_url_util.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
 import 'package:parent_app/shared/widgets/rounded_cta_button.dart';
@@ -20,6 +21,52 @@ class StaffQuickActions extends StatelessWidget {
     required this.onLocateStudent,
     this.isDriver = false,
   });
+
+  Future<bool> _confirmTripToggle(BuildContext context, {required bool tripActive}) async {
+    final localizations = AppLocalizations.of(context)!;
+    final actionLabel = tripActive ? localizations.staffEndTrip : localizations.staffStartTrip;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(localizations.tripActionConfirmTitle),
+        content: Text(localizations.tripActionConfirmBody(actionLabel)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(localizations.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(localizations.commonConfirm),
+          ),
+        ],
+      ),
+    );
+
+    return result ?? false;
+  }
+
+  Future<Uri?> _buildGoogleMapsDirectionsUri(StudentData student) async {
+    final directCoords = student.toLatLng();
+    final resolvedCoords = directCoords ?? await parseGmapsUrl(student.gMapsLink);
+    if (resolvedCoords == null) {
+      return Uri.tryParse(student.gMapsLink);
+    }
+
+    return Uri.https('www.google.com', '/maps/dir/', {
+      'api': '1',
+      'destination': '${resolvedCoords.latitude},${resolvedCoords.longitude}',
+      'travelmode': 'driving',
+      'dir_action': 'navigate',
+    });
+  }
+
+  Future<void> _openInGoogleMaps(BuildContext context) async {
+    if (currentStudent == null) return;
+    final uri = await _buildGoogleMapsDirectionsUri(currentStudent!);
+    if (uri == null) return;
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +100,12 @@ class StaffQuickActions extends StatelessWidget {
                   final buttonLabel = tripActive ? endTripLabel : startTripLabel;
                   return RoundedCtaButton(
                     text: buttonLabel,
-                    onTap: () {
+                    onTap: () async {
+                      final confirmed = await _confirmTripToggle(context, tripActive: tripActive);
+                      if (!confirmed) {
+                        return;
+                      }
+
                       if (tripActive) {
                         context.read<DriverTripSessionCubit>().endSession();
                       } else {
@@ -111,10 +163,7 @@ class StaffQuickActions extends StatelessWidget {
                         iconSize: 32,
                         width: mapsTileWidth,
                         onTap: currentStudent != null
-                            ? () => launchUrl(
-                                Uri.parse(currentStudent!.gMapsLink),
-                                mode: LaunchMode.externalApplication,
-                              )
+                            ? () => _openInGoogleMaps(context)
                             : null,
                       ),
                       Text(openMapsLabel, style: labelStyle),

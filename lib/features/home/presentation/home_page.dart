@@ -101,31 +101,45 @@ class _HomePageState extends State<HomePage> {
             ? Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Divider(color: Color.fromARGB(40, 97, 117, 138), thickness: 1),
+                  const Divider(
+                    color: Color.fromARGB(40, 97, 117, 138),
+                    thickness: 1,
+                  ),
                   BlocBuilder<NotificationsCubit, NotificationsState>(
                     builder: (context, notificationsState) {
                       final unread = notificationsState.unreadCount;
-                      return NavigationBar(
-                        labelPadding: const EdgeInsets.only(top: 6),
-                        backgroundColor: Colors.transparent,
-                        selectedIndex: _currentIndex,
-                        onDestinationSelected: (value) {
-                          final selectedConfig = destinations[value];
-                          if (selectedConfig.markNotificationsAsReadOnSelect) {
-                            context.read<NotificationsCubit>().markAllAsRead();
-                          }
-                          if (value == _currentIndex) {
-                            _navigatorKeys[value].currentState?.popUntil((route) => route.isFirst);
-                          } else {
-                            setState(() {
-                              _currentIndex = value;
-                              _initializedTabs.add(value);
-                            });
-                          }
-                        },
-                        destinations: destinations
-                            .map((config) => config.destinationBuilder(context, unread))
-                            .toList(),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8.0),
+                        child: NavigationBar(
+                          labelPadding: const EdgeInsets.only(top: 6),
+                          backgroundColor: Colors.transparent,
+                          selectedIndex: _currentIndex,
+                          onDestinationSelected: (value) {
+                            final selectedConfig = destinations[value];
+                            if (selectedConfig
+                                .markNotificationsAsReadOnSelect) {
+                              context
+                                  .read<NotificationsCubit>()
+                                  .markAllAsRead();
+                            }
+                            if (value == _currentIndex) {
+                              _navigatorKeys[value].currentState?.popUntil(
+                                (route) => route.isFirst,
+                              );
+                            } else {
+                              setState(() {
+                                _currentIndex = value;
+                                _initializedTabs.add(value);
+                              });
+                            }
+                          },
+                          destinations: destinations
+                              .map(
+                                (config) =>
+                                    config.destinationBuilder(context, unread),
+                              )
+                              .toList(),
+                        ),
                       );
                     },
                   ),

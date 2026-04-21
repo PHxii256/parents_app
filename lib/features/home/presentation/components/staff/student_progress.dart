@@ -8,6 +8,7 @@ class StudentProgress extends StatelessWidget {
   final int totalStudents;
   final VoidCallback? onPrevious;
   final VoidCallback? onNext;
+  final bool isSchoolTile;
 
   const StudentProgress({
     super.key,
@@ -15,6 +16,7 @@ class StudentProgress extends StatelessWidget {
     required this.totalStudents,
     this.onPrevious,
     this.onNext,
+    this.isSchoolTile = false,
   });
 
   @override
@@ -39,7 +41,7 @@ class StudentProgress extends StatelessWidget {
                   CircularActionButton(icon: Icons.navigate_before, onTap: onPrevious),
                   Text(totalStudents == 0 ? "0/0" : "${currentIndex + 1}/$totalStudents"),
                   CircularActionButton(icon: Icons.navigate_next, onTap: onNext),
-                  AttendanceStatusCircle(),
+                  AttendanceStatusCircle(icon: isSchoolTile ? Icons.remove : Icons.close),
                   //AttendanceStatusCircle(color: Colors.red, icon: Icons.close),
                 ],
               ),

@@ -323,6 +323,18 @@ abstract class AppLocalizations {
   /// **'Search students by name'**
   String get studentSearchHint;
 
+  /// No description provided for @noStudentsAssignedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No students assigned yet.'**
+  String get noStudentsAssignedYet;
+
+  /// No description provided for @noStudentsMatchingFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No students matching selected filters.'**
+  String get noStudentsMatchingFilters;
+
   /// No description provided for @pinCodes.
   ///
   /// In en, this message translates to:
@@ -449,6 +461,18 @@ abstract class AppLocalizations {
   /// **'End Trip'**
   String get staffEndTrip;
 
+  /// No description provided for @tripActionConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Trip Action'**
+  String get tripActionConfirmTitle;
+
+  /// No description provided for @tripActionConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to {action}?'**
+  String tripActionConfirmBody(Object action);
+
   /// No description provided for @schoolCampusLabel.
   ///
   /// In en, this message translates to:
@@ -478,6 +502,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Dropped off'**
   String get studentDroppedOffLabel;
+
+  /// No description provided for @studentsFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Students'**
+  String get studentsFilterTitle;
+
+  /// No description provided for @studentsFilterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get studentsFilterClear;
 
   /// No description provided for @statusConfirmTitle.
   ///
@@ -521,6 +557,24 @@ abstract class AppLocalizations {
   /// **'has not been dropped off'**
   String get statusActionDroppedOffFalse;
 
+  /// No description provided for @callContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Guardian'**
+  String get callContactTitle;
+
+  /// No description provided for @primaryContactMother.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Contact (Mother)'**
+  String get primaryContactMother;
+
+  /// No description provided for @secondaryContactFather.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Contact (Father)'**
+  String get secondaryContactFather;
+
   /// No description provided for @commonYes.
   ///
   /// In en, this message translates to:
@@ -560,7 +614,7 @@ abstract class AppLocalizations {
   /// No description provided for @changePickupDropoff.
   ///
   /// In en, this message translates to:
-  /// **'Change Stop Location'**
+  /// **'Edit Stop Location'**
   String get changePickupDropoff;
 
   /// No description provided for @tripStatusTitle.
@@ -941,6 +995,30 @@ abstract class AppLocalizations {
   /// **'Your Enrolled Children'**
   String get yourEnrolledChildrenTitle;
 
+  /// No description provided for @profileLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load profile.'**
+  String get profileLoadError;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileNameLabel;
+
+  /// No description provided for @profilePrimaryPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary Phone no.'**
+  String get profilePrimaryPhoneLabel;
+
+  /// No description provided for @profileSecondaryPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Secondary Phone no.'**
+  String get profileSecondaryPhoneLabel;
+
   /// No description provided for @nameLabel.
   ///
   /// In en, this message translates to:
@@ -1000,6 +1078,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Already getting your location. Please wait a moment.'**
   String get mapLocationAlreadyLocating;
+
+  /// No description provided for @mapPermissionPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access required'**
+  String get mapPermissionPromptTitle;
+
+  /// No description provided for @mapPermissionPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To focus on your live location, please enable location services/permission in settings.'**
+  String get mapPermissionPromptBody;
+
+  /// No description provided for @mapOpenSettingsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get mapOpenSettingsButton;
+
+  /// No description provided for @invalidGoogleMapsLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn’t parse this Google Maps link. Please try another link.'**
+  String get invalidGoogleMapsLink;
+
+  /// No description provided for @noNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet.'**
+  String get noNotificationsYet;
 
   /// No description provided for @openStreetMapContributors.
   ///

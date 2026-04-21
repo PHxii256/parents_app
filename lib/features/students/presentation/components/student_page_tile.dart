@@ -6,7 +6,20 @@ import 'package:parent_app/features/students/presentation/components/student_pag
 
 class StudentPageTile extends StatelessWidget {
   final StudentData student;
-  const StudentPageTile({super.key, required this.student});
+  final VoidCallback? onLocationTap;
+  final bool boardedBus;
+  final bool droppedOff;
+  final ValueChanged<bool>? onBoardedChanged;
+  final ValueChanged<bool>? onDroppedOffChanged;
+  const StudentPageTile({
+    super.key,
+    required this.student,
+    this.onLocationTap,
+    this.boardedBus = false,
+    this.droppedOff = false,
+    this.onBoardedChanged,
+    this.onDroppedOffChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +27,15 @@ class StudentPageTile extends StatelessWidget {
       children: [
         StudentPageInfoTile(studentData: student),
         SizedBox(height: 4),
-        ContactParentsTile(),
+        ContactParentsTile(onLocationTap: onLocationTap),
         SizedBox(height: 4),
-        StudentPageTileStatus(studentName: student.name),
+        StudentPageTileStatus(
+          studentName: student.name,
+          boardedBus: boardedBus,
+          droppedOff: droppedOff,
+          onBoardedChanged: onBoardedChanged,
+          onDroppedOffChanged: onDroppedOffChanged,
+        ),
       ],
     );
   }

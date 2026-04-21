@@ -127,6 +127,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get studentSearchHint => 'Search students by name';
 
   @override
+  String get noStudentsAssignedYet => 'No students assigned yet.';
+
+  @override
+  String get noStudentsMatchingFilters => 'No students matching selected filters.';
+
+  @override
   String get pinCodes => 'PIN codes';
 
   @override
@@ -192,6 +198,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffEndTrip => 'End Trip';
 
   @override
+  String get tripActionConfirmTitle => 'Confirm Trip Action';
+
+  @override
+  String tripActionConfirmBody(Object action) {
+    return 'Are you sure you want to $action?';
+  }
+
+  @override
   String get schoolCampusLabel => 'School Campus';
 
   @override
@@ -205,6 +219,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get studentDroppedOffLabel => 'Dropped off';
+
+  @override
+  String get studentsFilterTitle => 'Filter Students';
+
+  @override
+  String get studentsFilterClear => 'Clear';
 
   @override
   String get statusConfirmTitle => 'Confirm Action';
@@ -230,6 +250,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusActionDroppedOffFalse => 'has not been dropped off';
 
   @override
+  String get callContactTitle => 'Call Guardian';
+
+  @override
+  String get primaryContactMother => 'Primary Contact (Mother)';
+
+  @override
+  String get secondaryContactFather => 'Secondary Contact (Father)';
+
+  @override
   String get commonYes => 'Yes';
 
   @override
@@ -248,7 +277,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get absenceTitle => 'Absence';
 
   @override
-  String get changePickupDropoff => 'Change Stop Location';
+  String get changePickupDropoff => 'Edit Stop Location';
 
   @override
   String get tripStatusTitle => 'Trip Status';
@@ -442,6 +471,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yourEnrolledChildrenTitle => 'Your Enrolled Children';
 
   @override
+  String get profileLoadError => 'Unable to load profile.';
+
+  @override
+  String get profileNameLabel => 'Name';
+
+  @override
+  String get profilePrimaryPhoneLabel => 'Primary Phone no.';
+
+  @override
+  String get profileSecondaryPhoneLabel => 'Secondary Phone no.';
+
+  @override
   String nameLabel(Object name) {
     return 'Name: $name';
   }
@@ -476,6 +517,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapLocationAlreadyLocating => 'Already getting your location. Please wait a moment.';
+
+  @override
+  String get mapPermissionPromptTitle => 'Location access required';
+
+  @override
+  String get mapPermissionPromptBody => 'To focus on your live location, please enable location services/permission in settings.';
+
+  @override
+  String get mapOpenSettingsButton => 'Open settings';
+
+  @override
+  String get invalidGoogleMapsLink => 'Couldn’t parse this Google Maps link. Please try another link.';
+
+  @override
+  String get noNotificationsYet => 'No notifications yet.';
 
   @override
   String get openStreetMapContributors => 'OpenStreetMap contributors';

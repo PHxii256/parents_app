@@ -20,11 +20,18 @@ class ConfirmLocationButton extends StatelessWidget {
             addressLine: addressLine,
           );
           GuardianRepository().createLocation(
-            SavedLocation(id: location.id, name: location.name, addressLine: location.addressLine),
+            SavedLocation(
+              id: location.id,
+              name: location.name,
+              addressLine: location.addressLine,
+            ),
           );
 
           // Add to cubit for existing listeners
-          context.read<ChangeLocationCubit>().addAddress(locationName, addressLine);
+          context.read<ChangeLocationCubit>().addAddress(
+            locationName,
+            addressLine,
+          );
         },
       ),
     );
@@ -45,7 +52,10 @@ class ConfirmLocationButton extends StatelessWidget {
           onPressed: () => _showLocationDialog(context),
           child: Text(
             localizations.confirmLocationButton,
-            style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -69,7 +79,8 @@ class _LocationDialog extends StatefulWidget {
 class _LocationDialogState extends State<_LocationDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _locationNameController = TextEditingController();
-  final TextEditingController _locationAddressLineController = TextEditingController();
+  final TextEditingController _locationAddressLineController =
+      TextEditingController();
 
   @override
   void dispose() {
@@ -98,9 +109,17 @@ class _LocationDialogState extends State<_LocationDialog> {
       actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Text(localizations.addLocationDetailsTitle, style: const TextStyle(fontSize: 18)),
+        child: Text(
+          localizations.addLocationDetailsTitle,
+          style: const TextStyle(fontSize: 18),
+        ),
       ),
-      actions: [TextButton(onPressed: submitLocation, child: Text(localizations.doneButton))],
+      actions: [
+        TextButton(
+          onPressed: submitLocation,
+          child: Text(localizations.doneButton),
+        ),
+      ],
       content: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Form(

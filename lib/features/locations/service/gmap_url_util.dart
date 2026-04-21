@@ -37,13 +37,9 @@ Future<LatLng?> parseGmapsUrl(String url) async {
     // 4. Check data parameters like !3d..!4d..
     coords ??= _parseDataPattern(finalUrl);
 
-    // 5. Last resort: scan any lat,lng pair from text
-    coords ??= _parseAnyLatLngFromText(finalUrl);
-
     // If still null and we have HTML from a short URL, try parsing from that too
     if (coords == null && html != null) {
       coords ??= _parseDataPattern(html);
-      coords ??= _parseAnyLatLngFromText(html);
     }
 
     return coords;
@@ -158,28 +154,28 @@ LatLng? _parsePlacePattern(String url) {
 
 /// Parses coordinates from data parameters like !3d.. !4d..
 LatLng? _parseDataPattern(String text) {
-  final regex = RegExp(r'!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)');
-  final match = regex.firstMatch(text);
-  if (match != null) {
-    final lat = double.tryParse(match.group(1)!);
-    final lng = double.tryParse(match.group(2)!);
+  // Common data payload pattern in many place links.
+  final regex34 = RegExp(r'!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)');
+  final match34 = regex34.firstMatch(text);
+  if (match34 != null) {
+    final lat = double.tryParse(match34.group(1)!);
+    final lng = double.tryParse(match34.group(2)!);
     if (lat != null && lng != null) {
       return LatLng(lat, lng);
     }
   }
+
+  // Seen in named place links where preview payload stores lon then lat.
+  final regex23 = RegExp(r'!2d(-?\d+(?:\.\d+)?)!3d(-?\d+(?:\.\d+)?)');
+  final match23 = regex23.firstMatch(text);
+  if (match23 != null) {
+    final lng = double.tryParse(match23.group(1)!);
+    final lat = double.tryParse(match23.group(2)!);
+    if (lat != null && lng != null) {
+      return LatLng(lat, lng);
+    }
+  }
+
   return null;
 }
 
-/// Last-resort parser: finds any "lat,lng" pair in a string.
-LatLng? _parseAnyLatLngFromText(String text) {
-  final regex = RegExp(r'(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)');
-  final match = regex.firstMatch(text);
-  if (match != null) {
-    final lat = double.tryParse(match.group(1)!);
-    final lng = double.tryParse(match.group(2)!);
-    if (lat != null && lng != null) {
-      return LatLng(lat, lng);
-    }
-  }
-  return null;
-}

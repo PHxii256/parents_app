@@ -82,7 +82,14 @@ class _GmapsSearchState extends State<GmapsSearch> {
               InkWell(
                 onTap: () async {
                   final coords = await parseGmapsUrl(controller.text);
-                  if (coords != null) widget.cb(coords);
+                  if (coords != null) {
+                    widget.cb(coords);
+                    return;
+                  }
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(localizations.invalidGoogleMapsLink)),
+                  );
                 },
                 child: Container(
                   height: 56,

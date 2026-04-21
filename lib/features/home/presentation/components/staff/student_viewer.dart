@@ -63,6 +63,28 @@ class _StudentViewerState extends State<StudentViewer> {
     );
   }
 
+  StudentData? _toStudentData(RouteStudentItem item, AppLocalizations localizations, int index) {
+    if (!item.isSchool) {
+      return item.studentData;
+    }
+    final isCampusSchool = index == 0;
+    final schoolPlaceLabel = isCampusSchool ? localizations.schoolCampusLabel : localizations.schoolStopLabel;
+    return StudentData(
+      id: -1,
+      name: item.name,
+      grade: '',
+      pinCodes: const [],
+      address: schoolPlaceLabel,
+      gMapsLink: item.gMapsUrl,
+      coords: item.coords == null
+          ? const []
+          : [
+              item.coords!.latitude.toString(),
+              item.coords!.longitude.toString(),
+            ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_items.isEmpty) {
@@ -109,6 +131,7 @@ class _StudentViewerState extends State<StudentViewer> {
           totalStudents: _items.length - 2,
           onPrevious: goBack(),
           onNext: goNext(maxIndex),
+          isSchoolTile: _items[_currentIndex].isSchool,
         ),
         const SizedBox(height: 12),
         SizedBox(
@@ -122,25 +145,15 @@ class _StudentViewerState extends State<StudentViewer> {
             itemBuilder: (context, index) {
               final item = _items[index];
               if (item.isSchool) {
-                final isCampusSchool = index == 0;
-                final schoolPlaceLabel =
-                    isCampusSchool ? localizations.schoolCampusLabel : localizations.schoolStopLabel;
+                final schoolData = _toStudentData(item, localizations, index)!;
                 return Column(
                   children: [
                     StudentInfoTile(
                       iconOverride: Icons.school,
-                      studentData: StudentData(
-                        id: -1,
-                        name: item.name,
-                        grade: '',
-                        pinCodes: const [],
-                        address: schoolPlaceLabel,
-                        gMapsLink: item.gMapsUrl,
-                        coords: const [],
-                      ),
+                      studentData: schoolData,
                     ),
                     const SizedBox(height: 6),
-                    StudentStatus(statusOverride: schoolPlaceLabel),
+                    StudentStatus(statusOverride: schoolData.address),
                   ],
                 );
               }
@@ -158,7 +171,7 @@ class _StudentViewerState extends State<StudentViewer> {
         ),
         const SizedBox(height: 12),
         StaffQuickActions(
-          currentStudent: _items[_currentIndex].studentData,
+          currentStudent: _toStudentData(_items[_currentIndex], localizations, _currentIndex),
           onLocateStudent: widget.onLocateStudent,
           isDriver: widget.isDriver,
         ),

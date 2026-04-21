@@ -10,47 +10,60 @@ class StudentsRepository {
 
   StudentsRepository({Dio? dio}) : _dio = dio ?? ApiClient.dio;
 
-  Future<List<RouteStudentItem>> fetchRouteStudents({required String direction}) async {
+  Future<List<RouteStudentItem>> fetchRouteStudents({
+    required String direction,
+  }) async {
     if (!ApiConfig.useRealApi) {
       return _mockRouteStudents();
     }
 
-    final response = await _dio.get('/api/v1/routes/students', queryParameters: {'direction': direction});
+    final response = await _dio.get(
+      '/api/v1/routes/students',
+      queryParameters: {'direction': direction},
+    );
     final body = response.data;
-    final rawData = body is Map<String, dynamic> ? (body['data'] ?? body) : body;
-    final students = rawData is Map<String, dynamic> ? rawData['students'] : null;
+    final rawData = body is Map<String, dynamic>
+        ? (body['data'] ?? body)
+        : body;
+    final students = rawData is Map<String, dynamic>
+        ? rawData['students']
+        : null;
     if (students is! List) {
       return _mockRouteStudents();
     }
 
-    final mapped =
-        students.whereType<Map<String, dynamic>>().map((student) {
-          final pickup = student['activePickup'] as Map<String, dynamic>?;
-          final coords = pickup?['coords'];
-          LatLng? location;
-          if (coords is List && coords.length >= 2) {
-            location = LatLng((coords[0] as num).toDouble(), (coords[1] as num).toDouble());
-          }
-          final gMapsUrl = pickup?['gMapsUrl']?.toString() ?? '';
-          final address = pickup?['description']?.toString() ?? '';
-          final name = student['name']?.toString() ?? 'Student';
-          return RouteStudentItem(
-            id: student['id']?.toString() ?? name,
-            name: name,
-            address: address,
-            gMapsUrl: gMapsUrl,
-            coords: location,
-            studentData: StudentData(
-              id: int.tryParse(student['id']?.toString() ?? '') ?? 0,
-              name: name,
-              grade: student['grade']?.toString() ?? '',
-              pinCodes: const [],
-              address: address,
-              gMapsLink: gMapsUrl,
-              coords: coords is List ? coords.map((e) => e.toString()).toList() : const [],
-            ),
-          );
-        }).toList();
+    final mapped = students.whereType<Map<String, dynamic>>().map((student) {
+      final pickup = student['activePickup'] as Map<String, dynamic>?;
+      final coords = pickup?['coords'];
+      LatLng? location;
+      if (coords is List && coords.length >= 2) {
+        location = LatLng(
+          (coords[0] as num).toDouble(),
+          (coords[1] as num).toDouble(),
+        );
+      }
+      final gMapsUrl = pickup?['gMapsUrl']?.toString() ?? '';
+      final address = pickup?['description']?.toString() ?? '';
+      final name = student['name']?.toString() ?? 'Student';
+      return RouteStudentItem(
+        id: student['id']?.toString() ?? name,
+        name: name,
+        address: address,
+        gMapsUrl: gMapsUrl,
+        coords: location,
+        studentData: StudentData(
+          id: int.tryParse(student['id']?.toString() ?? '') ?? 0,
+          name: name,
+          grade: student['grade']?.toString() ?? '',
+          pinCodes: const [],
+          address: address,
+          gMapsLink: gMapsUrl,
+          coords: coords is List
+              ? coords.map((e) => e.toString()).toList()
+              : const [],
+        ),
+      );
+    }).toList();
 
     return withSchoolEndpoints(mapped);
   }
@@ -93,19 +106,18 @@ class StudentsRepository {
   }
 
   List<RouteStudentItem> _mockRouteStudents() {
-    final mapped =
-        StudentData.mockStudentData
-            .map(
-              (student) => RouteStudentItem(
-                id: student.id.toString(),
-                name: student.name,
-                address: student.address,
-                gMapsUrl: student.gMapsLink,
-                coords: student.toLatLng(),
-                studentData: student,
-              ),
-            )
-            .toList();
+    final mapped = StudentData.mockStudentData
+        .map(
+          (student) => RouteStudentItem(
+            id: student.id.toString(),
+            name: student.name,
+            address: student.address,
+            gMapsUrl: student.gMapsLink,
+            coords: student.toLatLng(),
+            studentData: student,
+          ),
+        )
+        .toList();
     return withSchoolEndpoints(mapped);
   }
 
@@ -114,8 +126,8 @@ class StudentsRepository {
       id: 'school',
       name: 'Victory College School',
       address: 'School Campus',
-      gMapsUrl: 'https://maps.app.goo.gl/JAHtk8j2YfS2DE5j9',
-      coords: null,
+      gMapsUrl: 'https://maps.app.goo.gl/JqJKgJL8GUo2LHBA7',
+      coords: LatLng(29.962477, 31.271561),
       isSchool: true,
     );
   }
