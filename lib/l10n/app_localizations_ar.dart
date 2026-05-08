@@ -406,6 +406,39 @@ class AppLocalizationsAr extends AppLocalizations {
   String get requestTitle => 'طلب';
 
   @override
+  String get changeRequestSubmitError => 'تعذر إرسال الطلب. يُرجى المحاولة مرة أخرى.';
+
+  @override
+  String get changeRequestPendingServerTitle => 'يوجد طلب تغيير نقطة توقف قيد المعالجة';
+
+  @override
+  String get changeRequestPendingServerBody => 'لديك طلب قيد المراجعة أو تم قبوله ولم يكتمل بعد. ألغِ الطلب لتتمكن من إرسال طلب جديد.';
+
+  @override
+  String get changeRequestFieldStatus => 'الحالة';
+
+  @override
+  String get changeRequestFieldTargetDate => 'تاريخ التطبيق';
+
+  @override
+  String get changeRequestFieldChangeType => 'نوع التغيير';
+
+  @override
+  String get changeRequestFieldNewLocationId => 'معرف الموقع';
+
+  @override
+  String get changeRequestFieldEffectiveUntil => 'ساري حتى';
+
+  @override
+  String get changeRequestCancelServerRequest => 'إلغاء هذا الطلب';
+
+  @override
+  String get changeRequestCancelFailed => 'تعذر الإلغاء. حاول لاحقًا.';
+
+  @override
+  String get busStopChangeDateTitle => 'تاريخ تغيير نقطة التوقف';
+
+  @override
   String get changeRequestDateSubtitle => 'غداً (الأربعاء 16/3)';
 
   @override
@@ -550,4 +583,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get schoolSuffix => 'المدرسة';
+
+  @override
+  String get changePasswordTitle => 'تغيير كلمة المرور';
+
+  @override
+  String get oldPasswordLabel => 'كلمة المرور الحالية';
+
+  @override
+  String get changePasswordButton => 'تغيير كلمة المرور';
+
+  @override
+  String get changePasswordSuccess => 'تم تغيير كلمة المرور بنجاح.';
+
+  @override
+  String get locationAddedSuccess => 'تم حفظ الموقع.';
 }

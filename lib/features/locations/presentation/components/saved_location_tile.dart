@@ -21,6 +21,8 @@ class SavedLocationTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final primaryColor = AppColors.ctaDark;
+    final title = location.tileTitle;
+    final subtitle = location.tileSubtitle;
 
     return Material(
       color: Colors.white,
@@ -54,13 +56,12 @@ class SavedLocationTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Flexible(
+                        Expanded(
                           child: Text(
-                            location.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            title,
+                            softWrap: true,
                             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17),
                           ),
                         ),
@@ -80,13 +81,14 @@ class SavedLocationTile extends StatelessWidget {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      location.addressLine,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: AppColors.onSurfaceDark.withAlpha(190), fontSize: 17),
-                    ),
+                    if (subtitle != null && subtitle.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        softWrap: true,
+                        style: TextStyle(color: AppColors.onSurfaceDark.withAlpha(190), fontSize: 17),
+                      ),
+                    ],
                   ],
                 ),
               ),

@@ -1,35 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/features/change_request/data/change_request_repository.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
+import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
 import 'change_location_state.dart';
 
 class ChangeLocationCubit extends Cubit<ChangeLocationState> {
   final ChangeRequestRepository _changeRequestRepository;
+  final GuardianRepository _guardianRepository;
 
-  ChangeLocationCubit({ChangeRequestRepository? changeRequestRepository})
-    : _changeRequestRepository = changeRequestRepository ?? ChangeRequestRepository(),
-      super(const ChangeLocationState()) {
+  ChangeLocationCubit({
+    ChangeRequestRepository? changeRequestRepository,
+    GuardianRepository? guardianRepository,
+  }) : _changeRequestRepository = changeRequestRepository ?? ChangeRequestRepository(),
+       _guardianRepository = guardianRepository ?? GuardianRepository(),
+       super(const ChangeLocationState()) {
     _loadAddresses();
     loadActiveRequest();
   }
 
-  void _loadAddresses() {
-    // Mock backend fetch
-    final mockAddresses = [
-      const SavedAddress(
-        id: '1',
-        name: 'Home',
-        address: '123 Main St',
-        icon: Icons.home,
-      ),
-      const SavedAddress(
-        id: '2',
-        name: "Grandma's House",
-        address: '456 Oak Ave',
-        icon: Icons.home,
-      ),
-    ];
-    emit(state.copyWith(addresses: mockAddresses));
+  Future<void> _loadAddresses() async {
+    if (!ApiConfig.useRealApi) {
+      emit(state.copyWith(addresses: const [
+        SavedAddress(id: '1', name: 'Home', address: '123 Main St', icon: Icons.home),
+        SavedAddress(id: '2', name: "Grandma's House", address: '456 Oak Ave', icon: Icons.home),
+      ]));
+      return;
+    }
+    try {
+      final locations = await _guardianRepository.getLocations();
+      SavedLocationsStore.instance.mergeServerLocations(locations);
+      final addresses = locations
+          .map(
+            (loc) => SavedAddress(
+              id: loc.id,
+              name: loc.name,
+              address: loc.addressLine,
+              icon: Icons.location_on,
+            ),
+          )
+          .toList();
+      emit(state.copyWith(addresses: addresses));
+    } catch (_) {
+      // Keep empty list on error; user can still add addresses manually
+    }
   }
   void addAddress(String name, String address) {
     final newAddress = SavedAddress(

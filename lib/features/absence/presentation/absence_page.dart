@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
 import '../../change_request/presentation/components/date_radio_group.dart';
-import '../data/student_data.dart';
 import '../domain/absence_cubit.dart';
 import '../domain/absence_state.dart';
 
@@ -25,7 +24,6 @@ class _AbsencePageState extends State<AbsencePage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    final students = StudentData.mockStudentData;
 
     return BlocProvider(
       create: (_) => sl<AbsenceCubit>(),
@@ -66,44 +64,49 @@ class _AbsencePageState extends State<AbsencePage> {
                 ),
                 const SizedBox(height: 12),
 
-                // Students list
-                Column(
-                  children: students.map((student) {
-                    final isSelected = state.selectedChildrenIds.contains(student.id);
-                    final isAbsent = state.absentChildrenIds.contains(student.id);
+                // Students list loaded from guardian profile
+                if (state.children.isEmpty)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                else
+                  Column(
+                    children: state.children.map((child) {
+                      final isSelected = state.selectedChildrenIds.contains(child.id);
+                      final isAbsent = state.absentChildrenIds.contains(child.id);
 
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.grey.shade300,
-
-                        child: Icon(Icons.child_care),
-                      ),
-                      title: Text(
-                        student.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        isAbsent
-                            ? localizations.absenceStudentStatusAbsent
-                            : localizations.absenceStudentStatusPresent,
-                      ),
-                      trailing: isAbsent
-                          ? TextButton(
-                              onPressed: state.isLoading || selectedAbsenceDate == null
-                                  ? null
-                                  : () => cubit.undoAbsence(student.id, selectedAbsenceDate!),
-                              child: Text(
-                                localizations.absenceUndoAction,
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            )
-                          : isSelected
-                          ? const Icon(Icons.check, color: Colors.green)
-                          : null,
-                      onTap: isAbsent ? null : () => cubit.toggleSelectChild(student.id),
-                    );
-                  }).toList(),
-                ),
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: Colors.grey.shade300,
+                          child: const Icon(Icons.child_care),
+                        ),
+                        title: Text(
+                          child.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          isAbsent
+                              ? localizations.absenceStudentStatusAbsent
+                              : localizations.absenceStudentStatusPresent,
+                        ),
+                        trailing: isAbsent
+                            ? TextButton(
+                                onPressed: state.isLoading || selectedAbsenceDate == null
+                                    ? null
+                                    : () => cubit.undoAbsence(child.id, selectedAbsenceDate!),
+                                child: Text(
+                                  localizations.absenceUndoAction,
+                                  style: const TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              )
+                            : isSelected
+                            ? const Icon(Icons.check, color: Colors.green)
+                            : null,
+                        onTap: isAbsent ? null : () => cubit.toggleSelectChild(child.id),
+                      );
+                    }).toList(),
+                  ),
 
                 const SizedBox(height: 20),
                 Text(

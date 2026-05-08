@@ -355,6 +355,29 @@ class AuthRepository {
     }
   }
 
+  /// Changes the authenticated user's password.
+  /// Returns `null` on success, or an error message string on failure.
+  Future<String?> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    if (!ApiConfig.useRealApi) return null;
+    try {
+      final role = await loadLastRole() ?? 'guardian';
+      final response = await authData.changePassword(
+        role: role,
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+      if (!isResOk(response)) return 'Failed to change password. Please try again.';
+      return null;
+    } on ServerException catch (e) {
+      return e.message;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+
   Future<String?> loadLastRole() => _authRoleStore.loadRole();
 
   Future<void> saveLastRole(String role) => _authRoleStore.saveRole(role);

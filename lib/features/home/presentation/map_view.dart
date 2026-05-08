@@ -17,6 +17,10 @@ class MapView extends StatefulWidget {
   final DragMarkers? dragMarkers;
   final LatLng? focusTarget;
   final LatLng? busLocation;
+  /// When true (e.g. mock / non-real API), places the bus marker at the map center when the map becomes ready.
+  final bool showBusMarkerAtMapLoadCenter;
+  /// When true and [busLocation] is non-null, animates the camera to follow the bus as coordinates update.
+  final bool followBusLocation;
   final int focusRequestKey;
   final double controlsBottomOffset;
   final bool showControls;
@@ -29,6 +33,8 @@ class MapView extends StatefulWidget {
     this.dragMarkers,
     this.focusTarget,
     this.busLocation,
+    this.showBusMarkerAtMapLoadCenter = false,
+    this.followBusLocation = false,
     this.focusRequestKey = 0,
     this.controlsBottomOffset = 36,
     this.showControls = true,
@@ -66,6 +72,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
   int _locationRequestGeneration = 0;
   bool _hasReportedControlsState = false;
   LatLng? _lastReportedDeviceLocation;
+  LatLng? _mockBusAtMapCenter;
 
   @override
   void initState() {
@@ -143,30 +150,63 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
       _pendingFocusTarget = null;
       _animateFocusTo(pending);
     }
+
+    if (widget.showBusMarkerAtMapLoadCenter) {
+      try {
+        setState(() => _mockBusAtMapCenter = _mapController.camera.center);
+      } catch (_) {}
+    }
+
+    if (widget.followBusLocation && widget.busLocation != null) {
+      _animateFocusTo(widget.busLocation!);
+    }
   }
 
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    if (widget.focusTarget == null) {
-      return;
+    if (widget.focusTarget != null) {
+      final didRequestNewFocus = widget.focusRequestKey != oldWidget.focusRequestKey;
+      final didFocusTargetChange = widget.focusTarget != oldWidget.focusTarget;
+      if (didRequestNewFocus || didFocusTargetChange) {
+        final target = widget.focusTarget!;
+        setState(() => _focusedLocation = target);
+        if (_loading) {
+          _pendingFocusTarget = target;
+        } else {
+          _animateFocusTo(target);
+        }
+      }
     }
 
-    final didRequestNewFocus = widget.focusRequestKey != oldWidget.focusRequestKey;
-    final didFocusTargetChange = widget.focusTarget != oldWidget.focusTarget;
-    if (!didRequestNewFocus && !didFocusTargetChange) {
-      return;
+    final mockOn = widget.showBusMarkerAtMapLoadCenter;
+    final mockWasOn = oldWidget.showBusMarkerAtMapLoadCenter;
+    if (mockOn && !mockWasOn) {
+      if (_isMapReady) {
+        try {
+          setState(() => _mockBusAtMapCenter = _mapController.camera.center);
+        } catch (_) {}
+      }
+    } else if (!mockOn && mockWasOn) {
+      setState(() => _mockBusAtMapCenter = null);
     }
 
-    final target = widget.focusTarget!;
-    setState(() => _focusedLocation = target);
-    if (_loading) {
-      _pendingFocusTarget = target;
-      return;
+    if (widget.followBusLocation &&
+        widget.busLocation != null &&
+        _coordsDiffer(widget.busLocation, oldWidget.busLocation)) {
+      if (_loading) {
+        _pendingFocusTarget = widget.busLocation;
+      } else if (_isMapReady) {
+        _animateFocusTo(widget.busLocation!);
+      }
     }
+  }
 
-    _animateFocusTo(target);
+  bool _coordsDiffer(LatLng? a, LatLng? b) {
+    if (identical(a, b)) return false;
+    if (a == null || b == null) return true;
+    return a.latitude != b.latitude || a.longitude != b.longitude;
   }
 
   void _completeWithoutDeviceLocation(_MapViewError fallbackError) {
@@ -429,6 +469,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
     final localizations = AppLocalizations.of(context)!;
     _reportControlsStateIfNeeded();
     final initialCenter = widget.initLocation ?? _deviceLocation ?? _fallbackCenter;
+    final busForMarker =
+        widget.showBusMarkerAtMapLoadCenter ? _mockBusAtMapCenter : widget.busLocation;
     final errorText = switch (_errorKey) {
       _MapViewError.locationServicesDisabled => localizations.locationServicesDisabled,
       _MapViewError.locationPermissionDenied => localizations.locationPermissionDenied,
@@ -447,7 +489,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
             dragMarkers: widget.dragMarkers,
             focusedLocation: _focusedLocation,
             deviceLocation: _deviceLocation,
-            busLocation: widget.busLocation,
+            busLocation: busForMarker,
             onMapReady: _handleMapReady,
             showAttribution: widget.showAttribution,
           ),

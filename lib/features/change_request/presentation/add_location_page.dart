@@ -16,6 +16,8 @@ class AddLocationPage extends StatefulWidget {
 
 class _AddLocationPageState extends State<AddLocationPage> {
   LatLng? _locationCoords;
+  /// Tracks the draggable pin (search sets it; dragging updates it).
+  LatLng? _markerLatLng;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +32,28 @@ class _AddLocationPageState extends State<AddLocationPage> {
             style: const TextStyle(fontWeight: FontWeight.w600),
           ),
         ),
-        GmapsSearch(cb: (coords) => setState(() => _locationCoords = coords)),
+        GmapsSearch(
+          cb: (coords) => setState(() {
+            _locationCoords = coords;
+            _markerLatLng = coords;
+          }),
+        ),
         const SizedBox(height: 8),
-        _locationCoords != null
+        _locationCoords != null && _markerLatLng != null
             ? Expanded(
                 child: MapView(
-                  stackWidgets: const [ConfirmLocationButton()],
+                  stackWidgets: [
+                    ConfirmLocationButton(markerLatLng: () => _markerLatLng!),
+                  ],
                   initLocation: _locationCoords!,
-                  dragMarkers: DragMarkers(markers: [custMarker(initPoint: _locationCoords!)]),
+                  dragMarkers: DragMarkers(
+                    markers: [
+                      custMarker(
+                        initPoint: _locationCoords!,
+                        onDragEnd: (_, point) => setState(() => _markerLatLng = point),
+                      ),
+                    ],
+                  ),
                 ),
               )
             : const SizedBox.shrink(),

@@ -163,6 +163,17 @@
   "temporaryPinCopied": "Temporary PIN copied!",
 
   "requestTitle": "Request",
+  "changeRequestSubmitError": "Could not submit your request. Please try again.",
+  "changeRequestPendingServerTitle": "A stop change is already in progress",
+  "changeRequestPendingServerBody": "You have a request that is waiting for review or is approved and not yet completed. Cancel it to submit a new one.",
+  "changeRequestFieldStatus": "Status",
+  "changeRequestFieldTargetDate": "Target date",
+  "changeRequestFieldChangeType": "Change type",
+  "changeRequestFieldNewLocationId": "Location id",
+  "changeRequestFieldEffectiveUntil": "Effective until",
+  "changeRequestCancelServerRequest": "Cancel this request",
+  "changeRequestCancelFailed": "Could not cancel. Try again later.",
+  "busStopChangeDateTitle": "Bus stop change date",
   "changePickupDropoff": "Edit Stop Location",
   "changeRequestDateSubtitle": "Tomorrow (Wednesday 16/3)",
   "pickupLabel": "Pickup",
@@ -233,5 +244,12 @@
   "invalidGoogleMapsLink": "Couldn’t parse this Google Maps link. Please try another link.",
   "noNotificationsYet": "No notifications yet.",
   "openStreetMapContributors": "OpenStreetMap contributors",
-  "schoolSuffix": "School"
+  "schoolSuffix": "School",
+
+  "changePasswordTitle": "Change Password",
+  "oldPasswordLabel": "Current Password",
+  "changePasswordButton": "Change Password",
+  "changePasswordSuccess": "Password changed successfully.",
+
+  "locationAddedSuccess": "Location saved."
 }

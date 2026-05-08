@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' show DateFormat;
+import 'package:parent_app/core/config/api_config.dart';
+import 'package:parent_app/features/change_request/data/change_request_repository.dart';
 import 'package:parent_app/features/change_request/data/services/change_request_store.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_confirmed_page.dart';
 import 'package:parent_app/features/change_request/presentation/models/change_request_payload.dart';
@@ -7,16 +10,79 @@ import 'package:parent_app/features/locations/presentation/components/saved_loca
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 
-class ChangeRequestSummaryPage extends StatelessWidget {
+/// Maps UI toggles to API `change_type` (`pickup` | `dropoff` | `both`).
+String changeRequestApiChangeType(ChangeRequestPayload payload) {
+  if (payload.isPickupSelected && payload.isDropoffSelected) return 'both';
+  if (payload.isPickupSelected) return 'pickup';
+  return 'dropoff';
+}
+
+class ChangeRequestSummaryPage extends StatefulWidget {
   final ChangeRequestPayload payload;
 
   const ChangeRequestSummaryPage({super.key, required this.payload});
+
+  @override
+  State<ChangeRequestSummaryPage> createState() => _ChangeRequestSummaryPageState();
+}
+
+class _ChangeRequestSummaryPageState extends State<ChangeRequestSummaryPage> {
+  bool _submitting = false;
+
+  Future<void> _onDone() async {
+    if (_submitting) return;
+    final payload = widget.payload;
+    final localizations = AppLocalizations.of(context)!;
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (!ApiConfig.useRealApi) {
+      ChangeRequestStore.instance.setActiveRequest(payload);
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (_) => ChangeRequestConfirmedPage(payload: payload)),
+      );
+      return;
+    }
+
+    setState(() => _submitting = true);
+    try {
+      final repo = ChangeRequestRepository();
+      await repo.submitRequest(
+        targetDate: payload.selectedDate,
+        changeType: changeRequestApiChangeType(payload),
+        locationId: payload.requestedLocation.id,
+      );
+      if (!mounted) return;
+      ChangeRequestStore.instance.setActiveRequest(payload);
+      navigator.pushReplacement(
+        MaterialPageRoute(builder: (_) => ChangeRequestConfirmedPage(payload: payload)),
+      );
+    } on DioException catch (e) {
+      if (!mounted) return;
+      final msg = e.response?.data is Map
+          ? (e.response!.data as Map)['message']?.toString()
+          : null;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            (msg != null && msg.isNotEmpty) ? msg : localizations.changeRequestSubmitError,
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      messenger.showSnackBar(SnackBar(content: Text(localizations.changeRequestSubmitError)));
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).languageCode;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final payload = widget.payload;
     final selectedDateText = DateFormat('EEEE, d MMMM', locale).format(payload.selectedDate);
 
     return Scaffold(
@@ -117,7 +183,7 @@ class ChangeRequestSummaryPage extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: _submitting ? null : () => Navigator.of(context).pop(),
                 child: Text(
                   localizations.returnAndEdit,
                   style: const TextStyle(fontSize: 18, color: Colors.white),
@@ -130,16 +196,20 @@ class ChangeRequestSummaryPage extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.cta),
-                onPressed: () {
-                  ChangeRequestStore.instance.setActiveRequest(payload);
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (_) => ChangeRequestConfirmedPage(payload: payload)),
-                  );
-                },
-                child: Text(
-                  localizations.doneButton,
-                  style: const TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                onPressed: _submitting ? null : _onDone,
+                child: _submitting
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        localizations.doneButton,
+                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
               ),
             ),
           ],

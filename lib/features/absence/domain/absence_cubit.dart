@@ -1,11 +1,38 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/guardian/data/guardian_repository.dart';
 import 'absence_repo.dart';
 import 'absence_state.dart';
 
 class AbsenceCubit extends Cubit<AbsenceState> {
   final AbsenceRepository _repository;
+  final GuardianRepository _guardianRepository;
 
-  AbsenceCubit(this._repository) : super(const AbsenceState());
+  AbsenceCubit(this._repository, {GuardianRepository? guardianRepository})
+      : _guardianRepository = guardianRepository ?? GuardianRepository(),
+        super(const AbsenceState()) {
+    loadChildren();
+  }
+
+  Future<void> loadChildren() async {
+    try {
+      final profile = await _guardianRepository.getProfile();
+      final children = profile.children.asMap().entries.map((entry) {
+        final child = entry.value;
+        final rawId = child['id'];
+        final id = rawId != null && rawId.isNotEmpty
+            ? int.tryParse(rawId) ?? (entry.key + 1)
+            : (entry.key + 1);
+        return AbsenceChild(
+          id: id,
+          name: child['name'] ?? '',
+          grade: child['grade'] ?? '',
+        );
+      }).toList();
+      emit(state.copyWith(children: children));
+    } catch (_) {
+      // Keep empty children on error; UI will show nothing to select
+    }
+  }
 
   void toggleSelectChild(int childId) {
     final current = List<int>.from(state.selectedChildrenIds);

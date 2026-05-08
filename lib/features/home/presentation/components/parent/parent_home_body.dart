@@ -7,6 +7,7 @@ import 'package:parent_app/features/home/presentation/components/address_tile.da
 import 'package:parent_app/features/home/presentation/components/parent/parent_quick_actions.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_status.dart';
+import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -54,7 +55,12 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
                     clipBehavior: Clip.none,
                     children: [
                       MapView(
-                        busLocation: activeTrip?.busCoords,
+                        busLocation:
+                            ApiConfig.useRealApi ? activeTrip?.busCoords : null,
+                        showBusMarkerAtMapLoadCenter:
+                            activeTrip != null && !ApiConfig.useRealApi,
+                        followBusLocation:
+                            activeTrip != null && ApiConfig.useRealApi,
                         showControls: true,
                         showAttribution: false,
                         controlsBottomOffset: 36,

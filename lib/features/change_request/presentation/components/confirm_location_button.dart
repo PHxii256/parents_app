@@ -1,37 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/guardian/data/guardian_repository.dart';
-import 'package:parent_app/features/locations/data/models/saved_location.dart';
 import 'package:parent_app/features/locations/data/services/saved_locations_store.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/theme/app_colors.dart';
 import '../../cubit/change_location_cubit.dart';
 
 class ConfirmLocationButton extends StatelessWidget {
-  const ConfirmLocationButton({super.key});
+  /// Current pin position on the map (updated when the user drags the marker).
+  final LatLng Function() markerLatLng;
 
-  void _showLocationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (c) => _LocationDialog(
-        onSubmit: (String locationName, String addressLine) {
+  const ConfirmLocationButton({super.key, required this.markerLatLng});
+
+  void _showLocationDialog(BuildContext pageContext) {
+    showDialog<void>(
+      context: pageContext,
+      builder: (_) => _LocationDialog(
+        onConfirmed: (String locationName, String addressLine) {
+          final messenger = ScaffoldMessenger.maybeOf(pageContext);
+          final navigator = Navigator.maybeOf(pageContext);
+          final localizations = AppLocalizations.of(pageContext)!;
+          final successMessage = localizations.locationAddedSuccess;
+          final LatLng coords = markerLatLng();
+
           final location = SavedLocationsStore.instance.addLocation(
             name: locationName,
             addressLine: addressLine,
-          );
-          GuardianRepository().createLocation(
-            SavedLocation(
-              id: location.id,
-              name: location.name,
-              addressLine: location.addressLine,
-            ),
+            latitude: coords.latitude,
+            longitude: coords.longitude,
           );
 
-          // Add to cubit for existing listeners
-          context.read<ChangeLocationCubit>().addAddress(
-            locationName,
-            addressLine,
-          );
+          GuardianRepository().createLocation(location).catchError((_) {});
+
+          try {
+            pageContext.read<ChangeLocationCubit>().addAddress(locationName, addressLine);
+          } catch (_) {}
+
+          navigator?.pop();
+
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            messenger?.hideCurrentSnackBar();
+            messenger?.showSnackBar(
+              SnackBar(content: Text(successMessage)),
+            );
+          });
         },
       ),
     );
@@ -68,9 +81,10 @@ class ConfirmLocationButton extends StatelessWidget {
 // ─────────────────────────────────────────────────────────────
 
 class _LocationDialog extends StatefulWidget {
-  final void Function(String locationName, String addressLine) onSubmit;
+  /// Called after the dialog is closed; typically pops [AddLocationPage] and shows a snackbar.
+  final void Function(String locationName, String addressLine) onConfirmed;
 
-  const _LocationDialog({required this.onSubmit});
+  const _LocationDialog({required this.onConfirmed});
 
   @override
   State<_LocationDialog> createState() => _LocationDialogState();
@@ -93,11 +107,10 @@ class _LocationDialogState extends State<_LocationDialog> {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
-    widget.onSubmit(
-      _locationNameController.text.trim(),
-      _locationAddressLineController.text.trim(),
-    );
+    final name = _locationNameController.text.trim();
+    final address = _locationAddressLineController.text.trim();
     Navigator.of(context).pop();
+    widget.onConfirmed(name, address);
   }
 
   @override

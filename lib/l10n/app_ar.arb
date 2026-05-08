@@ -161,6 +161,17 @@
   "temporaryPinCopied": "تم نسخ الرمز المؤقت!",
 
   "requestTitle": "طلب",
+  "changeRequestSubmitError": "تعذر إرسال الطلب. يُرجى المحاولة مرة أخرى.",
+  "changeRequestPendingServerTitle": "يوجد طلب تغيير نقطة توقف قيد المعالجة",
+  "changeRequestPendingServerBody": "لديك طلب قيد المراجعة أو تم قبوله ولم يكتمل بعد. ألغِ الطلب لتتمكن من إرسال طلب جديد.",
+  "changeRequestFieldStatus": "الحالة",
+  "changeRequestFieldTargetDate": "تاريخ التطبيق",
+  "changeRequestFieldChangeType": "نوع التغيير",
+  "changeRequestFieldNewLocationId": "معرف الموقع",
+  "changeRequestFieldEffectiveUntil": "ساري حتى",
+  "changeRequestCancelServerRequest": "إلغاء هذا الطلب",
+  "changeRequestCancelFailed": "تعذر الإلغاء. حاول لاحقًا.",
+  "busStopChangeDateTitle": "تاريخ تغيير نقطة التوقف",
   "changePickupDropoffFor": "تغيير نقطة الركوب أو النزول لـ",
   "changeRequestDateSubtitle": "غداً (الأربعاء 16/3)",
   "pickupLabel": "الركوب",
@@ -231,5 +242,12 @@
   "invalidGoogleMapsLink": "تعذر قراءة رابط خرائط جوجل. يُرجى تجربة رابط آخر.",
   "noNotificationsYet": "لا توجد إشعارات حتى الآن.",
   "openStreetMapContributors": "مساهمو OpenStreetMap",
-  "schoolSuffix": "المدرسة"
+  "schoolSuffix": "المدرسة",
+
+  "changePasswordTitle": "تغيير كلمة المرور",
+  "oldPasswordLabel": "كلمة المرور الحالية",
+  "changePasswordButton": "تغيير كلمة المرور",
+  "changePasswordSuccess": "تم تغيير كلمة المرور بنجاح.",
+
+  "locationAddedSuccess": "تم حفظ الموقع."
 }

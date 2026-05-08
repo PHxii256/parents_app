@@ -5,6 +5,7 @@ import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/presentation/components/address_tile.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_status.dart';
+import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/features/home/presentation/map_view.dart';
 import 'package:parent_app/features/settings/presentation/settings_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
@@ -60,7 +61,14 @@ class HomeBody extends StatelessWidget {
                   child: SizedBox(
                     height: 488 - currentTripHeight,
                     width: double.infinity,
-                    child: MapView(busLocation: activeTrip?.busCoords),
+                    child: MapView(
+                      busLocation:
+                          ApiConfig.useRealApi ? activeTrip?.busCoords : null,
+                      showBusMarkerAtMapLoadCenter:
+                          activeTrip != null && !ApiConfig.useRealApi,
+                      followBusLocation:
+                          activeTrip != null && ApiConfig.useRealApi,
+                    ),
                   ),
                 ),
                 Column(

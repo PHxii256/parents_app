@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:parent_app/core/config/api_config.dart';
 import 'package:parent_app/features/auth/data/services/jwt_storage.dart';
 
@@ -18,7 +21,7 @@ class ApiClient {
         Headers.contentTypeHeader: Headers.jsonContentType,
       },
     ),
-  )..interceptors.add(
+  )..interceptors.addAll([
       InterceptorsWrapper(
         onRequest: (options, handler) async {
           if (options.extra['skipAuth'] == true) {
@@ -99,5 +102,89 @@ class ApiClient {
           }
         },
       ),
+      if (kDebugMode) _DebugHttpLoggingInterceptor(),
+    ]);
+}
+
+/// Logs each HTTP request and response to the console in debug builds only.
+/// Sensitive keys (tokens, passwords) are redacted.
+class _DebugHttpLoggingInterceptor extends Interceptor {
+  static const int _maxBodyChars = 4096;
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final auth = options.headers['Authorization'] ?? options.headers['authorization'];
+    final buf = StringBuffer()
+      ..writeln('[HTTP] --> ${options.method} ${options.uri}');
+    if (auth != null) {
+      buf.writeln('[HTTP]     Authorization: Bearer <redacted>');
+    }
+    final data = options.data;
+    if (data != null) {
+      buf.writeln('[HTTP]     ${_truncate(_stringifyForLog(data))}');
+    }
+    debugPrint(buf.toString().trimRight());
+    handler.next(options);
+  }
+
+  @override
+  void onResponse(Response<dynamic> response, ResponseInterceptorHandler handler) {
+    final body = _truncate(_stringifyForLog(response.data));
+    debugPrint(
+      '[HTTP] <-- ${response.statusCode} ${response.requestOptions.uri}\n'
+      '[HTTP]     $body',
     );
+    handler.next(response);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) {
+    debugPrint(
+      '[HTTP] xx ${err.response?.statusCode ?? '---'} ${err.requestOptions.uri} '
+      '${err.message}',
+    );
+    final d = err.response?.data;
+    if (d != null) {
+      debugPrint('[HTTP]     ${_truncate(_stringifyForLog(d))}');
+    }
+    handler.next(err);
+  }
+
+  static String _stringifyForLog(dynamic data) {
+    try {
+      final redacted = _redactSensitive(data);
+      if (redacted is Map || redacted is List) {
+        return const JsonEncoder.withIndent('  ').convert(redacted);
+      }
+      return redacted.toString();
+    } catch (_) {
+      return data.toString();
+    }
+  }
+
+  static dynamic _redactSensitive(dynamic value) {
+    if (value is Map) {
+      return value.map((dynamic k, dynamic v) {
+        final key = k.toString().toLowerCase();
+        final sensitive =
+            key.contains('token') ||
+            key.contains('password') ||
+            key.contains('secret') ||
+            key == 'authorization';
+        if (sensitive) {
+          return MapEntry(k, '<redacted>');
+        }
+        return MapEntry(k, _redactSensitive(v));
+      });
+    }
+    if (value is List) {
+      return value.map(_redactSensitive).toList();
+    }
+    return value;
+  }
+
+  static String _truncate(String s) {
+    if (s.length <= _maxBodyChars) return s;
+    return '${s.substring(0, _maxBodyChars)}… (${s.length} chars total)';
+  }
 }

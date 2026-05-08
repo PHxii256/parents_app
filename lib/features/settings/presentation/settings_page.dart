@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_cubit.dart';
 import 'package:parent_app/features/settings/cubit/settings_cubit.dart';
 import 'package:parent_app/features/settings/cubit/settings_state.dart';
+import 'package:parent_app/features/settings/presentation/change_password_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -27,6 +28,13 @@ class SettingsPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
         child: Column(
           children: [
+            ListTile(
+              title: Text(localizations.changePasswordTitle),
+              onTap: () => Navigator.of(context, rootNavigator: true).push(
+                MaterialPageRoute(builder: (_) => const ChangePasswordPage()),
+              ),
+              trailing: const Icon(Icons.lock_outline),
+            ),
             ListTile(
               title: Text(localizations.logout),
               onTap: () => logout(context),

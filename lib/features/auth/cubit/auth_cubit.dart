@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/auth/cubit/auth_state.dart';
 import 'package:parent_app/features/auth/data/models/login_result.dart';
@@ -26,6 +27,9 @@ class AuthCubit extends Cubit<AuthState> {
         accountTypeForApi: accountTypeForApi,
       );
       if (res is LoginSuccess) {
+        if (kDebugMode) {
+          debugPrint('[Auth] bearer token: ${res.accessToken}');
+        }
         emit(
           AuthenticatedState(
             user: res.user,
@@ -121,16 +125,14 @@ class AuthCubit extends Cubit<AuthState> {
     emit(UnauthenticatedState(error: 'Use resendOtp with role and password.'));
   }
 
-  void resendOtp({
-    required String email,
-    required String password,
-    required String role,
-  }) async {
+  void resendOtp({required String email, required String password, required String role}) async {
     emit(AuthLoadingState());
     try {
       final res = await _authRepository.requestOTP(role: role, email: email, password: password);
       if (res is OtpSuccess) {
-        emit(OtpSentState(email: email, role: role, duration: res.otp.duration, password: password));
+        emit(
+          OtpSentState(email: email, role: role, duration: res.otp.duration, password: password),
+        );
       } else if (res is OtpFailure) {
         emit(UnauthenticatedState(error: res.message));
       }

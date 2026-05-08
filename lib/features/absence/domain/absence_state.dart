@@ -1,6 +1,15 @@
 import 'package:equatable/equatable.dart';
 
+class AbsenceChild {
+  final int id;
+  final String name;
+  final String grade;
+
+  const AbsenceChild({required this.id, required this.name, required this.grade});
+}
+
 class AbsenceState extends Equatable {
+  final List<AbsenceChild> children;
   final List<int> selectedChildrenIds;
   final List<int> absentChildrenIds;
   final bool isLoading;
@@ -8,6 +17,7 @@ class AbsenceState extends Equatable {
   final DateTime? absenceDate;
 
   const AbsenceState({
+    this.children = const [],
     this.selectedChildrenIds = const [],
     this.absentChildrenIds = const [],
     this.isLoading = false,
@@ -16,6 +26,7 @@ class AbsenceState extends Equatable {
   });
 
   AbsenceState copyWith({
+    List<AbsenceChild>? children,
     List<int>? selectedChildrenIds,
     List<int>? absentChildrenIds,
     bool? isLoading,
@@ -23,6 +34,7 @@ class AbsenceState extends Equatable {
     DateTime? absenceDate,
   }) {
     return AbsenceState(
+      children: children ?? this.children,
       selectedChildrenIds: selectedChildrenIds ?? this.selectedChildrenIds,
       absentChildrenIds: absentChildrenIds ?? this.absentChildrenIds,
       isLoading: isLoading ?? this.isLoading,
@@ -33,6 +45,7 @@ class AbsenceState extends Equatable {
 
   @override
   List<Object?> get props => [
+    children,
     selectedChildrenIds,
     absentChildrenIds,
     isLoading,

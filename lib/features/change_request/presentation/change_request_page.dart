@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/core/config/api_config.dart';
+import 'package:parent_app/features/change_request/cubit/change_location_cubit.dart';
+import 'package:parent_app/features/change_request/data/change_request_repository.dart';
 import 'package:parent_app/features/change_request/data/services/change_request_store.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_confirmed_page.dart';
 import 'package:parent_app/features/change_request/presentation/add_location_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_summary.dart';
+import 'package:parent_app/features/change_request/presentation/server_blocking_change_request_view.dart';
 import 'package:parent_app/features/change_request/presentation/components/date_radio_group.dart';
 import 'package:parent_app/features/change_request/presentation/models/change_request_payload.dart';
 import 'package:parent_app/features/locations/data/models/saved_location.dart';
@@ -24,6 +29,16 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
   bool isDropoffSelected = false;
   DateTime? dateTime;
 
+  /// Until [getActiveRequest] completes when using the real API.
+  bool _loadingActiveCheck = true;
+
+  /// Server-side pending or accepted-not-fulfilled request (blocks new POSTs).
+  LocationChangeRequestData? _serverBlockingRequest;
+
+  bool _cancellingServerRequest = false;
+
+  final ChangeRequestRepository _changeRequestRepository = ChangeRequestRepository();
+
   // Saved addresses selection
   String selectedAddress = 'grandma';
 
@@ -42,8 +57,101 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (!ApiConfig.useRealApi) {
+      _loadingActiveCheck = false;
+    }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      if (ApiConfig.useRealApi) {
+        await SavedLocationsStore.instance.syncGuardianLocationsFromServer();
+        if (!mounted) return;
+      }
+      LocationChangeRequestData? active;
+      try {
+        active = await _changeRequestRepository.getActiveRequest();
+      } catch (_) {}
+      if (!mounted) return;
+      setState(() {
+        _loadingActiveCheck = false;
+        _serverBlockingRequest =
+            active != null && active.blocksNewSubmissions ? active : null;
+      });
+    });
+  }
+
+  Future<void> _onCancelServerRequest() async {
+    final blocking = _serverBlockingRequest;
+    if (blocking == null || blocking.id.isEmpty) return;
+    setState(() => _cancellingServerRequest = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      final ok = await _changeRequestRepository.cancelRequest(blocking.id);
+      if (!mounted) return;
+      if (ok) {
+        setState(() {
+          _serverBlockingRequest = null;
+          _cancellingServerRequest = false;
+        });
+      } else {
+        setState(() => _cancellingServerRequest = false);
+        messenger.showSnackBar(SnackBar(content: Text(l10n.changeRequestCancelFailed)));
+      }
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _cancellingServerRequest = false);
+      messenger.showSnackBar(SnackBar(content: Text(l10n.changeRequestCancelFailed)));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+
+    if (ApiConfig.useRealApi && _loadingActiveCheck) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            localizations.requestTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final blocking = _serverBlockingRequest;
+    if (blocking != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            localizations.requestTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          centerTitle: true,
+          foregroundColor: Colors.black,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ),
+        body: ServerBlockingChangeRequestView(
+          active: blocking,
+          cancelling: _cancellingServerRequest,
+          onCancel: _onCancelServerRequest,
+        ),
+      );
+    }
 
     final activeRequest = ChangeRequestStore.instance.activeRequest.value;
     if (activeRequest != null) {
@@ -171,9 +279,14 @@ class _ChangeRequestPage extends State<ChangeRequestPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(
-                      context,
-                    ).push(MaterialPageRoute(builder: (_) => const AddLocationPage()));
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider(
+                          create: (_) => ChangeLocationCubit(),
+                          child: const AddLocationPage(),
+                        ),
+                      ),
+                    );
                   },
                   child: Text(localizations.addNewAddress, style: TextStyle(color: AppColors.cta)),
                 ),

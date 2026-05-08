@@ -869,6 +869,72 @@ abstract class AppLocalizations {
   /// **'Request'**
   String get requestTitle;
 
+  /// No description provided for @changeRequestSubmitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not submit your request. Please try again.'**
+  String get changeRequestSubmitError;
+
+  /// No description provided for @changeRequestPendingServerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A stop change is already in progress'**
+  String get changeRequestPendingServerTitle;
+
+  /// No description provided for @changeRequestPendingServerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have a request that is waiting for review or is approved and not yet completed. Cancel it to submit a new one.'**
+  String get changeRequestPendingServerBody;
+
+  /// No description provided for @changeRequestFieldStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get changeRequestFieldStatus;
+
+  /// No description provided for @changeRequestFieldTargetDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Target date'**
+  String get changeRequestFieldTargetDate;
+
+  /// No description provided for @changeRequestFieldChangeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Change type'**
+  String get changeRequestFieldChangeType;
+
+  /// No description provided for @changeRequestFieldNewLocationId.
+  ///
+  /// In en, this message translates to:
+  /// **'Location id'**
+  String get changeRequestFieldNewLocationId;
+
+  /// No description provided for @changeRequestFieldEffectiveUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective until'**
+  String get changeRequestFieldEffectiveUntil;
+
+  /// No description provided for @changeRequestCancelServerRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this request'**
+  String get changeRequestCancelServerRequest;
+
+  /// No description provided for @changeRequestCancelFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not cancel. Try again later.'**
+  String get changeRequestCancelFailed;
+
+  /// No description provided for @busStopChangeDateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bus stop change date'**
+  String get busStopChangeDateTitle;
+
   /// No description provided for @changeRequestDateSubtitle.
   ///
   /// In en, this message translates to:
@@ -1144,6 +1210,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'School'**
   String get schoolSuffix;
+
+  /// No description provided for @changePasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordTitle;
+
+  /// No description provided for @oldPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get oldPasswordLabel;
+
+  /// No description provided for @changePasswordButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordButton;
+
+  /// No description provided for @changePasswordSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed successfully.'**
+  String get changePasswordSuccess;
+
+  /// No description provided for @locationAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Location saved.'**
+  String get locationAddedSuccess;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

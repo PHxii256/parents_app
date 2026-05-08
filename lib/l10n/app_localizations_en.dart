@@ -406,6 +406,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestTitle => 'Request';
 
   @override
+  String get changeRequestSubmitError => 'Could not submit your request. Please try again.';
+
+  @override
+  String get changeRequestPendingServerTitle => 'A stop change is already in progress';
+
+  @override
+  String get changeRequestPendingServerBody => 'You have a request that is waiting for review or is approved and not yet completed. Cancel it to submit a new one.';
+
+  @override
+  String get changeRequestFieldStatus => 'Status';
+
+  @override
+  String get changeRequestFieldTargetDate => 'Target date';
+
+  @override
+  String get changeRequestFieldChangeType => 'Change type';
+
+  @override
+  String get changeRequestFieldNewLocationId => 'Location id';
+
+  @override
+  String get changeRequestFieldEffectiveUntil => 'Effective until';
+
+  @override
+  String get changeRequestCancelServerRequest => 'Cancel this request';
+
+  @override
+  String get changeRequestCancelFailed => 'Could not cancel. Try again later.';
+
+  @override
+  String get busStopChangeDateTitle => 'Bus stop change date';
+
+  @override
   String get changeRequestDateSubtitle => 'Tomorrow (Wednesday 16/3)';
 
   @override
@@ -550,4 +583,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get schoolSuffix => 'School';
+
+  @override
+  String get changePasswordTitle => 'Change Password';
+
+  @override
+  String get oldPasswordLabel => 'Current Password';
+
+  @override
+  String get changePasswordButton => 'Change Password';
+
+  @override
+  String get changePasswordSuccess => 'Password changed successfully.';
+
+  @override
+  String get locationAddedSuccess => 'Location saved.';
 }
