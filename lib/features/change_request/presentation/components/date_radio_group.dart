@@ -55,8 +55,10 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
   Widget build(BuildContext context) {
     final locale = Localizations.localeOf(context).languageCode;
 
-    final today = DateUtils.dateOnly(DateTime.now());
+    final now = DateTime.now();
+    final today = DateUtils.dateOnly(now);
     final tomorrow = today.add(const Duration(days: 1));
+    final showTodayOption = now.hour < 4;
 
     final todayDay = DateFormat('EEEE', locale).format(today);
     final tomorrowDay = DateFormat('EEEE', locale).format(tomorrow);
@@ -64,16 +66,17 @@ class _DateRadioGroupState extends State<DateRadioGroup> {
 
     return Column(
       children: [
-        GestureDetector(
-          onTap: () => _selectToday(today),
-          child: _buildItem(
-            title: "${localizations.today} ($todayDay)",
-            value: AbsenceDateOption.today,
-            onChanged: (_) => _selectToday(today),
+        if (showTodayOption) ...[
+          GestureDetector(
+            onTap: () => _selectToday(today),
+            child: _buildItem(
+              title: "${localizations.today} ($todayDay)",
+              value: AbsenceDateOption.today,
+              onChanged: (_) => _selectToday(today),
+            ),
           ),
-        ),
-
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
 
         /// 🔹 Tomorrow
         GestureDetector(

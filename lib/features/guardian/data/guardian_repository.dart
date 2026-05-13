@@ -49,6 +49,27 @@ class GuardianRepository {
 
   GuardianRepository({Dio? dio}) : _dio = dio ?? ApiClient.dio;
 
+  String _parseChildName(Map<String, dynamic> child) {
+    final fullName = child['name']?.toString().trim() ?? '';
+    if (fullName.isNotEmpty) return fullName;
+
+    final firstName = child['first_name']?.toString().trim() ?? '';
+    final lastName = child['last_name']?.toString().trim() ?? '';
+    final combined = '$firstName $lastName'.trim();
+    return combined;
+  }
+
+  String _normalizeGrade(String rawGrade) {
+    final trimmed = rawGrade.trim();
+    if (trimmed.isEmpty) return '';
+
+    final match = RegExp(r'\d+').firstMatch(trimmed);
+    if (match != null) {
+      return 'Grade ${match.group(0)!}';
+    }
+    return trimmed;
+  }
+
   Future<GuardianPinsData> getPins() async {
     if (!ApiConfig.useRealApi) {
       return const GuardianPinsData(masterPin: '12345', tempPin: '56789');
@@ -82,26 +103,27 @@ class GuardianRepository {
       primaryPhone: data['primaryPhone']?.toString() ?? '',
       secondaryPhone: data['secondaryPhone']?.toString() ?? '',
       email: data['email']?.toString() ?? '',
-      children:
-          childrenRaw is List
-              ? childrenRaw
-                  .whereType<Map<String, dynamic>>()
-                  .toList()
-                  .asMap()
-                  .entries
-                  .map(
-                    (entry) => {
-                      'id':
-                          entry.value['id']?.toString() ??
-                          entry.value['student_id']?.toString() ??
-                          entry.value['studentId']?.toString() ??
-                          '${entry.key + 1}',
-                      'name': entry.value['name']?.toString() ?? '',
-                      'grade': entry.value['grade']?.toString() ?? '',
-                    },
-                  )
-                  .toList()
-              : const [],
+      children: childrenRaw is List
+          ? childrenRaw
+                .whereType<Map<String, dynamic>>()
+                .toList()
+                .asMap()
+                .entries
+                .map(
+                  (entry) => {
+                    'id':
+                        entry.value['id']?.toString() ??
+                        entry.value['student_id']?.toString() ??
+                        entry.value['studentId']?.toString() ??
+                        '${entry.key + 1}',
+                    'name': _parseChildName(entry.value),
+                    'grade': _normalizeGrade(
+                      entry.value['grade']?.toString() ?? '',
+                    ),
+                  },
+                )
+                .toList()
+          : const [],
     );
   }
 
@@ -153,7 +175,9 @@ class GuardianRepository {
     final lng = location.longitude;
     if (lat == null || lng == null) {
       if (kDebugMode) {
-        debugPrint('[Guardian] createLocation skipped: missing latitude/longitude');
+        debugPrint(
+          '[Guardian] createLocation skipped: missing latitude/longitude',
+        );
       }
       return;
     }
@@ -172,9 +196,15 @@ class GuardianRepository {
     );
   }
 
-  Future<void> sendMessage({required String content, required String studentId}) async {
+  Future<void> sendMessage({
+    required String content,
+    required String studentId,
+  }) async {
     if (!ApiConfig.useRealApi) return;
-    await _dio.post('/api/v1/guardian/messages', data: {'content': content, 'studentId': studentId});
+    await _dio.post(
+      '/api/v1/guardian/messages',
+      data: {'content': content, 'studentId': studentId},
+    );
   }
 
   /// Backend expects `token` + `device_type` (see Postman: ANDROID / IOS / …).

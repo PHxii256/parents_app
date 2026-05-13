@@ -25,6 +25,8 @@ class MapView extends StatefulWidget {
   final double controlsBottomOffset;
   final bool showControls;
   final bool showAttribution;
+  final VoidCallback? onCenterControlPressed;
+  final IconData centerControlIcon;
   final ValueChanged<MapViewControlsState>? onControlsStateChanged;
   const MapView({
     super.key,
@@ -39,6 +41,8 @@ class MapView extends StatefulWidget {
     this.controlsBottomOffset = 36,
     this.showControls = true,
     this.showAttribution = true,
+    this.onCenterControlPressed,
+    this.centerControlIcon = Icons.gps_fixed,
     this.onControlsStateChanged,
   });
 
@@ -56,7 +60,8 @@ enum _LocationFetchSource { initial, backgroundRetry, userTap, resume }
 
 class _MapViewState extends State<MapView> with TickerProviderStateMixin, WidgetsBindingObserver {
   static const LatLng _fallbackCenter = LatLng(29.996341, 30.965452);
-  static const Duration _locationLookupTimeout = Duration(seconds: 5);
+  static const LatLng _defaultBusLocation = LatLng(29.996608, 30.965438);
+  static const Duration _locationLookupTimeout = Duration(seconds: 12);
   static const int _maxBackgroundRetries = 5;
   final MapController _mapController = MapController();
   LatLng? _deviceLocation;
@@ -64,7 +69,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
   LatLng? _pendingFocusTarget;
   AnimationController? _focusAnimationController;
   bool _isMapReady = false;
-  bool _loading = true;
+  bool _loading = false;
   _MapViewError? _errorKey;
   Timer? _backgroundRetryTimer;
   int _backgroundRetryCount = 0;
@@ -152,9 +157,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
     }
 
     if (widget.showBusMarkerAtMapLoadCenter) {
-      try {
-        setState(() => _mockBusAtMapCenter = _mapController.camera.center);
-      } catch (_) {}
+      setState(() => _mockBusAtMapCenter = _defaultBusLocation);
     }
 
     if (widget.followBusLocation && widget.busLocation != null) {
@@ -183,11 +186,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
     final mockOn = widget.showBusMarkerAtMapLoadCenter;
     final mockWasOn = oldWidget.showBusMarkerAtMapLoadCenter;
     if (mockOn && !mockWasOn) {
-      if (_isMapReady) {
-        try {
-          setState(() => _mockBusAtMapCenter = _mapController.camera.center);
-        } catch (_) {}
-      }
+      setState(() => _mockBusAtMapCenter = _defaultBusLocation);
     } else if (!mockOn && mockWasOn) {
       setState(() => _mockBusAtMapCenter = null);
     }
@@ -297,10 +296,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
       }
       return Future.value();
     }
-    if (_deviceLocation == null && _errorKey != null) {
-      _promptOpenSettings(_errorKey!);
-      return Future.value();
-    }
     return _fetchDeviceLocation(_LocationFetchSource.userTap);
   }
 
@@ -332,10 +327,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
   }
 
   Future<void> _fetchDeviceLocation(_LocationFetchSource source) async {
-    if (mounted && _loading) {
-      setState(() => _loading = false);
-    }
-
     if (_isFetchingLocation &&
         (source == _LocationFetchSource.backgroundRetry ||
             source == _LocationFetchSource.resume)) {
@@ -394,8 +385,24 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
         return;
       }
 
+      final lastKnown = await Geolocator.getLastKnownPosition();
+      if (lastKnown != null) {
+        if (!mounted || requestGen != _locationRequestGeneration) return;
+        _cancelBackgroundRetry();
+        _backgroundRetryCount = 0;
+        setState(() {
+          _deviceLocation = LatLng(lastKnown.latitude, lastKnown.longitude);
+          _errorKey = null;
+          _isFetchingLocation = false;
+        });
+        if (source == _LocationFetchSource.userTap && _deviceLocation != null) {
+          _animateFocusTo(_deviceLocation!);
+        }
+        return;
+      }
+
       final pos = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
+        locationSettings: LocationSettings(
           accuracy: LocationAccuracy.low,
           timeLimit: _locationLookupTimeout,
         ),
@@ -408,12 +415,16 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
         _errorKey = null;
         _isFetchingLocation = false;
       });
+      if (source == _LocationFetchSource.userTap && _deviceLocation != null) {
+        _animateFocusTo(_deviceLocation!);
+      }
     } catch (e, stackTrace) {
+      final isTimeout = _looksLikeTimeout(e);
       log(
         'MapView: getCurrentPosition failed (${source.name})',
         name: 'MapView',
         error: e,
-        stackTrace: stackTrace,
+        stackTrace: isTimeout ? null : stackTrace,
       );
       if (!mounted || requestGen != _locationRequestGeneration) return;
 
@@ -422,8 +433,6 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
         _errorKey = null;
         _isFetchingLocation = false;
       });
-
-      final isTimeout = _looksLikeTimeout(e);
 
       switch (source) {
         case _LocationFetchSource.initial:
@@ -468,7 +477,9 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     _reportControlsStateIfNeeded();
-    final initialCenter = widget.initLocation ?? _deviceLocation ?? _fallbackCenter;
+    final initialCenter = widget.showBusMarkerAtMapLoadCenter
+        ? (widget.initLocation ?? _defaultBusLocation)
+        : (widget.initLocation ?? _deviceLocation ?? _fallbackCenter);
     final busForMarker =
         widget.showBusMarkerAtMapLoadCenter ? _mockBusAtMapCenter : widget.busLocation;
     final errorText = switch (_errorKey) {
@@ -499,6 +510,8 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin, Widget
               deviceLocation: _deviceLocation,
               onCenterToDeviceLocation: _animateFocusTo,
               onRetryLocation: _retryLocationFromUser,
+              onCenterControlPressed: widget.onCenterControlPressed,
+              centerControlIcon: widget.centerControlIcon,
               bottomOffset: widget.controlsBottomOffset,
             ),
           ...(widget.stackWidgets ?? [SizedBox.shrink()]),
@@ -593,17 +606,6 @@ class MapCanvas extends StatelessWidget {
                   ),
                   child: const Icon(Icons.directions_bus, color: Colors.white, size: 20),
                 ),
-              ),
-            ],
-          ),
-        if (focusedLocation != null)
-          MarkerLayer(
-            markers: [
-              Marker(
-                point: focusedLocation!,
-                width: 40,
-                height: 40,
-                child: const Icon(Icons.location_pin, color: Colors.red, size: 36),
               ),
             ],
           ),

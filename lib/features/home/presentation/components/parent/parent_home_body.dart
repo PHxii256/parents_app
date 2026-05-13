@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/presentation/components/address_tile.dart';
@@ -21,6 +22,11 @@ class ParentHomeBody extends StatefulWidget {
 
 class _ParentHomeBodyState extends State<ParentHomeBody> {
   late final TripCubit _tripCubit;
+  MapViewControlsState? _mapControlsState;
+  LatLng? _mapFocusTarget;
+  int _mapFocusRequestKey = 0;
+  bool _showBusActionIcon = false;
+  bool _followBusLocation = false;
 
   @override
   void initState() {
@@ -34,6 +40,48 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
     super.dispose();
   }
 
+  void _focusOnSelfLocation() {
+    final controls = _mapControlsState;
+    if (controls == null) return;
+    final location = controls.deviceLocation;
+    if (location != null) {
+      controls.onCenterToDeviceLocation(location);
+      return;
+    }
+    controls.onRetryLocation();
+  }
+
+  void _focusOnBusLocation(ActiveTripState activeTrip) {
+    final busLocation = ApiConfig.useRealApi ? activeTrip.busCoords : null;
+    if (busLocation == null) {
+      return;
+    }
+    setState(() {
+      _mapFocusTarget = busLocation;
+      _mapFocusRequestKey++;
+    });
+  }
+
+  void _handleCenterControlTap(ActiveTripState? activeTrip) {
+    if (activeTrip == null) {
+      _focusOnSelfLocation();
+      return;
+    }
+    if (_showBusActionIcon) {
+      _focusOnBusLocation(activeTrip);
+      setState(() {
+        _showBusActionIcon = false;
+        _followBusLocation = true;
+      });
+      return;
+    }
+    _focusOnSelfLocation();
+    setState(() {
+      _showBusActionIcon = true;
+      _followBusLocation = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -44,6 +92,10 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
         builder: (context, state) {
           const double activeTripPanelHeight = 74;
           final activeTrip = state is ActiveTripState ? state : null;
+          if (activeTrip == null && (_showBusActionIcon || _followBusLocation)) {
+            _showBusActionIcon = false;
+            _followBusLocation = false;
+          }
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,15 +107,24 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
                     clipBehavior: Clip.none,
                     children: [
                       MapView(
+                        focusTarget: _mapFocusTarget,
+                        focusRequestKey: _mapFocusRequestKey,
                         busLocation:
                             ApiConfig.useRealApi ? activeTrip?.busCoords : null,
                         showBusMarkerAtMapLoadCenter:
                             activeTrip != null && !ApiConfig.useRealApi,
                         followBusLocation:
-                            activeTrip != null && ApiConfig.useRealApi,
+                            activeTrip != null && ApiConfig.useRealApi && _followBusLocation,
                         showControls: true,
                         showAttribution: false,
                         controlsBottomOffset: 36,
+                        centerControlIcon: activeTrip != null && _showBusActionIcon
+                            ? Icons.directions_bus
+                            : Icons.gps_fixed,
+                        onCenterControlPressed: () => _handleCenterControlTap(activeTrip),
+                        onControlsStateChanged: (controlsState) {
+                          _mapControlsState = controlsState;
+                        },
                       ),
                       Positioned(
                         left: 8,

@@ -9,6 +9,8 @@ class MapControls extends StatelessWidget {
     required LatLng? deviceLocation,
     this.onCenterToDeviceLocation,
     this.onRetryLocation,
+    this.onCenterControlPressed,
+    this.centerControlIcon = Icons.gps_fixed,
     this.bottomOffset = 36,
   }) : _mapController = mapController,
        _deviceLocation = deviceLocation;
@@ -18,6 +20,8 @@ class MapControls extends StatelessWidget {
   final ValueChanged<LatLng>? onCenterToDeviceLocation;
   /// When [deviceLocation] is null (e.g. GPS timeout), tapping the locate button calls this to retry.
   final VoidCallback? onRetryLocation;
+  final VoidCallback? onCenterControlPressed;
+  final IconData centerControlIcon;
   final double bottomOffset;
 
   @override
@@ -52,6 +56,10 @@ class MapControls extends StatelessWidget {
             backgroundColor: Colors.white,
             foregroundColor: Colors.black87,
             onPressed: () {
+              if (onCenterControlPressed != null) {
+                onCenterControlPressed!();
+                return;
+              }
               final target = _deviceLocation;
               if (target != null) {
                 if (onCenterToDeviceLocation != null) {
@@ -63,7 +71,7 @@ class MapControls extends StatelessWidget {
               }
               onRetryLocation?.call();
             },
-            child: const Icon(Icons.gps_fixed),
+            child: Icon(centerControlIcon),
           ),
         ],
       ),

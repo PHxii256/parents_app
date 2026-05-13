@@ -30,6 +30,8 @@ class TripRepository {
       return OfflineTripState();
     }
 
+    final tripId = _extractTripId(data);
+
     final eta =
         (data['eta'] as num?)?.toInt() ??
         ((data['tripUpdate'] as Map<String, dynamic>?)?['eta'] as num?)?.toInt() ??
@@ -44,6 +46,7 @@ class TripRepository {
         _parseBusCoords((data['tripUpdate'] as Map<String, dynamic>?)?['busCoords']);
 
     return ActiveTripState(
+      tripId: tripId,
       eta: eta,
       licensePlateLetters:
           (data['licencePlateLetters'] as String?) ??
@@ -102,6 +105,15 @@ class TripRepository {
       return body;
     }
     return body;
+  }
+
+  int? _extractTripId(Map<String, dynamic> data) {
+    final direct = data['tripId'] ?? data['trip_id'] ?? data['id'];
+    final fromTrip = (data['trip'] as Map<String, dynamic>?)?['id'];
+    final fromTripUpdate = (data['tripUpdate'] as Map<String, dynamic>?)?['tripId'];
+    final raw = direct ?? fromTrip ?? fromTripUpdate;
+    if (raw is int) return raw;
+    return int.tryParse(raw?.toString() ?? '');
   }
 
   LatLng? _parseBusCoords(dynamic rawCoords) {
