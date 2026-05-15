@@ -20,7 +20,7 @@ String _messageFromDio(DioException e) {
       }
     }
   }
-    return e.message?.trim().isNotEmpty == true ? e.message! : 'Network error';
+  return e.message?.trim().isNotEmpty == true ? e.message! : 'Network error';
 }
 
 void _debugAuthDioFailure(String action, DioException e) {
@@ -48,6 +48,7 @@ class AuthDataProvider {
       return await _dio.post<dynamic>(
         _authPath(role, 'login'),
         data: {'email': email, 'password': password},
+        options: Options(extra: {'skipAuth': true}),
       );
     } on DioException catch (e) {
       _debugAuthDioFailure('POST login', e);
@@ -64,6 +65,7 @@ class AuthDataProvider {
       return await _dio.post<dynamic>(
         _authPath(role, 'verify'),
         data: {'email': email, 'otp': otp},
+        options: Options(extra: {'skipAuth': true}),
       );
     } on DioException catch (e) {
       _debugAuthDioFailure('POST verify', e);
@@ -86,6 +88,7 @@ class AuthDataProvider {
           'new_password': newPassword,
           'confirm_password': newPassword,
         },
+        options: Options(extra: {'skipAuth': true}),
       );
     } on DioException catch (e) {
       _debugAuthDioFailure('POST set-initial-password', e);
@@ -102,6 +105,7 @@ class AuthDataProvider {
       return await _dio.post<dynamic>(
         _authPath(role, 'resend-otp'),
         data: {'email': email, 'password': password},
+        options: Options(extra: {'skipAuth': true}),
       );
     } on DioException catch (e) {
       _debugAuthDioFailure('POST resend-otp', e);

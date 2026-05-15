@@ -431,7 +431,17 @@ class AuthRepository {
 }
 
 String _loginFailureMessageFromDio(DioException e) {
+  final statusCode = e.response?.statusCode;
   final d = e.response?.data;
+  if (statusCode == 403) {
+    if (d is String) {
+      final lower = d.toLowerCase();
+      if (lower.contains('<!doctype html') || lower.contains('forbidden')) {
+        return 'This account is not allowed for the selected account type. Please change Account Type and try again.';
+      }
+    }
+    return 'Login was rejected for the selected account type. Please verify the Account Type and credentials.';
+  }
   if (d is Map) {
     final msg = d['message'];
     if (msg != null && msg.toString().trim().isNotEmpty) {
