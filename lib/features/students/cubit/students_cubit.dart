@@ -50,6 +50,10 @@ class StudentsCubit extends Cubit<StudentsState> {
       if (sd != null && sd.id != 0) {
         merged[sd.id.toString()] = msg;
       }
+      final backend = item.backendStudentId?.trim();
+      if (backend != null && backend.isNotEmpty) {
+        merged[backend] = msg;
+      }
     }
     return merged;
   }
@@ -62,10 +66,15 @@ class StudentsCubit extends Cubit<StudentsState> {
       final sd = item.studentData;
       if (sd == null) continue;
       final idStr = sd.id != 0 ? sd.id.toString() : null;
-      final rosterMatches = item.id == coreKey || (idStr != null && idStr == coreKey);
+      final backend = item.backendStudentId?.trim();
+      final rosterMatches =
+          item.id == coreKey ||
+          (idStr != null && idStr == coreKey) ||
+          (backend != null && backend.isNotEmpty && backend == coreKey);
       if (rosterMatches) {
         keys.add(item.id);
         if (idStr != null) keys.add(idStr);
+        if (backend != null && backend.isNotEmpty) keys.add(backend);
       }
     }
     return keys;
@@ -116,19 +125,25 @@ class StudentsCubit extends Cubit<StudentsState> {
     }
   }
 
-  Future<void> markBoarded(String studentId) async {
-    final ok = await _studentsRepository.markBoarded(studentId);
+  Future<void> markBoarded({
+    required String apiStudentId,
+    required String statusKey,
+  }) async {
+    final ok = await _studentsRepository.markBoarded(apiStudentId);
     if (!ok) return;
     final updated = Map<String, String>.from(state.statuses);
-    updated[studentId] = 'boarded';
+    updated[statusKey] = 'boarded';
     emit(state.copyWith(statuses: updated));
   }
 
-  Future<void> markDroppedOff(String studentId) async {
-    final ok = await _studentsRepository.markDroppedOff(studentId);
+  Future<void> markDroppedOff({
+    required String apiStudentId,
+    required String statusKey,
+  }) async {
+    final ok = await _studentsRepository.markDroppedOff(apiStudentId);
     if (!ok) return;
     final updated = Map<String, String>.from(state.statuses);
-    updated[studentId] = 'dropped-off';
+    updated[statusKey] = 'dropped-off';
     emit(state.copyWith(statuses: updated));
   }
 

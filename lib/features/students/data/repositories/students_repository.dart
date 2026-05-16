@@ -112,14 +112,16 @@ class StudentsRepository {
       final gMapsUrl = pickup?['gMapsUrl']?.toString() ?? '';
       final address = pickup?['description']?.toString() ?? '';
       final name = student['name']?.toString() ?? 'Student';
+      final backendId = _nonEmptyField(student, ['id', 'studentId', 'student_id', 'pk']);
       return RouteStudentItem(
-        id: student['id']?.toString() ?? name,
+        id: backendId ?? name,
+        backendStudentId: backendId,
         name: name,
         address: address,
         gMapsUrl: gMapsUrl,
         coords: location,
         studentData: StudentData(
-          id: int.tryParse(student['id']?.toString() ?? '') ?? 0,
+          id: int.tryParse(backendId ?? '') ?? 0,
           name: name,
           grade: student['grade']?.toString() ?? '',
           pinCodes: _parseStudentPinCodes(student),
@@ -178,6 +180,7 @@ class StudentsRepository {
         .map(
           (student) => RouteStudentItem(
             id: student.id.toString(),
+            backendStudentId: student.id.toString(),
             name: student.name,
             address: student.address,
             gMapsUrl: student.gMapsLink,

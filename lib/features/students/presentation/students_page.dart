@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/students/cubit/students_cubit.dart';
 import 'package:parent_app/features/students/cubit/students_state.dart';
+import 'package:parent_app/features/students/data/models/route_student_item.dart';
 import 'package:parent_app/features/students/presentation/components/location_tile.dart';
 import 'package:parent_app/features/students/presentation/components/student_page_search.dart';
 import 'package:parent_app/features/students/presentation/components/track_segment.dart';
@@ -45,6 +47,24 @@ class _StudentsPageState extends State<StudentsPage> {
   void dispose() {
     _studentsCubit.close();
     super.dispose();
+  }
+
+  void _showNeedsStudentIdSnack() {
+    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Student id missing — cannot update status.',
+        ),
+      ),
+    );
+  }
+
+  /// Backend id for `/api/v1/students/{id}/…`; never use display name here.
+  String? _apiStudentId(RouteStudentItem item, StudentData student) {
+    final raw = item.backendStudentId?.trim();
+    if (raw != null && raw.isNotEmpty) return raw;
+    if (student.id != 0) return student.id.toString();
+    return null;
   }
 
   void _showFilterSheet(AppLocalizations? localizations) {
@@ -308,6 +328,10 @@ class _StudentsPageState extends State<StudentsPage> {
                                         state.latestMessages[item.id] ??
                                         (student.id != 0
                                             ? state.latestMessages[student.id.toString()]
+                                            : null) ??
+                                        (item.backendStudentId != null &&
+                                                item.backendStudentId!.isNotEmpty
+                                            ? state.latestMessages[item.backendStudentId!]
                                             : null),
                                     onLocationTap: () => _openGoogleMaps(student.gMapsLink),
                                     boardedBus:
@@ -316,14 +340,30 @@ class _StudentsPageState extends State<StudentsPage> {
                                     droppedOff: state.statuses[item.id] == 'dropped-off',
                                     onBoardedChanged: (value) async {
                                       if (value) {
-                                        await _studentsCubit.markBoarded(item.id);
+                                        final apiId = _apiStudentId(item, student);
+                                        if (apiId == null) {
+                                          _showNeedsStudentIdSnack();
+                                          return;
+                                        }
+                                        await _studentsCubit.markBoarded(
+                                          apiStudentId: apiId,
+                                          statusKey: item.id,
+                                        );
                                       } else {
                                         _studentsCubit.setStatusLocal(item.id, null);
                                       }
                                     },
                                     onDroppedOffChanged: (value) async {
                                       if (value) {
-                                        await _studentsCubit.markDroppedOff(item.id);
+                                        final apiId = _apiStudentId(item, student);
+                                        if (apiId == null) {
+                                          _showNeedsStudentIdSnack();
+                                          return;
+                                        }
+                                        await _studentsCubit.markDroppedOff(
+                                          apiStudentId: apiId,
+                                          statusKey: item.id,
+                                        );
                                       } else {
                                         _studentsCubit.setStatusLocal(item.id, 'boarded');
                                       }
