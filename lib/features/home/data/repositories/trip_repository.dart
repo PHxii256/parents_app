@@ -110,8 +110,12 @@ class TripRepository {
   int? _extractTripId(Map<String, dynamic> data) {
     final direct = data['tripId'] ?? data['trip_id'] ?? data['id'];
     final fromTrip = (data['trip'] as Map<String, dynamic>?)?['id'];
-    final fromTripUpdate = (data['tripUpdate'] as Map<String, dynamic>?)?['tripId'];
-    final raw = direct ?? fromTrip ?? fromTripUpdate;
+    final fromTripUpdate =
+        (data['tripUpdate'] as Map<String, dynamic>?)?['tripId'] ??
+        (data['tripUpdate'] as Map<String, dynamic>?)?['trip_id'];
+    // Some deployments omit tripId but expose routeId while tripActive — WS room may still match.
+    final routeFallback = data['routeId'] ?? data['route_id'];
+    final raw = direct ?? fromTrip ?? fromTripUpdate ?? routeFallback;
     if (raw is int) return raw;
     return int.tryParse(raw?.toString() ?? '');
   }

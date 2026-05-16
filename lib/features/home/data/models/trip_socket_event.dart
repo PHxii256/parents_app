@@ -23,13 +23,22 @@ sealed class TripSocketEvent {
         return null;
       case 'guardian_message':
         return GuardianMessageSocketEvent(
-          studentId: payload['student_id']?.toString(),
-          content: payload['content']?.toString() ?? '',
-          guardianName: payload['guardian_name']?.toString(),
+          studentId:
+              payload['student_id']?.toString() ??
+              payload['studentId']?.toString(),
+          content:
+              payload['content']?.toString() ??
+              payload['message']?.toString() ??
+              '',
+          guardianName:
+              payload['guardian_name']?.toString() ??
+              payload['guardianName']?.toString(),
         );
       case 'student_status':
         return StudentStatusSocketEvent(
-          studentId: payload['student_id']?.toString(),
+          studentId:
+              payload['student_id']?.toString() ??
+              payload['studentId']?.toString(),
           status: payload['status']?.toString() ?? '',
         );
       default:

@@ -304,7 +304,11 @@ class _StudentsPageState extends State<StudentsPage> {
                                   if (!isFirst) const TrackSegment(),
                                   StudentPageTile(
                                     student: student,
-                                    latestMessage: state.latestMessages[item.id],
+                                    latestMessage:
+                                        state.latestMessages[item.id] ??
+                                        (student.id != 0
+                                            ? state.latestMessages[student.id.toString()]
+                                            : null),
                                     onLocationTap: () => _openGoogleMaps(student.gMapsLink),
                                     boardedBus:
                                         state.statuses[item.id] == 'boarded' ||

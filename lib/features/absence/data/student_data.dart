@@ -10,6 +10,8 @@ class StudentData {
   final String gMapsLink;
   final List<String> coords;
   final String? status;
+  /// Latest guardian message from GET `/routes/students` when provided.
+  final String? latestMessage;
   StudentData({
     required this.id,
     required this.name,
@@ -19,6 +21,7 @@ class StudentData {
     required this.gMapsLink,
     required this.coords,
     this.status,
+    this.latestMessage,
   });
 
   static final List<StudentData> mockStudentData = [

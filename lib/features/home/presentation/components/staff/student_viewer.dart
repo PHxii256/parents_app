@@ -90,6 +90,7 @@ class _StudentViewerState extends State<StudentViewer> {
       name: item.name,
       grade: '',
       pinCodes: const [],
+      latestMessage: null,
       address: schoolPlaceLabel,
       gMapsLink: item.gMapsUrl,
       coords: item.coords == null

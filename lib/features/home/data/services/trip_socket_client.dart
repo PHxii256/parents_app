@@ -20,29 +20,50 @@ class TripSocketClient {
 
   Stream<TripSocketEvent> get events => _eventsController.stream;
 
+  bool get isConnected => _socket != null;
+
+  void _log(String message) {
+    if (kDebugMode) {
+      debugPrint('[TripSocket] $message');
+    }
+  }
+
   Future<void> connect({required int tripId}) async {
-    if (!ApiConfig.useRealApi) return;
-    if (_socket != null && _connectedTripId == tripId) return;
+    if (!ApiConfig.useRealApi) {
+      _log('connect skipped (useRealApi=false) trip=$tripId');
+      return;
+    }
+    if (_socket != null && _connectedTripId == tripId) {
+      _log('already connected trip=$tripId');
+      return;
+    }
 
     await disconnect();
     final tokens = await _jwtStorage.load();
     final token = tokens?.accessToken;
-    if (token == null || token.isEmpty) return;
+    if (token == null || token.isEmpty) {
+      _log('connect aborted: no JWT access token trip=$tripId');
+      return;
+    }
 
     final wsUri = _buildTripWsUri(tripId: tripId, token: token);
+    final safeForLog = wsUri.replace(queryParameters: {'token': '***'});
+    _log('connecting $safeForLog');
     try {
       _socket = await WebSocket.connect(wsUri.toString());
       _connectedTripId = tripId;
+      _log('socket open trip=$tripId');
       _socketSubscription = _socket!.listen(
         _onRawMessage,
-        onError: (_) => _onSocketEnded(),
+        onError: (Object e, _) {
+          _log('socket error trip=$tripId err=$e');
+          _onSocketEnded();
+        },
         onDone: _onSocketEnded,
         cancelOnError: true,
       );
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('[TripSocket] connect failed for trip=$tripId: $e');
-      }
+      _log('connect failed trip=$tripId: $e');
       await disconnect();
     }
   }
@@ -55,6 +76,7 @@ class TripSocketClient {
     } catch (_) {}
     _socket = null;
     _connectedTripId = null;
+    _log('disconnected');
   }
 
   Future<void> dispose() async {
@@ -63,19 +85,30 @@ class TripSocketClient {
   }
 
   void _onRawMessage(dynamic raw) {
+    final text = raw.toString();
     try {
-      final decoded = jsonDecode(raw.toString());
-      if (decoded is! Map) return;
+      final decoded = jsonDecode(text);
+      if (decoded is! Map) {
+        _log('ignored non-object frame len=${text.length}');
+        return;
+      }
       final map = <String, dynamic>{};
       decoded.forEach((k, v) => map[k.toString()] = v);
+      final preview = text.length > 200 ? '${text.substring(0, 200)}…' : text;
+      _log('frame in: $preview');
       final event = TripSocketEvent.fromJson(map);
       if (event != null) {
         _eventsController.add(event);
+      } else {
+        _log('unparsed event type=${map['type']}');
       }
-    } catch (_) {}
+    } catch (e) {
+      _log('frame parse error: $e');
+    }
   }
 
   void _onSocketEnded() {
+    _log('socket closed');
     _socketSubscription = null;
     _socket = null;
     _connectedTripId = null;
