@@ -5,6 +5,7 @@ class StudentsState {
   final String direction;
   final List<RouteStudentItem> students;
   final Map<String, String> statuses;
+  final Map<String, String> latestMessages;
   final String? error;
 
   const StudentsState({
@@ -12,6 +13,7 @@ class StudentsState {
     this.direction = 'am',
     this.students = const [],
     this.statuses = const {},
+    this.latestMessages = const {},
     this.error,
   });
 
@@ -20,6 +22,7 @@ class StudentsState {
     String? direction,
     List<RouteStudentItem>? students,
     Map<String, String>? statuses,
+    Map<String, String>? latestMessages,
     String? error,
     bool clearError = false,
   }) {
@@ -28,6 +31,7 @@ class StudentsState {
       direction: direction ?? this.direction,
       students: students ?? this.students,
       statuses: statuses ?? this.statuses,
+      latestMessages: latestMessages ?? this.latestMessages,
       error: clearError ? null : error ?? this.error,
     );
   }

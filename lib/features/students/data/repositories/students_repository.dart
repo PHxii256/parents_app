@@ -10,6 +10,66 @@ class StudentsRepository {
 
   StudentsRepository({Dio? dio}) : _dio = dio ?? ApiClient.dio;
 
+  static String? _nonEmptyField(Map<String, dynamic> json, List<String> keys) {
+    for (final key in keys) {
+      final v = json[key];
+      if (v == null) continue;
+      final s = v.toString().trim();
+      if (s.isNotEmpty) return s;
+    }
+    return null;
+  }
+
+  static List<String> _pinsFromMasterTempKeys(Map<String, dynamic> json) {
+    final master = _nonEmptyField(json, [
+      'masterPincode',
+      'master_pincode',
+      'masterPinCode',
+      'master_pin_code',
+      'masterPin',
+      'master_pin',
+    ]);
+    final temp = _nonEmptyField(json, [
+      'tempPincode',
+      'temp_pincode',
+      'tempPinCode',
+      'temp_pin_code',
+      'tempPin',
+      'temp_pin',
+    ]);
+    final pins = <String>[];
+    if (master != null) pins.add(master);
+    if (temp != null) pins.add(temp);
+    return pins;
+  }
+
+  /// API may send `pinCodes` as a string list, or as `{ masterPin, tempPin }`,
+  /// or nested `pins`/`pin`; plus top-level master/temp variants on the student.
+  static List<String> _parseStudentPinCodes(Map<String, dynamic> student) {
+    final raw = student['pinCodes'] ?? student['pin_codes'];
+    if (raw is List) {
+      final fromList = raw
+          .map((e) => e.toString().trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      if (fromList.isNotEmpty) return fromList;
+    }
+    if (raw is Map) {
+      final map = Map<String, dynamic>.from(raw);
+      final fromPinCodesObj = _pinsFromMasterTempKeys(map);
+      if (fromPinCodesObj.isNotEmpty) return fromPinCodesObj;
+    }
+
+    final fromFlatStudent = _pinsFromMasterTempKeys(student);
+    if (fromFlatStudent.isNotEmpty) return fromFlatStudent;
+
+    final nested = student['pins'] ?? student['pin'];
+    if (nested is Map<String, dynamic>) {
+      return _parseStudentPinCodes(nested);
+    }
+    return const [];
+  }
+
   Future<List<RouteStudentItem>> fetchRouteStudents({
     required String direction,
   }) async {
@@ -55,7 +115,7 @@ class StudentsRepository {
           id: int.tryParse(student['id']?.toString() ?? '') ?? 0,
           name: name,
           grade: student['grade']?.toString() ?? '',
-          pinCodes: const [],
+          pinCodes: _parseStudentPinCodes(student),
           address: address,
           gMapsLink: gMapsUrl,
           coords: coords is List

@@ -105,6 +105,7 @@ class _PinScreenState extends State<PinCodePage> {
                 const SizedBox(height: 8),
                 TextField(
                   controller: masterPinController,
+                  readOnly: true,
                   obscureText: !masterPinVisible,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

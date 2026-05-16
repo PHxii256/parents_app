@@ -21,8 +21,6 @@ class _StudentsPageState extends State<StudentsPage> {
   String _searchQuery = '';
   bool _filterBoardedBus = false;
   bool _filterDroppedOff = false;
-  final Map<String, bool> _boardedByStudentId = {};
-  final Map<String, bool> _droppedOffByStudentId = {};
 
   int get _activeFilterCount {
     var count = 0;
@@ -165,8 +163,9 @@ class _StudentsPageState extends State<StudentsPage> {
                 item.name.toLowerCase().contains(trimmedQuery);
             if (!matchesSearch) return false;
 
-            final boarded = _boardedByStudentId[item.id] ?? false;
-            final dropped = _droppedOffByStudentId[item.id] ?? false;
+            final status = state.statuses[item.id];
+            final boarded = status == 'boarded' || status == 'dropped-off';
+            final dropped = status == 'dropped-off';
             if (_filterBoardedBus && !boarded) return false;
             if (_filterDroppedOff && !dropped) return false;
             return true;
@@ -305,21 +304,25 @@ class _StudentsPageState extends State<StudentsPage> {
                                   if (!isFirst) const TrackSegment(),
                                   StudentPageTile(
                                     student: student,
+                                    latestMessage: state.latestMessages[item.id],
                                     onLocationTap: () => _openGoogleMaps(student.gMapsLink),
-                                    boardedBus: _boardedByStudentId[item.id] ?? false,
-                                    droppedOff: _droppedOffByStudentId[item.id] ?? false,
-                                    onBoardedChanged: (value) {
-                                      setState(() {
-                                        _boardedByStudentId[item.id] = value;
-                                        if (!value) {
-                                          _droppedOffByStudentId[item.id] = false;
-                                        }
-                                      });
+                                    boardedBus:
+                                        state.statuses[item.id] == 'boarded' ||
+                                        state.statuses[item.id] == 'dropped-off',
+                                    droppedOff: state.statuses[item.id] == 'dropped-off',
+                                    onBoardedChanged: (value) async {
+                                      if (value) {
+                                        await _studentsCubit.markBoarded(item.id);
+                                      } else {
+                                        _studentsCubit.setStatusLocal(item.id, null);
+                                      }
                                     },
-                                    onDroppedOffChanged: (value) {
-                                      setState(() {
-                                        _droppedOffByStudentId[item.id] = value;
-                                      });
+                                    onDroppedOffChanged: (value) async {
+                                      if (value) {
+                                        await _studentsCubit.markDroppedOff(item.id);
+                                      } else {
+                                        _studentsCubit.setStatusLocal(item.id, 'boarded');
+                                      }
                                     },
                                   ),
                                 ],

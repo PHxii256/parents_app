@@ -16,6 +16,7 @@ class StudentPageInfoTile extends StatelessWidget {
         ? studentData.grade
         : studentData.localizedGrade(localizations);
     final pinCodesText = studentData.pinCodes.join(', ');
+    final hasPins = studentData.pinCodes.isNotEmpty;
 
     var textStyle = TextStyle(
       fontWeight: FontWeight.w300,
@@ -63,10 +64,13 @@ class StudentPageInfoTile extends StatelessWidget {
                           gradeLabel,
                           style: textStyle,
                         ),
-                        Text('•', style: textStyle),
-                        Text(
-                          '$pinCodesLabel: $pinCodesText',
-                        ),
+                        if (hasPins) ...[
+                          Text('•', style: textStyle),
+                          Text(
+                            '$pinCodesLabel: $pinCodesText',
+                            style: textStyle,
+                          ),
+                        ],
                       ],
                     ),
                     Text(

@@ -7,6 +7,7 @@ import 'package:parent_app/features/students/presentation/components/student_pag
 class StudentPageTile extends StatelessWidget {
   final StudentData student;
   final VoidCallback? onLocationTap;
+  final String? latestMessage;
   final bool boardedBus;
   final bool droppedOff;
   final ValueChanged<bool>? onBoardedChanged;
@@ -15,6 +16,7 @@ class StudentPageTile extends StatelessWidget {
     super.key,
     required this.student,
     this.onLocationTap,
+    this.latestMessage,
     this.boardedBus = false,
     this.droppedOff = false,
     this.onBoardedChanged,
@@ -27,7 +29,7 @@ class StudentPageTile extends StatelessWidget {
       children: [
         StudentPageInfoTile(studentData: student),
         SizedBox(height: 4),
-        ContactParentsTile(onLocationTap: onLocationTap),
+        ContactParentsTile(onLocationTap: onLocationTap, latestMessage: latestMessage),
         SizedBox(height: 4),
         StudentPageTileStatus(
           studentName: student.name,

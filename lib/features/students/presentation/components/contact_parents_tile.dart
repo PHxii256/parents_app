@@ -8,7 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactParentsTile extends StatelessWidget {
   final VoidCallback? onLocationTap;
-  const ContactParentsTile({super.key, this.onLocationTap});
+  final String? latestMessage;
+  const ContactParentsTile({super.key, this.onLocationTap, this.latestMessage});
 
   static const String _motherNumber = '+20 01009207148';
   static const String _fatherNumber = '+20 1064141108';
@@ -82,7 +83,7 @@ class ContactParentsTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   spacing: 6,
                   children: [
-                    Expanded(child: LatestMessageViewer()),
+                    Expanded(child: LatestMessageViewer(latestMessage: latestMessage)),
                     CircularActionButton(
                       icon: Icons.call,
                       size: 16,
