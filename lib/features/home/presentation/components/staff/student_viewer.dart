@@ -1,8 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:parent_app/features/absence/data/student_data.dart';
+import 'package:parent_app/features/home/cubit/driver_trip_session_cubit.dart';
+import 'package:parent_app/features/home/cubit/driver_trip_session_state.dart';
 import 'package:parent_app/features/students/data/models/route_student_item.dart';
 import 'package:parent_app/features/students/data/repositories/students_repository.dart';
 import 'package:parent_app/features/home/presentation/components/staff/staff_quick_actions.dart';
@@ -38,11 +41,24 @@ class _StudentViewerState extends State<StudentViewer> {
   }
 
   Future<void> _loadStudents() async {
-    final data = await _studentsRepository.fetchRouteStudents(direction: 'am');
-    if (!mounted) return;
-    setState(() {
-      _items = data;
-    });
+    try {
+      final data = await _studentsRepository.fetchRouteStudents(direction: 'am');
+      if (!mounted) return;
+      setState(() {
+        _items = data;
+        if (_items.isEmpty) {
+          _currentIndex = 0;
+        } else {
+          _currentIndex = _currentIndex.clamp(0, _items.length - 1).toInt();
+        }
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _items = const [];
+        _currentIndex = 0;
+      });
+    }
   }
 
   @override
@@ -87,95 +103,107 @@ class _StudentViewerState extends State<StudentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_items.isEmpty) {
-      return const SizedBox(
-        height: 160,
-        child: Center(child: CircularProgressIndicator()),
-      );
-    }
+    return BlocListener<DriverTripSessionCubit, DriverTripSessionState>(
+      listenWhen: (previous, current) {
+        if (!widget.isDriver) return false;
+        return current is DriverTripActiveState &&
+            (previous is DriverTripIdleState || previous is DriverTripErrorState);
+      },
+      listener: (_, __) => _loadStudents(),
+      child: Builder(
+        builder: (context) {
+          if (_items.isEmpty) {
+            return const SizedBox(
+              height: 160,
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-    final localizations = AppLocalizations.of(context)!;
-    final maxIndex = _items.length - 1;
-    int _getCurrentIndex(int i) {
-      return min(i - 1, maxIndex - 2);
-    }
+          final localizations = AppLocalizations.of(context)!;
+          final maxIndex = _items.length - 1;
+          int _getCurrentIndex(int i) {
+            return min(i - 1, maxIndex - 2);
+          }
 
-    VoidCallback? goNext(int maxIndex) {
-      if (_currentIndex < maxIndex) {
-        return () {
-          final nextIndex = _currentIndex + 1;
-          setState(() => _currentIndex = nextIndex);
-          _animateToIndex(nextIndex);
-        };
-      }
-      return null;
-    }
+          VoidCallback? goNext(int maxIndex) {
+            if (_currentIndex < maxIndex) {
+              return () {
+                final nextIndex = _currentIndex + 1;
+                setState(() => _currentIndex = nextIndex);
+                _animateToIndex(nextIndex);
+              };
+            }
+            return null;
+          }
 
-    VoidCallback? goBack() {
-      if (_currentIndex > 0) {
-        return () {
-          final previousIndex = _currentIndex - 1;
-          setState(() => _currentIndex = previousIndex);
-          _animateToIndex(previousIndex);
-        };
-      }
-      return null;
-    }
+          VoidCallback? goBack() {
+            if (_currentIndex > 0) {
+              return () {
+                final previousIndex = _currentIndex - 1;
+                setState(() => _currentIndex = previousIndex);
+                _animateToIndex(previousIndex);
+              };
+            }
+            return null;
+          }
 
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        StudentProgress(
-          currentIndex: _getCurrentIndex(_currentIndex),
-          totalStudents: _items.length - 2,
-          onPrevious: goBack(),
-          onNext: goNext(maxIndex),
-          isSchoolTile: _items[_currentIndex].isSchool,
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          height: 112,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: _items.length,
-            onPageChanged: (index) {
-              setState(() => _currentIndex = index);
-            },
-            itemBuilder: (context, index) {
-              final item = _items[index];
-              if (item.isSchool) {
-                final schoolData = _toStudentData(item, localizations, index)!;
-                return Column(
-                  children: [
-                    StudentInfoTile(
-                      iconOverride: Icons.school,
-                      studentData: schoolData,
-                    ),
-                    const SizedBox(height: 6),
-                    StudentStatus(statusOverride: schoolData.address),
-                  ],
-                );
-              }
-              final student = item.studentData;
-              if (student == null) return const SizedBox.shrink();
-              return Column(
-                children: [
-                  StudentInfoTile(studentData: student),
-                  const SizedBox(height: 6),
-                  StudentStatus(studentId: item.id),
-                ],
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 12),
-        StaffQuickActions(
-          currentStudent: _toStudentData(_items[_currentIndex], localizations, _currentIndex),
-          onLocateStudent: widget.onLocateStudent,
-          isDriver: widget.isDriver,
-        ),
-      ],
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StudentProgress(
+                currentIndex: _getCurrentIndex(_currentIndex),
+                totalStudents: _items.length - 2,
+                onPrevious: goBack(),
+                onNext: goNext(maxIndex),
+                isSchoolTile: _items[_currentIndex].isSchool,
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 112,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: _items.length,
+                  onPageChanged: (index) {
+                    setState(() => _currentIndex = index);
+                  },
+                  itemBuilder: (context, index) {
+                    final item = _items[index];
+                    if (item.isSchool) {
+                      final schoolData = _toStudentData(item, localizations, index)!;
+                      return Column(
+                        children: [
+                          StudentInfoTile(
+                            iconOverride: Icons.school,
+                            studentData: schoolData,
+                          ),
+                          const SizedBox(height: 6),
+                          StudentStatus(statusOverride: schoolData.address),
+                        ],
+                      );
+                    }
+                    final student = item.studentData;
+                    if (student == null) return const SizedBox.shrink();
+                    return Column(
+                      children: [
+                        StudentInfoTile(studentData: student),
+                        const SizedBox(height: 6),
+                        StudentStatus(studentId: item.id),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 12),
+              StaffQuickActions(
+                currentStudent: _toStudentData(_items[_currentIndex], localizations, _currentIndex),
+                onLocateStudent: widget.onLocateStudent,
+                isDriver: widget.isDriver,
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

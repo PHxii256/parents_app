@@ -43,6 +43,15 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     emit(state.copyWith(history: [], unreadCount: 0));
   }
 
+  Future<void> refresh() async {
+    try {
+      final history = await _repository.loadHistory();
+      emit(state.copyWith(loading: false, history: history, clearError: true));
+    } catch (e) {
+      emit(state.copyWith(loading: false, error: e.toString()));
+    }
+  }
+
   void markAllAsRead() {
     if (state.unreadCount == 0) return;
     emit(state.copyWith(unreadCount: 0));

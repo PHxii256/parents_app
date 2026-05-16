@@ -133,39 +133,43 @@ class _LocationsPageState extends State<LocationsPage> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-              child: ValueListenableBuilder<List<SavedLocation>>(
-                valueListenable: SavedLocationsStore.instance.addedLocations,
-                builder: (context, addedLocations, _) {
-                  final allLocations = [...defaultLocations, ...addedLocations];
-                  return ListView.separated(
-                    itemCount: allLocations.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final location = allLocations[index];
-                      final showDelete = _isEditMode && !location.isPrimary;
-                      return SavedLocationTile(
-                        location: location,
-                        trailing: showDelete
-                            ? IconButton(
-                                tooltip: localizations.deleteLocation,
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: AppColors.brownBg,
-                                ),
-                                onPressed: () {
-                                  _deleteLocation(
-                                    location: location,
-                                    defaultLocations: defaultLocations,
-                                    addedLocations: addedLocations,
-                                    localizations: localizations,
-                                  );
-                                },
-                              )
-                            : null,
-                      );
-                    },
-                  );
-                },
+              child: RefreshIndicator(
+                onRefresh: _loadServerLocations,
+                child: ValueListenableBuilder<List<SavedLocation>>(
+                  valueListenable: SavedLocationsStore.instance.addedLocations,
+                  builder: (context, addedLocations, _) {
+                    final allLocations = [...defaultLocations, ...addedLocations];
+                    return ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: allLocations.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final location = allLocations[index];
+                        final showDelete = _isEditMode && !location.isPrimary;
+                        return SavedLocationTile(
+                          location: location,
+                          trailing: showDelete
+                              ? IconButton(
+                                  tooltip: localizations.deleteLocation,
+                                  icon: Icon(
+                                    Icons.delete_outline,
+                                    color: AppColors.brownBg,
+                                  ),
+                                  onPressed: () {
+                                    _deleteLocation(
+                                      location: location,
+                                      defaultLocations: defaultLocations,
+                                      addedLocations: addedLocations,
+                                      localizations: localizations,
+                                    );
+                                  },
+                                )
+                              : null,
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
           ),

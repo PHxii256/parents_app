@@ -22,22 +22,37 @@ class ParentHomeBody extends StatefulWidget {
 
 class _ParentHomeBodyState extends State<ParentHomeBody> {
   late final TripCubit _tripCubit;
+  late final ScrollController _scrollController;
   MapViewControlsState? _mapControlsState;
   LatLng? _mapFocusTarget;
   int _mapFocusRequestKey = 0;
   bool _showBusActionIcon = false;
   bool _followBusLocation = false;
+  bool _autoScrolledForActiveTrip = false;
 
   @override
   void initState() {
     super.initState();
-    _tripCubit = TripCubit();
+    _scrollController = ScrollController();
+    _tripCubit = TripCubit(
+      enableAutoPolling: false,
+    );
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _tripCubit.close();
     super.dispose();
+  }
+
+  void _scrollToBottom() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeOutCubic,
+    );
   }
 
   void _focusOnSelfLocation() {
@@ -88,117 +103,133 @@ class _ParentHomeBodyState extends State<ParentHomeBody> {
 
     return BlocProvider.value(
       value: _tripCubit,
-      child: BlocBuilder<TripCubit, TripState>(
-        builder: (context, state) {
-          const double activeTripPanelHeight = 74;
-          final activeTrip = state is ActiveTripState ? state : null;
-          if (activeTrip == null && (_showBusActionIcon || _followBusLocation)) {
-            _showBusActionIcon = false;
-            _followBusLocation = false;
-          }
+      child: RefreshIndicator(
+        onRefresh: _tripCubit.syncTripState,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height,
+            child: BlocBuilder<TripCubit, TripState>(
+              builder: (context, state) {
+                const double activeTripPanelHeight = 74;
+                final activeTrip = state is ActiveTripState ? state : null;
+                if (activeTrip != null && !_autoScrolledForActiveTrip) {
+                  _autoScrolledForActiveTrip = true;
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _scrollToBottom();
+                  });
+                } else if (activeTrip == null) {
+                  _autoScrolledForActiveTrip = false;
+                }
+                if (activeTrip == null && (_showBusActionIcon || _followBusLocation)) {
+                  _showBusActionIcon = false;
+                  _followBusLocation = false;
+                }
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.amber),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      MapView(
-                        focusTarget: _mapFocusTarget,
-                        focusRequestKey: _mapFocusRequestKey,
-                        busLocation:
-                            ApiConfig.useRealApi ? activeTrip?.busCoords : null,
-                        showBusMarkerAtMapLoadCenter:
-                            activeTrip != null && !ApiConfig.useRealApi,
-                        followBusLocation:
-                            activeTrip != null && ApiConfig.useRealApi && _followBusLocation,
-                        showControls: true,
-                        showAttribution: false,
-                        controlsBottomOffset: 36,
-                        centerControlIcon: activeTrip != null && _showBusActionIcon
-                            ? Icons.directions_bus
-                            : Icons.gps_fixed,
-                        onCenterControlPressed: () => _handleCenterControlTap(activeTrip),
-                        onControlsStateChanged: (controlsState) {
-                          _mapControlsState = controlsState;
-                        },
-                      ),
-                      Positioned(
-                        left: 8,
-                        bottom: 8,
-                        child: RichAttributionWidget(
-                          alignment: AttributionAlignment.bottomLeft,
-                          popupBackgroundColor: Colors.white.withAlpha(220),
-                          showFlutterMapAttribution: false,
-                          attributions: [
-                            TextSourceAttribution(
-                              localizations.openStreetMapContributors,
-                              onTap: () => launchUrl(
-                                Uri.parse('https://openstreetmap.org/copyright'),
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(color: Colors.amber),
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            MapView(
+                              focusTarget: _mapFocusTarget,
+                              focusRequestKey: _mapFocusRequestKey,
+                              busLocation: ApiConfig.useRealApi ? activeTrip?.busCoords : null,
+                              showBusMarkerAtMapLoadCenter: activeTrip != null && !ApiConfig.useRealApi,
+                              followBusLocation:
+                                  activeTrip != null && ApiConfig.useRealApi && _followBusLocation,
+                              showControls: true,
+                              showAttribution: false,
+                              controlsBottomOffset: 36,
+                              centerControlIcon: activeTrip != null && _showBusActionIcon
+                                  ? Icons.directions_bus
+                                  : Icons.gps_fixed,
+                              onCenterControlPressed: () => _handleCenterControlTap(activeTrip),
+                              onControlsStateChanged: (controlsState) {
+                                _mapControlsState = controlsState;
+                              },
+                            ),
+                            Positioned(
+                              left: 8,
+                              bottom: 8,
+                              child: RichAttributionWidget(
+                                alignment: AttributionAlignment.bottomLeft,
+                                popupBackgroundColor: Colors.white.withAlpha(220),
+                                showFlutterMapAttribution: false,
+                                attributions: [
+                                  TextSourceAttribution(
+                                    localizations.openStreetMapContributors,
+                                    onTap: () => launchUrl(
+                                      Uri.parse('https://openstreetmap.org/copyright'),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              Transform.translate(
-                offset: const Offset(0, -8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 8,
-                            spreadRadius: 3,
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black38,
+                                  blurRadius: 8,
+                                  spreadRadius: 3,
+                                ),
+                              ],
+                              borderRadius: BorderRadiusDirectional.only(
+                                topStart: Radius.circular(16),
+                                topEnd: Radius.circular(16),
+                              ),
+                            ),
+                            child: SizedBox(height: 20, width: double.infinity),
+                          ),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(22, 12, 22, 8),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TripStatus(),
+                                  SizedBox(height: 12),
+                                  TripPanel(height: activeTripPanelHeight),
+                                  AddressTile(
+                                    addressName: localizations.homeAddressName,
+                                    addressDesc: localizations.homeAddressDesc,
+                                    trailing: localizations.nextPickup,
+                                  ),
+                                  SizedBox(height: 12),
+                                  ParentQuickActions(),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
-                        borderRadius: BorderRadiusDirectional.only(
-                          topStart: Radius.circular(16),
-                          topEnd: Radius.circular(16),
-                        ),
-                      ),
-                      child: SizedBox(height: 20, width: double.infinity),
-                    ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(22, 12, 22, 8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TripStatus(),
-                            SizedBox(height: 12),
-                            TripPanel(height: activeTripPanelHeight),
-                            AddressTile(
-                              addressName: localizations.homeAddressName,
-                              addressDesc: localizations.homeAddressDesc,
-                              trailing: localizations.nextPickup,
-                            ),
-                            SizedBox(height: 12),
-                            ParentQuickActions(),
-                          ],
-                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

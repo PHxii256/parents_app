@@ -76,9 +76,31 @@ class GuardianRepository {
     }
     final response = await _dio.get('/api/v1/guardian/pins');
     final data = _extractData(response.data);
+    if (data is List) {
+      final parsedPins = data.whereType<Map<String, dynamic>>();
+      if (parsedPins.isNotEmpty) {
+        final firstPin = parsedPins.first;
+        return GuardianPinsData(
+          masterPin:
+              firstPin['masterPin']?.toString() ??
+              firstPin['master_pin']?.toString() ??
+              '',
+          tempPin:
+              firstPin['tempPin']?.toString() ??
+              firstPin['temp_pin']?.toString() ??
+              '',
+        );
+      }
+    }
     return GuardianPinsData(
-      masterPin: data['masterPin']?.toString() ?? '',
-      tempPin: data['tempPin']?.toString() ?? '',
+      masterPin:
+          (data is Map<String, dynamic>)
+              ? (data['masterPin']?.toString() ?? data['master_pin']?.toString() ?? '')
+              : '',
+      tempPin:
+          (data is Map<String, dynamic>)
+              ? (data['tempPin']?.toString() ?? data['temp_pin']?.toString() ?? '')
+              : '',
     );
   }
 

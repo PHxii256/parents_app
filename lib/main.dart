@@ -14,7 +14,7 @@ import 'package:parent_app/features/settings/cubit/settings_cubit.dart';
 import 'package:parent_app/features/settings/cubit/settings_state.dart';
 import 'package:parent_app/firebase_options.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
-
+import 'package:parent_app/shared/widgets/offline_connection_guard.dart';
 import 'features/absence/domain/service_locator.dart';
 
 final sl = GetIt.instance;
@@ -63,6 +63,12 @@ class MyApp extends StatelessWidget {
             return MaterialApp(
               title: 'SafeRoute',
               locale: state.locale,
+              builder: (context, child) {
+                if (child == null) {
+                  return const SizedBox.shrink();
+                }
+                return OfflineConnectionGuard(child: child);
+              },
               localizationsDelegates: const [
                 AppLocalizations.delegate,
                 GlobalMaterialLocalizations.delegate,

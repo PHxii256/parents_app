@@ -55,70 +55,81 @@ class _StaffHomeBodyState extends State<StaffHomeBody> {
         BlocProvider.value(value: _driverTripSessionCubit),
         BlocProvider.value(value: _studentsCubit),
       ],
-      child: BlocBuilder<TripCubit, TripState>(
-        builder: (context, _) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(color: Colors.amber),
-                  child: MapView(
-                    focusTarget: _focusedStudentLocation,
-                    focusRequestKey: _focusRequestKey,
-                    controlsBottomOffset: 36,
-                  ),
-                ),
-              ),
-              Transform.translate(
-                offset: const Offset(0, -8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          await _tripCubit.syncTripState();
+          await _studentsCubit.loadStudents(direction: _studentsCubit.state.direction);
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.sizeOf(context).height,
+            child: BlocBuilder<TripCubit, TripState>(
+              builder: (context, _) {
+                return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black38,
-                            blurRadius: 8,
-                            spreadRadius: 3,
+                    Expanded(
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(color: Colors.amber),
+                        child: MapView(
+                          focusTarget: _focusedStudentLocation,
+                          focusRequestKey: _focusRequestKey,
+                          controlsBottomOffset: 36,
+                        ),
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: const Offset(0, -8),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black38,
+                                  blurRadius: 8,
+                                  spreadRadius: 3,
+                                ),
+                              ],
+                              borderRadius: BorderRadiusDirectional.only(
+                                topStart: Radius.circular(16),
+                                topEnd: Radius.circular(16),
+                              ),
+                            ),
+                            child: SizedBox(height: 20, width: double.infinity),
+                          ),
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(22, 8, 22, 8),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  StudentViewer(
+                                    onLocateStudent: _onLocateStudent,
+                                    isDriver: context.authRoleOr('assistant') == 'driver',
+                                  ),
+                                  SizedBox(height: 42),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
-                        borderRadius: BorderRadiusDirectional.only(
-                          topStart: Radius.circular(16),
-                          topEnd: Radius.circular(16),
-                        ),
-                      ),
-                      child: SizedBox(height: 20, width: double.infinity),
-                    ),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).scaffoldBackgroundColor,
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(22, 8, 22, 8),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            StudentViewer(
-                              onLocateStudent: _onLocateStudent,
-                              isDriver:
-                                  context.authRoleOr('assistant') == 'driver',
-                            ),
-                            SizedBox(height: 42),
-                          ],
-                        ),
                       ),
                     ),
                   ],
-                ),
-              ),
-            ],
-          );
-        },
+                );
+              },
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -13,10 +13,22 @@ class TripCubit extends Cubit<TripState> {
   Timer? _pollingTimer;
   final TripSocketClient _tripSocketClient;
   StreamSubscription<TripSocketEvent>? _tripSocketSubscription;
+  final Duration _pollingInterval;
+  final bool _pollWhenInactive;
+  final bool _enableAutoPolling;
 
-  TripCubit({TripRepository? tripRepository, TripSocketClient? tripSocketClient})
+  TripCubit({
+    TripRepository? tripRepository,
+    TripSocketClient? tripSocketClient,
+    Duration pollingInterval = const Duration(seconds: 45),
+    bool pollWhenInactive = false,
+    bool enableAutoPolling = true,
+  })
     : _tripRepository = tripRepository ?? TripRepository(),
       _tripSocketClient = tripSocketClient ?? TripSocketClient(),
+      _pollingInterval = pollingInterval,
+      _pollWhenInactive = pollWhenInactive,
+      _enableAutoPolling = enableAutoPolling,
       super(ActiveTripState.exampleActiveState) {
     syncTripState();
   }
@@ -33,22 +45,33 @@ class TripCubit extends Cubit<TripState> {
     try {
       final tripState = await _tripRepository.fetchTripState();
       emit(tripState);
-      if (tripState is ActiveTripState) {
+      final shouldPoll = _enableAutoPolling && (tripState is ActiveTripState || _pollWhenInactive);
+      if (shouldPoll) {
         _startPolling();
-        await _startRealtime(tripState);
       } else {
         _stopPolling();
+      }
+
+      if (tripState is ActiveTripState) {
+        await _startRealtime(tripState);
+      } else {
         await _stopRealtime();
       }
     } catch (_) {
+      if (_enableAutoPolling && _pollWhenInactive) {
+        _startPolling();
+      } else {
+        _stopPolling();
+      }
       await _stopRealtime();
       emit(OfflineTripState());
     }
   }
 
   void _startPolling() {
+    if (_pollingTimer?.isActive ?? false) return;
     _pollingTimer?.cancel();
-    _pollingTimer = Timer.periodic(const Duration(seconds: 45), (_) async {
+    _pollingTimer = Timer.periodic(_pollingInterval, (_) async {
       await syncTripState();
     });
   }

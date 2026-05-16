@@ -31,44 +31,85 @@ class NotificationsPage extends StatelessWidget {
       ),
       body: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
-          if (state.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.error != null) {
-            return Center(child: Text(state.error!));
-          }
-
-          if (state.history.isEmpty) {
-            return Center(child: Text(localizations.noNotificationsYet));
-          }
-
-          return ListView.separated(
-            itemCount: state.history.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final item = state.history[index];
-              return ListTile(
-                leading: const Icon(Icons.notifications_active_outlined),
-                title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (item.body.isNotEmpty)
-                      Text(item.body, maxLines: 2, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${formatter.format(item.receivedAt)} • ${item.source}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
-                isThreeLine: true,
-              );
-            },
+          final notificationsCubit = context.read<NotificationsCubit>();
+          final refreshIndicator = RefreshIndicator(
+            onRefresh: notificationsCubit.refresh,
+            child: _buildContent(context, state, formatter, localizations),
           );
+
+          return refreshIndicator;
         },
       ),
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    NotificationsState state,
+    DateFormat formatter,
+    AppLocalizations localizations,
+  ) {
+    const alwaysScrollablePhysics = AlwaysScrollableScrollPhysics();
+    if (state.loading) {
+      return ListView(
+        physics: alwaysScrollablePhysics,
+        children: const [
+          SizedBox(
+            height: 420,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ],
+      );
+    }
+
+    if (state.error != null) {
+      return ListView(
+        physics: alwaysScrollablePhysics,
+        children: [
+          SizedBox(
+            height: 420,
+            child: Center(child: Text(state.error!)),
+          ),
+        ],
+      );
+    }
+
+    if (state.history.isEmpty) {
+      return ListView(
+        physics: alwaysScrollablePhysics,
+        children: [
+          SizedBox(
+            height: 420,
+            child: Center(child: Text(localizations.noNotificationsYet)),
+          ),
+        ],
+      );
+    }
+
+    return ListView.separated(
+      physics: alwaysScrollablePhysics,
+      itemCount: state.history.length,
+      separatorBuilder: (context, index) => const Divider(height: 1),
+      itemBuilder: (context, index) {
+        final item = state.history[index];
+        return ListTile(
+          leading: const Icon(Icons.notifications_active_outlined),
+          title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (item.body.isNotEmpty)
+                Text(item.body, maxLines: 2, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 4),
+              Text(
+                '${formatter.format(item.receivedAt)} • ${item.source}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
+          isThreeLine: true,
+        );
+      },
     );
   }
 }

@@ -17,16 +17,29 @@ class AbsencePage extends StatefulWidget {
 }
 
 class _AbsencePageState extends State<AbsencePage> {
+  late final AbsenceCubit _absenceCubit;
   AbsenceDateOption selectedOption = AbsenceDateOption.today;
   DateTime? specificDate;
   DateTime? selectedAbsenceDate;
 
   @override
+  void initState() {
+    super.initState();
+    _absenceCubit = sl<AbsenceCubit>();
+  }
+
+  @override
+  void dispose() {
+    _absenceCubit.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return BlocProvider(
-      create: (_) => sl<AbsenceCubit>(),
+    return BlocProvider.value(
+      value: _absenceCubit,
       child: Scaffold(
         appBar: AppBar(
           foregroundColor: Colors.black,
@@ -55,24 +68,25 @@ class _AbsencePageState extends State<AbsencePage> {
           builder: (context, state) {
             final cubit = context.read<AbsenceCubit>();
 
-            return ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  localizations.selectChildrenTitle,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(height: 12),
+            return RefreshIndicator(
+              onRefresh: cubit.loadChildren,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(16),
+                children: [
+                  Text(
+                    localizations.selectChildrenTitle,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const SizedBox(height: 12),
 
-                // Students list loaded from guardian profile
-                if (state.children.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else
-                  Column(
-                    children: state.children.map((child) {
+                  if (state.children.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(child: CircularProgressIndicator()),
+                    )
+                  else
+                    ...state.children.map((child) {
                       final isSelected = state.selectedChildrenIds.contains(child.id);
                       final isAbsent = state.absentChildrenIds.contains(child.id);
 
@@ -105,168 +119,47 @@ class _AbsencePageState extends State<AbsencePage> {
                             : null,
                         onTap: isAbsent ? null : () => cubit.toggleSelectChild(child.id),
                       );
-                    }).toList(),
+                    }),
+
+                  const SizedBox(height: 20),
+                  Text(
+                    localizations.absenceDateTitle,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-
-                const SizedBox(height: 20),
-                Text(
-                  localizations.absenceDateTitle,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                const SizedBox(height: 8),
-                DateRadioGroup(
-                  onDateSelected: (DateTime selectedDate) {
-                    setState(() => selectedAbsenceDate = selectedDate);
-                  },
-                ),
-
-                // Column(
-                //   children: [
-                //     GestureDetector(
-                //       onTap: () => setState(() {
-                //         selectedOption = AbsenceDateOption.tomorrow;
-                //         specificDate = null;
-                //       }),
-                //       child: Container(
-                //         padding: const EdgeInsets.symmetric(
-                //           horizontal: 16,
-                //           vertical: 8,
-                //         ),
-                //         decoration: BoxDecoration(
-                //           color: Colors.white,
-                //           border: Border.all(color: Colors.grey.shade200),
-                //
-                //           borderRadius: BorderRadius.circular(12),
-                //         ),
-                //         child: Row(
-                //           children: [
-                //             Expanded(
-                //               child: RichText(
-                //                 text: TextSpan(
-                //                   style: const TextStyle(
-                //                     fontFamily: 'Lexend',
-                //                     fontSize: 16,
-                //                     color: Colors.black,
-                //                   ),
-                //                   children: [
-                //                     const TextSpan(
-                //                       text: "Tomorrow ",
-                //                       style: TextStyle(
-                //                         fontWeight: FontWeight.w700,
-                //                       ),
-                //                     ),
-                //                     TextSpan(
-                //                       text: "($tomorrowDayName)",
-                //
-                //                       style: TextStyle(
-                //                         color: Colors.grey.shade500,
-                //                         fontWeight: FontWeight.w400,
-                //                       ),
-                //                     ),
-                //                   ],
-                //                 ),
-                //               ),
-                //             ),
-                //             Radio<AbsenceDateOption>(
-                //               value: AbsenceDateOption.tomorrow,
-                //               groupValue: selectedOption,
-                //               activeColor: Colors.black,
-                //
-                //               onChanged: (value) => setState(() {
-                //                 selectedOption = value!;
-                //                 specificDate = null;
-                //               }),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //     const SizedBox(height: 12),
-                //
-                //     GestureDetector(
-                //       onTap: () async {
-                //         final picked = await showDatePicker(
-                //           context: context,
-                //           initialDate: specificDate ?? DateTime.now(),
-                //           firstDate: DateTime.now(),
-                //           lastDate: DateTime.now().add(
-                //             const Duration(days: 365),
-                //           ),
-                //         );
-                //         if (picked != null) {
-                //           setState(() {
-                //             specificDate = picked;
-                //             selectedOption = AbsenceDateOption.specific;
-                //           });
-                //         }
-                //       },
-                //       child: Container(
-                //         padding: const EdgeInsets.symmetric(
-                //           horizontal: 16,
-                //           vertical: 8,
-                //         ),
-                //         decoration: BoxDecoration(
-                //           color: Colors.white,
-                //           border: Border.all(color: Colors.grey.shade200),
-                //           borderRadius: BorderRadius.circular(12),
-                //         ),
-                //         child: Row(
-                //           children: [
-                //             Expanded(
-                //               child: Text(
-                //                 specificDate != null
-                //                     ? DateFormat(
-                //                         'EEEE, d MMMM,ar',
-                //                       ).format(specificDate!)
-                //                     : "Specific date",
-                //                 style: const TextStyle(
-                //                   fontFamily: 'Lexend',
-                //                   fontWeight: FontWeight.w700,
-                //                   fontSize: 16,
-                //                   color: Colors.black,
-                //                 ),
-                //               ),
-                //             ),
-                //             Radio<AbsenceDateOption>(
-                //               value: AbsenceDateOption.specific,
-                //               groupValue: selectedOption,
-                //               activeColor: Colors.black,
-                //               onChanged: (value) =>
-                //                   setState(() => selectedOption = value!),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ],
-                // )
-                const SizedBox(height: 22),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed:
-                        state.selectedChildrenIds.isEmpty ||
-                            state.isLoading ||
-                            selectedAbsenceDate == null
-                        ? null
-                        : () => cubit.markAbsent(selectedAbsenceDate!),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12), // optional rounded corners
+                  const SizedBox(height: 8),
+                  DateRadioGroup(
+                    onDateSelected: (DateTime selectedDate) {
+                      setState(() => selectedAbsenceDate = selectedDate);
+                    },
+                  ),
+                  const SizedBox(height: 22),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed:
+                          state.selectedChildrenIds.isEmpty ||
+                              state.isLoading ||
+                              selectedAbsenceDate == null
+                          ? null
+                          : () => cubit.markAbsent(selectedAbsenceDate!),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: state.isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text(
+                              localizations.markAsAbsentButton,
+                              style: const TextStyle(fontSize: 18),
+                            ),
                     ),
-                    child: state.isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            localizations.markAsAbsentButton,
-                            style: const TextStyle(fontSize: 18),
-                          ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           },
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/absence/presentation/absence_page.dart';
 import 'package:parent_app/features/change_request/presentation/change_request_page.dart';
+import 'package:parent_app/features/home/cubit/trip_cubit.dart';
 import 'package:parent_app/features/pin_code/presentation/pin_code_page.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:parent_app/shared/widgets/icon_box.dart';
@@ -35,8 +37,11 @@ class ParentQuickActions extends StatelessWidget {
                   width: 80,
                   height: 80,
                   iconSize: 32,
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => PinCodePage()));
+                  onTap: () async {
+                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => PinCodePage()));
+                    if (context.mounted) {
+                      await context.read<TripCubit>().syncTripState();
+                    }
                   },
                 ),
                 Text(
@@ -53,8 +58,11 @@ class ParentQuickActions extends StatelessWidget {
                   width: 80,
                   height: 80,
                   iconSize: 32,
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => AbsencePage()));
+                  onTap: () async {
+                    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => AbsencePage()));
+                    if (context.mounted) {
+                      await context.read<TripCubit>().syncTripState();
+                    }
                   },
                 ),
                 Text(
@@ -72,10 +80,13 @@ class ParentQuickActions extends StatelessWidget {
                     height: 80,
                     iconSize: 32,
                     width: double.maxFinite,
-                    onTap: () {
-                      Navigator.of(
+                    onTap: () async {
+                      await Navigator.of(
                         context,
                       ).push(MaterialPageRoute(builder: (_) => ChangeRequestPage()));
+                      if (context.mounted) {
+                        await context.read<TripCubit>().syncTripState();
+                      }
                     },
                   ),
                   Text(

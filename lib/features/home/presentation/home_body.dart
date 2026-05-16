@@ -10,7 +10,11 @@ class HomeBody extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         actionsPadding: const EdgeInsets.only(right: 8),
         title: Padding(
           padding: const EdgeInsets.only(left: 8),

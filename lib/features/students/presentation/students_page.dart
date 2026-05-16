@@ -227,91 +227,110 @@ class _StudentsPageState extends State<StudentsPage> {
                     });
                   },
                 ),
-                if (state.loading)
-                  const Expanded(
-                    child: Center(child: CircularProgressIndicator()),
-                  )
-                else if (filteredItems.isEmpty)
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        hasActiveFilters
-                            ? (localizations?.noStudentsMatchingFilters ??
-                                  'No students matching selected filters.')
-                            : (localizations?.noStudentsAssignedYet ?? 'No students assigned yet.'),
-                      ),
-                    ),
-                  )
-                else
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 22.0),
-                      child: ListView.builder(
-                        primary: false,
-                        padding: EdgeInsets.zero,
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = filteredItems[index];
-                          final isLast = index == filteredItems.length - 1;
-                          final isFirst = index == 0;
-                          if (item.isSchool) {
-                            return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (isLast)
-                                  const TrackSegment(
-                                    height: 16,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 22,
-                                      vertical: 4,
-                                    ),
-                                  ),
-                                LocationTile(
-                                  name: item.name,
-                                  icon: Icons.school,
-                                  onLocationTap: () =>
-                                      _openGoogleMaps(item.gMapsUrl),
-                                ),
-                              ],
-                            );
-                          }
-                          final student = item.studentData;
-                          if (student == null) {
-                            return const SizedBox.shrink();
-                          }
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (!isFirst) const TrackSegment(),
-                              StudentPageTile(
-                                student: student,
-                                onLocationTap: () =>
-                                    _openGoogleMaps(student.gMapsLink),
-                                boardedBus:
-                                    _boardedByStudentId[item.id] ?? false,
-                                droppedOff:
-                                    _droppedOffByStudentId[item.id] ?? false,
-                                onBoardedChanged: (value) {
-                                  setState(() {
-                                    _boardedByStudentId[item.id] = value;
-                                    if (!value) {
-                                      _droppedOffByStudentId[item.id] = false;
-                                    }
-                                  });
-                                },
-                                onDroppedOffChanged: (value) {
-                                  setState(() {
-                                    _droppedOffByStudentId[item.id] = value;
-                                  });
-                                },
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () => _studentsCubit.loadStudents(direction: state.direction),
+                    child: Builder(
+                      builder: (context) {
+                        if (state.loading) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: const [
+                              SizedBox(
+                                height: 420,
+                                child: Center(child: CircularProgressIndicator()),
                               ),
                             ],
                           );
-                        },
-                      ),
+                        }
+                        if (filteredItems.isEmpty) {
+                          return ListView(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            children: [
+                              SizedBox(
+                                height: 420,
+                                child: Center(
+                                  child: Text(
+                                    hasActiveFilters
+                                        ? (localizations?.noStudentsMatchingFilters ??
+                                              'No students matching selected filters.')
+                                        : (localizations?.noStudentsAssignedYet ??
+                                              'No students assigned yet.'),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 22.0),
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            primary: false,
+                            padding: EdgeInsets.zero,
+                            itemCount: filteredItems.length,
+                            itemBuilder: (context, index) {
+                              final item = filteredItems[index];
+                              final isLast = index == filteredItems.length - 1;
+                              final isFirst = index == 0;
+                              if (item.isSchool) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (isLast)
+                                      const TrackSegment(
+                                        height: 16,
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: 22,
+                                          vertical: 4,
+                                        ),
+                                      ),
+                                    LocationTile(
+                                      name: item.name,
+                                      icon: Icons.school,
+                                      onLocationTap: () => _openGoogleMaps(item.gMapsUrl),
+                                    ),
+                                  ],
+                                );
+                              }
+                              final student = item.studentData;
+                              if (student == null) {
+                                return const SizedBox.shrink();
+                              }
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (!isFirst) const TrackSegment(),
+                                  StudentPageTile(
+                                    student: student,
+                                    onLocationTap: () => _openGoogleMaps(student.gMapsLink),
+                                    boardedBus: _boardedByStudentId[item.id] ?? false,
+                                    droppedOff: _droppedOffByStudentId[item.id] ?? false,
+                                    onBoardedChanged: (value) {
+                                      setState(() {
+                                        _boardedByStudentId[item.id] = value;
+                                        if (!value) {
+                                          _droppedOffByStudentId[item.id] = false;
+                                        }
+                                      });
+                                    },
+                                    onDroppedOffChanged: (value) {
+                                      setState(() {
+                                        _droppedOffByStudentId[item.id] = value;
+                                      });
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        );
+                      },
                     ),
                   ),
+                ),
               ],
             ),
           );

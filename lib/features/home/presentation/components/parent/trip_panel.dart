@@ -1,3 +1,4 @@
+import 'package:characters/characters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/features/home/cubit/trip_cubit.dart';
@@ -180,6 +181,13 @@ class LicensePlate extends StatelessWidget {
     required this.licensePlateNumbers,
   });
 
+  /// Inserts a single space between each letter; numbers are shown unchanged.
+  static String _lettersSpaced(String raw) {
+    final collapsed = raw.replaceAll(RegExp(r'\s+'), '');
+    if (collapsed.isEmpty) return '';
+    return collapsed.characters.join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -199,7 +207,7 @@ class LicensePlate extends StatelessWidget {
                 width: double.infinity,
                 child: Center(
                   child: Text(
-                    licensePlateLetters,
+                    _lettersSpaced(licensePlateLetters),
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

@@ -13,12 +13,24 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final GuardianRepository _guardianRepository = GuardianRepository();
-  late final Future<GuardianProfileData> _profileFuture;
+  late Future<GuardianProfileData> _profileFuture;
 
   @override
   void initState() {
     super.initState();
-    _profileFuture = _guardianRepository.getProfile();
+    _profileFuture = _loadProfile();
+  }
+
+  Future<GuardianProfileData> _loadProfile() {
+    return _guardianRepository.getProfile();
+  }
+
+  Future<void> _refreshProfile() async {
+    final refreshedProfile = _loadProfile();
+    setState(() {
+      _profileFuture = refreshedProfile;
+    });
+    await refreshedProfile;
   }
 
   @override
@@ -28,14 +40,36 @@ class _ProfilePageState extends State<ProfilePage> {
       future: _profileFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+          return Scaffold(
+            body: RefreshIndicator(
+              onRefresh: _refreshProfile,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 420,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ],
+              ),
+            ),
           );
         }
         final profile = snapshot.data;
         if (profile == null) {
           return Scaffold(
-            body: Center(child: Text(localizations.profileLoadError)),
+            body: RefreshIndicator(
+              onRefresh: _refreshProfile,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: 420,
+                    child: Center(child: Text(localizations.profileLoadError)),
+                  ),
+                ],
+              ),
+            ),
           );
         }
         return Scaffold(
@@ -48,72 +82,76 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             centerTitle: true,
           ),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              const SizedBox(height: 16),
-              Text(
-                localizations.accountInformationTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+          body: RefreshIndicator(
+            onRefresh: _refreshProfile,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                const SizedBox(height: 16),
+                Text(
+                  localizations.accountInformationTitle,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              _buildInfoRow(localizations.profileNameLabel, profile.name),
-              const SizedBox(height: 8),
-              _buildInfoRow(
-                localizations.profilePrimaryPhoneLabel,
-                profile.primaryPhone,
-              ),
-              const SizedBox(height: 8),
-              _buildInfoRow(
-                localizations.profileSecondaryPhoneLabel,
-                profile.secondaryPhone,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                localizations.yourEnrolledChildrenTitle,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                const SizedBox(height: 12),
+                _buildInfoRow(localizations.profileNameLabel, profile.name),
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  localizations.profilePrimaryPhoneLabel,
+                  profile.primaryPhone,
                 ),
-              ),
-              const SizedBox(height: 12),
-              ...profile.children
-                  .map((child) => _buildChildTile(child, localizations))
-                  .toList(),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context, rootNavigator: true).push(
-                      MaterialPageRoute(
-                        builder: (_) => OtpPage(
-                          email: profile.email,
-                          role: AuthRepository.authPathRoleForEmail(
-                            profile.email,
+                const SizedBox(height: 8),
+                _buildInfoRow(
+                  localizations.profileSecondaryPhoneLabel,
+                  profile.secondaryPhone,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  localizations.yourEnrolledChildrenTitle,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ...profile.children
+                    .map((child) => _buildChildTile(child, localizations))
+                    .toList(),
+                const SizedBox(height: 40),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder: (_) => OtpPage(
+                            email: profile.email,
+                            role: AuthRepository.authPathRoleForEmail(
+                              profile.email,
+                            ),
                           ),
                         ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      localizations.resetPasswordButton,
+                      style: const TextStyle(fontSize: 18),
                     ),
                   ),
-                  child: Text(
-                    localizations.resetPasswordButton,
-                    style: const TextStyle(fontSize: 18),
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },

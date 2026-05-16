@@ -20,7 +20,19 @@ class _PinScreenState extends State<PinCodePage> {
   @override
   void initState() {
     super.initState();
-    _pinsFuture = _guardianRepository.getPins();
+    _pinsFuture = _loadPins();
+  }
+
+  Future<GuardianPinsData> _loadPins() {
+    return _guardianRepository.getPins();
+  }
+
+  Future<void> _refreshPins() async {
+    final refreshed = _loadPins();
+    setState(() {
+      _pinsFuture = refreshed;
+    });
+    await refreshed;
   }
 
   @override
@@ -52,76 +64,86 @@ class _PinScreenState extends State<PinCodePage> {
         future: _pinsFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return RefreshIndicator(
+              onRefresh: _refreshPins,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(height: 420, child: Center(child: CircularProgressIndicator())),
+                ],
+              ),
+            );
           }
           final pins = snapshot.data;
           if (pins != null) {
             masterPinController.text = pins.masterPin;
             tempPinController.text = pins.tempPin;
           }
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
+          return RefreshIndicator(
+            onRefresh: _refreshPins,
             child: ListView(
-          children: [
-            const SizedBox(height: 16),
-            Text(
-              localizations.shareChildPinCodeTitle,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              localizations.pinCodeDescription,
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              localizations.masterPinTitle,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 4),
-            Text(localizations.masterPinWarning, style: TextStyle(color: Colors.red)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: masterPinController,
-              obscureText: !masterPinVisible,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                suffixIcon: IconButton(
-                  icon: Icon(masterPinVisible ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      masterPinVisible = !masterPinVisible;
-                    });
-                  },
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(16),
+              children: [
+                const SizedBox(height: 16),
+                Text(
+                  localizations.shareChildPinCodeTitle,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              localizations.temporaryPinTitle,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 4),
-            Text(localizations.temporaryPinInfo, style: TextStyle(color: Colors.black54)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: tempPinController,
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.copy),
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: tempPinController.text));
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(localizations.temporaryPinCopied)));
-                  },
+                const SizedBox(height: 8),
+                Text(
+                  localizations.pinCodeDescription,
+                  style: TextStyle(fontSize: 16, color: Colors.black54),
                 ),
-              ),
+                const SizedBox(height: 24),
+                Text(
+                  localizations.masterPinTitle,
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(localizations.masterPinWarning, style: TextStyle(color: Colors.red)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: masterPinController,
+                  obscureText: !masterPinVisible,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    suffixIcon: IconButton(
+                      icon: Icon(masterPinVisible ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () {
+                        setState(() {
+                          masterPinVisible = !masterPinVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  localizations.temporaryPinTitle,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(localizations.temporaryPinInfo, style: TextStyle(color: Colors.black54)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: tempPinController,
+                  readOnly: true,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.copy),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: tempPinController.text));
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(localizations.temporaryPinCopied)));
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
           );
         },
       ),

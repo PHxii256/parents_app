@@ -24,9 +24,11 @@ class SettingsPage extends StatelessWidget {
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
-        child: Column(
+      body: RefreshIndicator(
+        onRefresh: () => context.read<SettingsCubit>().loadSavedLanguage(),
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
           children: [
             ListTile(
               title: Text(localizations.changePasswordTitle),
