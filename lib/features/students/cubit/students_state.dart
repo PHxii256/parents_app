@@ -1,3 +1,4 @@
+import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/students/data/models/route_student_item.dart';
 
 class StudentsState {
@@ -5,7 +6,7 @@ class StudentsState {
   final String direction;
   final List<RouteStudentItem> students;
   final Map<String, String> statuses;
-  final Map<String, String> latestMessages;
+  final Map<String, StudentLatestMessage> latestMessages;
   final String? error;
 
   const StudentsState({
@@ -13,7 +14,7 @@ class StudentsState {
     this.direction = 'am',
     this.students = const [],
     this.statuses = const {},
-    this.latestMessages = const {},
+    this.latestMessages = const <String, StudentLatestMessage>{},
     this.error,
   });
 
@@ -22,7 +23,7 @@ class StudentsState {
     String? direction,
     List<RouteStudentItem>? students,
     Map<String, String>? statuses,
-    Map<String, String>? latestMessages,
+    Map<String, StudentLatestMessage>? latestMessages,
     String? error,
     bool clearError = false,
   }) {

@@ -7,7 +7,7 @@ import 'package:parent_app/features/students/presentation/components/student_pag
 class StudentPageTile extends StatelessWidget {
   final StudentData student;
   final VoidCallback? onLocationTap;
-  final String? latestMessage;
+  final StudentLatestMessage? latestMessage;
   final bool boardedBus;
   final bool droppedOff;
   final ValueChanged<bool>? onBoardedChanged;

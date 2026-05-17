@@ -122,20 +122,26 @@ class _MessageChoicesState extends State<MessageChoices> {
               ),
               IconButton(
                 onPressed: isSelected
-                    ? () {
+                    ? () async {
                         final selectedMessage = _customMessageController.text.trim().isNotEmpty
                             ? _customMessageController.text.trim()
                             : _selectedChoice!;
-                        if (selectedMessage.isNotEmpty) {
-                          _guardianRepository.sendMessage(
-                            content: selectedMessage,
-                            studentId: '1',
-                          );
-                          Navigator.of(context).pop();
-                          ScaffoldMessenger.of(
-                            context,
-                          ).showSnackBar(SnackBar(content: Text("Message Sent")));
-                        }
+                        if (selectedMessage.isEmpty) return;
+                        final messenger = ScaffoldMessenger.maybeOf(context);
+                        final ok = await _guardianRepository.sendMessage(
+                          content: selectedMessage,
+                        );
+                        if (!context.mounted) return;
+                        Navigator.of(context).pop();
+                        messenger?.showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              ok
+                                  ? 'Message sent'
+                                  : 'Could not send message. Check your profile has linked students.',
+                            ),
+                          ),
+                        );
                       }
                     : null,
                 icon: Icon(Icons.send, color: sendColor),

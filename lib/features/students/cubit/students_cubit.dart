@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/core/config/api_config.dart';
+import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/home/cubit/trip_state.dart';
 import 'package:parent_app/features/home/data/models/trip_socket_event.dart';
 import 'package:parent_app/features/home/data/repositories/trip_repository.dart';
@@ -36,16 +37,17 @@ class StudentsCubit extends Cubit<StudentsState> {
     }
   }
 
-  Map<String, String> _mergeLatestFromRoster(
+  Map<String, StudentLatestMessage> _mergeLatestFromRoster(
     List<RouteStudentItem> roster,
-    Map<String, String> current,
+    Map<String, StudentLatestMessage> current,
   ) {
-    final merged = Map<String, String>.from(current);
+    final merged = Map<String, StudentLatestMessage>.from(current);
     for (final item in roster) {
       if (item.isSchool) continue;
       final sd = item.studentData;
-      final msg = sd?.latestMessage?.trim();
-      if (msg == null || msg.isEmpty) continue;
+      final msg = sd?.latestMessage;
+      final text = msg?.content.trim() ?? '';
+      if (msg == null || text.isEmpty) continue;
       merged[item.id] = msg;
       if (sd != null && sd.id != 0) {
         merged[sd.id.toString()] = msg;
@@ -217,7 +219,7 @@ class StudentsCubit extends Cubit<StudentsState> {
           _dbg('guardian_message ignored: missing studentId');
           return;
         }
-        final latest = Map<String, String>.from(state.latestMessages);
+        final latest = Map<String, StudentLatestMessage>.from(state.latestMessages);
         final guardian = (event.guardianName ?? '').trim();
         final content = event.content.trim();
         final line = guardian.isNotEmpty ? '$guardian: $content' : content;
@@ -226,8 +228,12 @@ class StudentsCubit extends Cubit<StudentsState> {
           'guardian_message rawStudentId=$studentId expandedKeys=${keys.join('|')} '
           'preview=${line.length > 80 ? '${line.substring(0, 80)}…' : line}',
         );
+        final snippet = StudentLatestMessage(
+          content: line,
+          createdAt: DateTime.now().toUtc(),
+        );
         for (final k in keys) {
-          latest[k] = line;
+          latest[k] = snippet;
         }
         emit(state.copyWith(latestMessages: latest));
 

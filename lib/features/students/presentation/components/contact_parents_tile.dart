@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:parent_app/features/absence/data/student_data.dart';
 import 'package:parent_app/features/home/presentation/components/parent/trip_panel.dart';
 import 'package:parent_app/features/home/presentation/components/staff/latest_message_viewer.dart';
 import 'package:parent_app/l10n/app_localizations.dart';
@@ -8,7 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ContactParentsTile extends StatelessWidget {
   final VoidCallback? onLocationTap;
-  final String? latestMessage;
+  final StudentLatestMessage? latestMessage;
   const ContactParentsTile({super.key, this.onLocationTap, this.latestMessage});
 
   static const String _motherNumber = '+20 01009207148';

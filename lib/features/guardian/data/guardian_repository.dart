@@ -151,22 +151,39 @@ class GuardianRepository {
 
   /// Student IDs for the logged-in guardian (from profile children). Empty if none parsed.
   Future<List<int>> getAssignedStudentIds() async {
-    final profile = await getProfile();
+    final raw = await getAssignedStudentIdStrings();
     final ids = <int>[];
-    for (final child in profile.children) {
-      final raw = (child['id'] ?? '').trim();
-      if (raw.isEmpty) continue;
-      final n = int.tryParse(raw);
-      if (n != null) {
-        ids.add(n);
-      }
+    for (final s in raw) {
+      final n = int.tryParse(s);
+      if (n != null) ids.add(n);
     }
     if (ids.isEmpty && kDebugMode) {
       debugPrint(
-        '[Guardian] getAssignedStudentIds: no numeric ids (${profile.children.length} children in profile).',
+        '[Guardian] getAssignedStudentIds: no numeric ids (raw=$raw).',
       );
     }
     return ids;
+  }
+
+  /// Non-empty `id` strings from profile `children` (same source as [getProfile] maps to `id`).
+  Future<List<String>> getAssignedStudentIdStrings() async {
+    final profile = await getProfile();
+    final ids = <String>[];
+    for (final child in profile.children) {
+      final raw = (child['id'] ?? '').toString().trim();
+      if (raw.isEmpty) continue;
+      ids.add(raw);
+    }
+    return ids;
+  }
+
+  static List<dynamic> _studentIdsJsonValues(List<String> raw) {
+    final out = <dynamic>[];
+    for (final s in raw) {
+      final n = int.tryParse(s);
+      out.add(n ?? s);
+    }
+    return out;
   }
 
   Future<List<SavedLocation>> getLocations() async {
@@ -218,15 +235,33 @@ class GuardianRepository {
     );
   }
 
-  Future<void> sendMessage({
-    required String content,
-    required String studentId,
-  }) async {
-    if (!ApiConfig.useRealApi) return;
-    await _dio.post(
-      '/api/v1/guardian/messages',
-      data: {'content': content, 'studentId': studentId},
-    );
+  /// Broadcasts to every student linked to the guardian profile (`studentIds` from `/guardian/profile` children).
+  Future<bool> sendMessage({required String content}) async {
+    if (!ApiConfig.useRealApi) return true;
+    final idStrings = await getAssignedStudentIdStrings();
+    if (idStrings.isEmpty) {
+      if (kDebugMode) {
+        debugPrint('[Guardian] sendMessage skipped: no student ids on profile');
+      }
+      return false;
+    }
+    try {
+      final response = await _dio.post(
+        '/api/v1/guardian/messages',
+        data: {
+          'content': content,
+          'studentIds': _studentIdsJsonValues(idStrings),
+        },
+      );
+      return (response.statusCode ?? 500) < 400;
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        debugPrint(
+          '[Guardian] sendMessage failed: ${e.response?.statusCode} ${e.response?.data}',
+        );
+      }
+      return false;
+    }
   }
 
   /// Backend expects `token` + `device_type` (see Postman: ANDROID / IOS / …).

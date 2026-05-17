@@ -43,13 +43,6 @@ class StudentsRepository {
     return pins;
   }
 
-  static String? _parseLatestMessageField(Map<String, dynamic> student) {
-    final v = student['latestMessage'] ?? student['latest_message'];
-    if (v == null) return null;
-    final s = v.toString().trim();
-    return s.isEmpty ? null : s;
-  }
-
   /// API may send `pinCodes` as a string list, or as `{ masterPin, tempPin }`,
   /// or nested `pins`/`pin`; plus top-level master/temp variants on the student.
   static List<String> _parseStudentPinCodes(Map<String, dynamic> student) {
@@ -130,7 +123,9 @@ class StudentsRepository {
           coords: coords is List
               ? coords.map((e) => e.toString()).toList()
               : const [],
-          latestMessage: _parseLatestMessageField(student),
+          latestMessage: StudentLatestMessage.tryParse(
+            student['latestMessage'] ?? student['latest_message'],
+          ),
         ),
       );
     }).toList();

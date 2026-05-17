@@ -1,6 +1,53 @@
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:latlong2/latlong.dart';
 
+/// Guardian latest message snippet from roster API or realtime.
+class StudentLatestMessage {
+  final String content;
+  final DateTime? createdAt;
+
+  const StudentLatestMessage({required this.content, this.createdAt});
+
+  static StudentLatestMessage? tryParse(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is String) {
+      final s = raw.trim();
+      if (s.isEmpty) return null;
+      return StudentLatestMessage(content: s);
+    }
+    if (raw is Map) {
+      final map = Map<String, dynamic>.from(raw);
+      final text = map['content']?.toString().trim() ?? '';
+      if (text.isEmpty) return null;
+      final createdRaw = map['createdAt'] ?? map['created_at'];
+      DateTime? created;
+      if (createdRaw != null) {
+        created = DateTime.tryParse(createdRaw.toString());
+      }
+      return StudentLatestMessage(content: text, createdAt: created);
+    }
+    return null;
+  }
+
+  /// `content · N min ago` (or plain [content] if no timestamp), for assistant tiles.
+  String assistantDisplayLine([DateTime? clock]) {
+    final trimmed = content.trim();
+    if (trimmed.isEmpty) return '';
+    final at = createdAt;
+    if (at == null) return trimmed;
+    return '$trimmed · ${_minutesAgo(at, clock ?? DateTime.now())}';
+  }
+
+  static String _minutesAgo(DateTime createdAt, DateTime now) {
+    final local = createdAt.isUtc ? createdAt.toLocal() : createdAt;
+    var elapsed = now.difference(local);
+    if (elapsed.isNegative) elapsed = Duration.zero;
+    final minutes = elapsed.inMinutes;
+    if (minutes < 1) return 'now';
+    return '$minutes min ago';
+  }
+}
+
 class StudentData {
   final int id;
   final String name;
@@ -10,8 +57,8 @@ class StudentData {
   final String gMapsLink;
   final List<String> coords;
   final String? status;
-  /// Latest guardian message from GET `/routes/students` when provided.
-  final String? latestMessage;
+  /// Latest guardian message from GET `/routes/students` when provided (string or object).
+  final StudentLatestMessage? latestMessage;
   StudentData({
     required this.id,
     required this.name,
