@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:parent_app/l10n/app_localizations.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -13,11 +15,38 @@ class StudentLatestMessage {
     if (raw is String) {
       final s = raw.trim();
       if (s.isEmpty) return null;
+      if ((s.startsWith('{') && s.endsWith('}')) || (s.startsWith('['))) {
+        try {
+          final decoded = jsonDecode(s);
+          if (decoded != raw && decoded != null) {
+            return tryParse(decoded);
+          }
+        } catch (_) {
+          /* use as plain text below */
+        }
+      }
       return StudentLatestMessage(content: s);
     }
     if (raw is Map) {
-      final map = Map<String, dynamic>.from(raw);
-      final text = map['content']?.toString().trim() ?? '';
+      final map = <String, dynamic>{};
+      raw.forEach((k, v) => map[k.toString()] = v);
+
+      dynamic contentRaw =
+          map['content'] ??
+          map['contents'] ??
+          map['message'] ??
+          map['body'] ??
+          map['text'];
+      if (contentRaw is Map) {
+        final nested = tryParse(contentRaw);
+        if (nested != null) return nested;
+        contentRaw = contentRaw.entries
+            .map((e) => e.value)
+            .whereType<String>()
+            .join(' ')
+            .trim();
+      }
+      final text = contentRaw?.toString().trim() ?? '';
       if (text.isEmpty) return null;
       final createdRaw = map['createdAt'] ?? map['created_at'];
       DateTime? created;
@@ -29,13 +58,20 @@ class StudentLatestMessage {
     return null;
   }
 
-  /// `content · N min ago` (or plain [content] if no timestamp), for assistant tiles.
-  String assistantDisplayLine([DateTime? clock]) {
-    final trimmed = content.trim();
-    if (trimmed.isEmpty) return '';
+  String get trimmedContent => content.trim();
+
+  /// Suffix shown after the swipeable body, e.g. ` · 3 min ago`, or empty.
+  String formattedRelativeSuffix([DateTime? clock]) {
     final at = createdAt;
-    if (at == null) return trimmed;
-    return '$trimmed · ${_minutesAgo(at, clock ?? DateTime.now())}';
+    if (at == null) return '';
+    return ' · ${_minutesAgo(at, clock ?? DateTime.now())}';
+  }
+
+  /// Plain `content · N min ago` (for tooling / tests).
+  String assistantDisplayLine([DateTime? clock]) {
+    final base = trimmedContent;
+    if (base.isEmpty) return '';
+    return '$base${formattedRelativeSuffix(clock ?? DateTime.now())}';
   }
 
   static String _minutesAgo(DateTime createdAt, DateTime now) {

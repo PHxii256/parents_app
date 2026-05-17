@@ -12,22 +12,63 @@ class LatestMessageViewer extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final snippet = latestMessage;
-    final String line;
-    if (snippet != null && snippet.content.trim().isNotEmpty) {
-      line = snippet.assistantDisplayLine();
-    } else {
-      line = '${localizations.noNewMessages}.';
+    final style = TextStyle(color: AppColors.brownBg);
+
+    final decoration = BoxDecoration(
+      color: AppColors.mutedBg,
+      borderRadius: BorderRadius.circular(22),
+    );
+
+    if (snippet == null || snippet.trimmedContent.isEmpty) {
+      return DecoratedBox(
+        decoration: decoration,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text('${localizations.noNewMessages}.', style: style),
+          ),
+        ),
+      );
     }
 
+    final clock = DateTime.now();
+    final body = snippet.trimmedContent;
+    final suffix = snippet.formattedRelativeSuffix(clock);
+
     return DecoratedBox(
-      decoration: BoxDecoration(color: AppColors.mutedBg, borderRadius: BorderRadius.circular(22)),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
-        child: Text(
-          line,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: AppColors.brownBg),
+      decoration: decoration,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(22),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(18, 8, 18, 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  primary: false,
+                  clipBehavior: Clip.hardEdge,
+                  child: Text(
+                    body,
+                    style: style,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.visible,
+                  ),
+                ),
+              ),
+              if (suffix.isNotEmpty)
+                Text(
+                  suffix,
+                  style: style,
+                  maxLines: 1,
+                  softWrap: false,
+                ),
+            ],
+          ),
         ),
       ),
     );
